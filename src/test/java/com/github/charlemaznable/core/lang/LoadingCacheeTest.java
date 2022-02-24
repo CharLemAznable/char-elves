@@ -1,5 +1,6 @@
 package com.github.charlemaznable.core.lang;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -13,6 +14,7 @@ import static com.github.charlemaznable.core.lang.LoadingCachee.accessCache;
 import static com.github.charlemaznable.core.lang.LoadingCachee.get;
 import static com.github.charlemaznable.core.lang.LoadingCachee.getAll;
 import static com.github.charlemaznable.core.lang.LoadingCachee.getUnchecked;
+import static com.github.charlemaznable.core.lang.LoadingCachee.manualCache;
 import static com.github.charlemaznable.core.lang.LoadingCachee.simpleCache;
 import static com.github.charlemaznable.core.lang.LoadingCachee.writeCache;
 import static com.github.charlemaznable.core.lang.Str.toStr;
@@ -23,6 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LoadingCacheeTest {
+
+    @SneakyThrows
+    @Test
+    public void testManualCache() {
+        Cache<String, String> manualCache = manualCache();
+
+        assertEquals("abc", manualCache.get("abc", () -> "abc"));
+        assertEquals("abc", manualCache.getIfPresent("abc"));
+    }
 
     @Test
     public void testSimpleCache() {

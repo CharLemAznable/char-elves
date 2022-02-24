@@ -1,5 +1,6 @@
 package com.github.charlemaznable.core.lang;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
@@ -16,6 +17,10 @@ import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class LoadingCachee {
+
+    public static <K, V> Cache<K, V> manualCache() {
+        return newBuilder().build();
+    }
 
     public static <K, V> LoadingCache<K, V> simpleCache(CacheLoader<K, V> loader) {
         return newBuilder().build(loader);
