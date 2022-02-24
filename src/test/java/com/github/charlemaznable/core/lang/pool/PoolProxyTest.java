@@ -1,12 +1,12 @@
 package com.github.charlemaznable.core.lang.pool;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.joor.ReflectException;
 import org.junit.jupiter.api.Test;
 
+import static lombok.AccessLevel.PROTECTED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -49,7 +49,7 @@ public class PoolProxyTest {
                 new PooledObjectCreator<TestPoolProxyObject>() {}).args("ARGUMENT", "ILLEGAL").build());
     }
 
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = PROTECTED)
     @AllArgsConstructor
     static class TestPoolProxyObject {
 
