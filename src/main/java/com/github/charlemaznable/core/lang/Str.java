@@ -3,6 +3,7 @@ package com.github.charlemaznable.core.lang;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -24,26 +25,32 @@ public final class Str {
      */
     public static final String DOT_SPLITTER = "\\.";
 
+    @Contract("null -> true")
     public static boolean isNull(String str) {
         return Objects.isNull(str);
     }
 
+    @Contract("null -> false")
     public static boolean isNotNull(String str) {
         return Objects.nonNull(str);
     }
 
+    @Contract("null -> true")
     public static boolean isEmpty(String str) {
         return isNull(str) || str.isEmpty();
     }
 
+    @Contract("null -> false")
     public static boolean isNotEmpty(String str) {
         return isNotNull(str) && !str.isEmpty();
     }
 
+    @Contract("null -> true")
     public static boolean isBlank(String str) {
         return isEmpty(str) || str.trim().isEmpty();
     }
 
+    @Contract("null -> false")
     public static boolean isNotBlank(String str) {
         return isNotEmpty(str) && !str.trim().isEmpty();
     }
