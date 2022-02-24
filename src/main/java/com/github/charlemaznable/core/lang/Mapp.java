@@ -168,8 +168,8 @@ public final class Mapp {
     }
 
     public static <T, K, U>
-    Collector<T, ?, ConcurrentMap<K,U>> toConcurrentMap(Function<? super T, ? extends K> keyMapper,
-                                                        Function<? super T, ? extends U> valueMapper) {
+    Collector<T, ?, ConcurrentMap<K, U>> toConcurrentMap(Function<? super T, ? extends K> keyMapper,
+                                                         Function<? super T, ? extends U> valueMapper) {
         return Collectors.toConcurrentMap(keyMapper, valueMapper, defaultMerger(), ConcurrentHashMap::new);
     }
 

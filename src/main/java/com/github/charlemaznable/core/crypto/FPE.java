@@ -30,14 +30,14 @@ public final class FPE extends FormatPreservingEncryption {
 
     private static final Cipher ff1 = new com.idealista.fpe.algorithm.ff1.Cipher();
 
-    public static FPEBuilder ff1() {
-        return new FPEBuilder(ff1);
-    }
-
     public FPE(Cipher cipher, Domain domain,
                PseudoRandomFunction pseudoRandomFunction,
                LengthRange lengthRange) {
         super(cipher, domain, pseudoRandomFunction, lengthRange);
+    }
+
+    public static FPEBuilder ff1() {
+        return new FPEBuilder(ff1);
     }
 
     public String encrypt(String plainText, String tweak) {
@@ -46,6 +46,38 @@ public final class FPE extends FormatPreservingEncryption {
 
     public String decrypt(String cipherText, String tweak) {
         return super.decrypt(cipherText, bytes(tweak));
+    }
+
+    @Getter
+    @Accessors(fluent = true)
+    public enum AlphabetDomains {
+
+        NUMBERS("0123456789"),
+
+        LOWER_LETTERS("abcdefghijklmnopqrstuvwxyz"),
+
+        UPPER_LETTERS("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+
+        LETTERS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+
+        LOWER_ALPHANUMERIC("0123456789abcdefghijklmnopqrstuvwxyz"),
+
+        UPPER_ALPHANUMERIC("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+
+        ALPHANUMERIC("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+
+        BASE64("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/="),
+
+        BASE64_URL_SAFE("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_="),
+
+        BASE64_PURIFIED("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"),;
+
+        private AlphabetDomain domain;
+
+        AlphabetDomains(String alphabetString) {
+            this.domain = new AlphabetDomain(new GenericAlphabet(
+                    checkNotNull(alphabetString).toCharArray()));
+        }
     }
 
     public static final class FPEBuilder {
@@ -128,38 +160,6 @@ public final class FPE extends FormatPreservingEncryption {
             return new FPE(cipher, checkNotNull(domain),
                     checkNotNull(pseudoRandomFunction),
                     checkNotNull(lengthRange));
-        }
-    }
-
-    @Getter
-    @Accessors(fluent = true)
-    public enum AlphabetDomains {
-
-        NUMBERS("0123456789"),
-
-        LOWER_LETTERS("abcdefghijklmnopqrstuvwxyz"),
-
-        UPPER_LETTERS("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-
-        LETTERS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-
-        LOWER_ALPHANUMERIC("0123456789abcdefghijklmnopqrstuvwxyz"),
-
-        UPPER_ALPHANUMERIC("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-
-        ALPHANUMERIC("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-
-        BASE64("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/="),
-
-        BASE64_URL_SAFE("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_="),
-
-        BASE64_PURIFIED("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"),;
-
-        private AlphabetDomain domain;
-
-        AlphabetDomains(String alphabetString) {
-            this.domain = new AlphabetDomain(new GenericAlphabet(
-                    checkNotNull(alphabetString).toCharArray()));
         }
     }
 

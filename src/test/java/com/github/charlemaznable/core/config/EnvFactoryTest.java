@@ -273,6 +273,16 @@ public class EnvFactoryTest {
         String error2();
     }
 
+    @EnvConfig
+    public interface ArgEnvConfig {
+
+        @EnvConfig("custom1.${customKey1}")
+        String custom1();
+
+        @EnvConfig("custom2.${customKey2}")
+        String custom2();
+    }
+
     public static class Provider implements ConfigKeyProvider, DefaultValueProvider {
 
         @Override
@@ -284,16 +294,6 @@ public class EnvFactoryTest {
         public String defaultValue(Class<?> minerClass, Method method) {
             return "PROV";
         }
-    }
-
-    @EnvConfig
-    public interface ArgEnvConfig {
-
-        @EnvConfig("custom1.${customKey1}")
-        String custom1();
-
-        @EnvConfig("custom2.${customKey2}")
-        String custom2();
     }
 
     public static class ErrorProvider implements ConfigKeyProvider, DefaultValueProvider {}
