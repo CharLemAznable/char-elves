@@ -2,7 +2,6 @@ package com.github.charlemaznable.core.lang;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +12,7 @@ import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.LoadingCachee.accessCache;
 import static com.github.charlemaznable.core.lang.LoadingCachee.get;
 import static com.github.charlemaznable.core.lang.LoadingCachee.getAll;
+import static com.github.charlemaznable.core.lang.LoadingCachee.getIfPresent;
 import static com.github.charlemaznable.core.lang.LoadingCachee.getUnchecked;
 import static com.github.charlemaznable.core.lang.LoadingCachee.manualCache;
 import static com.github.charlemaznable.core.lang.LoadingCachee.simpleCache;
@@ -26,13 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LoadingCacheeTest {
 
-    @SneakyThrows
     @Test
     public void testManualCache() {
         Cache<String, String> manualCache = manualCache();
 
-        assertEquals("abc", manualCache.get("abc", () -> "abc"));
-        assertEquals("abc", manualCache.getIfPresent("abc"));
+        assertEquals("abc", get(manualCache, "abc", () -> "abc"));
+        assertEquals("abc", getIfPresent(manualCache, "abc"));
     }
 
     @Test
@@ -55,7 +54,6 @@ public class LoadingCacheeTest {
         assertThrows(RuntimeException.class, () -> getAll(simpleCache, newArrayList("ex")));
     }
 
-    @SneakyThrows
     @Test
     public void testAccessCache() {
         val accessCache = accessCache(new CacheLoader<String, String>() {
@@ -77,7 +75,6 @@ public class LoadingCacheeTest {
                         !cachedValue.equals(get(accessCache, "abc"))));
     }
 
-    @SneakyThrows
     @Test
     public void testWriteCache() {
         val writeCache = writeCache(new CacheLoader<String, String>() {

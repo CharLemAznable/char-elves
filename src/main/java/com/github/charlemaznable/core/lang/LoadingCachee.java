@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.time.Duration;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.cache.CacheBuilder.newBuilder;
@@ -40,6 +41,21 @@ public final class LoadingCachee {
 
     public static <K, V> LoadingCache<K, V> writeCache(CacheLoader<K, V> loader, long duration, TimeUnit unit) {
         return newBuilder().expireAfterWrite(duration, unit).build(loader);
+    }
+
+    public static <K, V> V getIfPresent
+            (Cache<K, V> cache, K key) {
+        return cache.getIfPresent(key);
+    }
+
+    @SneakyThrows
+    public static <K, V> V get
+            (Cache<K, V> cache, K key, Callable<? extends V> loader) {
+        try {
+            return cache.get(key, loader);
+        } catch (UncheckedExecutionException e) {
+            throw e.getCause();
+        }
     }
 
     @SneakyThrows
