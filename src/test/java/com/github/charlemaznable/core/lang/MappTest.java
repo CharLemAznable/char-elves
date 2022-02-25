@@ -75,18 +75,20 @@ public class MappTest {
 
     @Test
     public void testToMap() {
-        val list = newArrayList("A", "B", "C");
+        val list = newArrayList("A", "B", "C", "D");
 
-        val map = list.stream().collect(Mapp.toMap(s -> s, s -> s));
+        val map = list.stream().collect(Mapp.toMap(s -> s, s -> "D".equals(s) ? null : s));
         assertTrue(map instanceof HashMap);
         assertEquals("A", Mapp.getStr(map, "A"));
         assertEquals("B", Mapp.getStr(map, "B"));
         assertEquals("C", Mapp.getStr(map, "C"));
+        assertNull(Mapp.getStr(map, "D"));
 
-        val cmap = list.stream().collect(Mapp.toConcurrentMap(s -> s, s -> s));
+        val cmap = list.stream().collect(Mapp.toConcurrentMap(s -> s, s -> "D".equals(s) ? null : s));
         assertTrue(cmap instanceof ConcurrentHashMap);
         assertEquals("A", Mapp.getStr(cmap, "A"));
         assertEquals("B", Mapp.getStr(cmap, "B"));
         assertEquals("C", Mapp.getStr(cmap, "C"));
+        assertNull(Mapp.getStr(cmap, "D"));
     }
 }

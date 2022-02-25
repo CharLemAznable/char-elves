@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -164,16 +165,46 @@ public final class Mapp {
     public static <T, K, U>
     Collector<T, ?, Map<K, U>> toMap(Function<? super T, ? extends K> keyMapper,
                                      Function<? super T, ? extends U> valueMapper) {
-        return Collectors.toMap(keyMapper, valueMapper, defaultMerger(), HashMap::new);
+        return Collectors.toMap(keyMapper, valueMapper, defaultMerger(), MergeHashMap::new);
     }
 
     public static <T, K, U>
     Collector<T, ?, ConcurrentMap<K, U>> toConcurrentMap(Function<? super T, ? extends K> keyMapper,
                                                          Function<? super T, ? extends U> valueMapper) {
-        return Collectors.toConcurrentMap(keyMapper, valueMapper, defaultMerger(), ConcurrentHashMap::new);
+        return Collectors.toConcurrentMap(keyMapper, valueMapper, defaultMerger(), ConcurrentMergeHashMap::new);
     }
 
     private static <T> BinaryOperator<T> defaultMerger() {
         return (u, v) -> v;
+    }
+
+    private static class MergeHashMap<K, V> extends HashMap<K, V> {
+
+        private static final long serialVersionUID = 8293495763789556890L;
+
+        public MergeHashMap() {
+            super();
+        }
+
+        @Override
+        public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+            if (isNull(value)) return remove(key);
+            return super.merge(key, value, remappingFunction);
+        }
+    }
+
+    private static class ConcurrentMergeHashMap<K, V> extends ConcurrentHashMap<K, V> {
+
+        private static final long serialVersionUID = 7370568525584783098L;
+
+        public ConcurrentMergeHashMap() {
+            super();
+        }
+
+        @Override
+        public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+            if (isNull(value)) return remove(key);
+            return super.merge(key, value, remappingFunction);
+        }
     }
 }
