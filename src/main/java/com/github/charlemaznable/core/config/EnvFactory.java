@@ -19,6 +19,7 @@ import net.sf.cglib.proxy.MethodProxy;
 import net.sf.cglib.proxy.NoOp;
 import org.apache.commons.text.StringSubstitutor;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -73,7 +74,8 @@ public final class EnvFactory {
             return (T) LoadingCachee.get(envCache, envClass);
         }
 
-        private <T> Object loadEnv(Class<T> envClass) {
+        @Nonnull
+        private <T> Object loadEnv(@Nonnull Class<T> envClass) {
             ensureClassIsAnInterface(envClass);
             checkEnvConfig(envClass);
 
