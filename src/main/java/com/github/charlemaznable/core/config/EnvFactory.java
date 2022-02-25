@@ -7,7 +7,6 @@ import com.github.charlemaznable.core.config.impl.BaseConfigable;
 import com.github.charlemaznable.core.context.FactoryContext;
 import com.github.charlemaznable.core.lang.EasyEnhancer;
 import com.github.charlemaznable.core.lang.Factory;
-import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.google.common.cache.LoadingCache;
 import com.google.common.primitives.Primitives;
 import lombok.AllArgsConstructor;
@@ -28,6 +27,8 @@ import static com.github.charlemaznable.core.config.Arguments.argumentsAsSubstit
 import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsSubstitutor;
 import static com.github.charlemaznable.core.lang.Condition.blankThen;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.github.charlemaznable.core.lang.LoadingCachee.get;
+import static com.github.charlemaznable.core.lang.LoadingCachee.simpleCache;
 import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.google.common.cache.CacheLoader.from;
 import static java.util.Objects.isNull;
@@ -40,8 +41,7 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 public final class EnvFactory {
 
     private static StringSubstitutor envClassPathSubstitutor;
-    private static LoadingCache<Factory, EnvLoader> envLoaderCache
-            = LoadingCachee.simpleCache(from(EnvLoader::new));
+    private static LoadingCache<Factory, EnvLoader> envLoaderCache = simpleCache(from(EnvLoader::new));
 
     static {
         envClassPathSubstitutor = classResourceAsSubstitutor("config.env.props");
@@ -56,7 +56,7 @@ public final class EnvFactory {
     }
 
     public static EnvLoader envLoader(Factory factory) {
-        return LoadingCachee.get(envLoaderCache, factory);
+        return get(envLoaderCache, factory);
     }
 
     @SuppressWarnings("unchecked")
@@ -64,14 +64,14 @@ public final class EnvFactory {
 
         private Factory factory;
         private LoadingCache<Class, Object> envCache
-                = LoadingCachee.simpleCache(from(this::loadEnv));
+                = simpleCache(from(this::loadEnv));
 
         EnvLoader(Factory factory) {
             this.factory = checkNotNull(factory);
         }
 
         public <T> T getEnv(Class<T> envClass) {
-            return (T) LoadingCachee.get(envCache, envClass);
+            return (T) get(envCache, envClass);
         }
 
         @Nonnull
