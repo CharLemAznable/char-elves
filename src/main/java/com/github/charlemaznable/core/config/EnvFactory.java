@@ -34,8 +34,8 @@ import static com.google.common.cache.CacheLoader.from;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
+import static org.springframework.core.annotation.AnnotatedElementUtils.getMergedAnnotation;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class EnvFactory {
@@ -94,7 +94,7 @@ public final class EnvFactory {
         }
 
         private <T> void checkEnvConfig(Class<T> clazz) {
-            checkNotNull(getAnnotation(clazz, EnvConfig.class),
+            checkNotNull(findAnnotation(clazz, EnvConfig.class),
                     new EnvConfigException(clazz + " has no EnvConfig"));
         }
     }
@@ -134,7 +134,7 @@ public final class EnvFactory {
                 return method.invoke(Config.getConfigImpl(), args);
             }
 
-            val envConfig = findAnnotation(method, EnvConfig.class);
+            val envConfig = getMergedAnnotation(method, EnvConfig.class);
             val configKey = checkEnvConfigKey(method, envConfig);
             val defaultValue = checkEnvDefaultValue(method, envConfig);
             val defaultArgument = args.length > 0 ? args[0] : null;

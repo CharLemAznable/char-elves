@@ -6,7 +6,14 @@ import com.github.charlemaznable.core.config.ex.ConfigValueFormatException;
 import com.github.charlemaznable.core.config.ex.EnvConfigException;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.annotation.AliasFor;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -273,14 +280,28 @@ public class EnvFactoryTest {
         String error2();
     }
 
-    @EnvConfig
+    @AliasConfig
     public interface ArgEnvConfig {
 
-        @EnvConfig("custom1.${customKey1}")
+        @AliasConfig("custom1.${customKey1}")
         String custom1();
 
-        @EnvConfig("custom2.${customKey2}")
+        @AliasConfig("custom2.${customKey2}")
         String custom2();
+    }
+
+    @Documented
+    @Inherited
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @EnvConfig
+    public @interface AliasConfig {
+
+        @AliasFor(annotation = EnvConfig.class)
+        String configKey() default "";
+
+        @AliasFor(annotation = EnvConfig.class)
+        String value() default "";
     }
 
     public static class Provider implements ConfigKeyProvider, DefaultValueProvider {
