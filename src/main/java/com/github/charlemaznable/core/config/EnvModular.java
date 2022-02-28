@@ -8,7 +8,7 @@ import com.google.inject.Provider;
 import static com.github.charlemaznable.core.config.EnvFactory.envLoader;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static java.util.Objects.nonNull;
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import static org.springframework.core.annotation.AnnotatedElementUtils.getMergedAnnotation;
 
 public final class EnvModular extends CommonModular<EnvModular> {
 
@@ -25,7 +25,7 @@ public final class EnvModular extends CommonModular<EnvModular> {
 
     @Override
     public boolean isCandidateClass(Class<?> clazz) {
-        return nonNull(findAnnotation(clazz, EnvConfig.class));
+        return nonNull(getMergedAnnotation(clazz, EnvConfig.class));
     }
 
     @Override

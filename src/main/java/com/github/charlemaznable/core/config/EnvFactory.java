@@ -35,7 +35,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static org.springframework.core.annotation.AnnotatedElementUtils.getMergedAnnotation;
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class EnvFactory {
@@ -94,7 +93,7 @@ public final class EnvFactory {
         }
 
         private <T> void checkEnvConfig(Class<T> clazz) {
-            checkNotNull(findAnnotation(clazz, EnvConfig.class),
+            checkNotNull(getMergedAnnotation(clazz, EnvConfig.class),
                     new EnvConfigException(clazz + " has no EnvConfig"));
         }
     }
