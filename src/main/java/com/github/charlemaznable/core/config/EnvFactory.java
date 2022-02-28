@@ -29,6 +29,7 @@ import static com.github.charlemaznable.core.lang.Condition.blankThen;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.LoadingCachee.get;
 import static com.github.charlemaznable.core.lang.LoadingCachee.simpleCache;
+import static com.github.charlemaznable.core.spring.AnnotationElf.findAnnotation;
 import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.google.common.cache.CacheLoader.from;
 import static java.util.Objects.isNull;
@@ -93,7 +94,7 @@ public final class EnvFactory {
         }
 
         private <T> void checkEnvConfig(Class<T> clazz) {
-            checkNotNull(getMergedAnnotation(clazz, EnvConfig.class),
+            checkNotNull(findAnnotation(clazz, EnvConfig.class),
                     new EnvConfigException(clazz + " has no EnvConfig"));
         }
     }
