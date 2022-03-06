@@ -1,5 +1,6 @@
 package com.github.charlemaznable.core.vertx;
 
+import com.google.common.primitives.Primitives;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
@@ -9,17 +10,42 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import static com.github.charlemaznable.core.lang.Objectt.parseObject;
+import static com.github.charlemaznable.core.lang.Objectt.setValue;
+import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
+import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.math.NumberUtils.toInt;
+import static org.apache.commons.lang3.math.NumberUtils.toLong;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class VertxElf {
 
     private static final String CLUSTER_MANAGER_CLASS_PROPERTY = "vertx.cluster.managerClass";
+
+    public static VertxOptions parseStringToVertxOptions(String string) {
+        val vertxOptions = new VertxOptions();
+        val properties = parseStringToProperties(string);
+        for (val prop : properties.entrySet()) {
+            setValue(vertxOptions, Objects.toString(prop.getKey()), returnType -> {
+                if (isNull(returnType)) return prop.getValue();
+                val value = Objects.toString(prop.getValue());
+                val rt = Primitives.unwrap(returnType);
+                if (rt == String.class) return value;
+                if (rt.isPrimitive()) return parsePrimitive(rt, value);
+                if (Enum.class.isAssignableFrom(rt))
+                    return parseEnum(rt, value);
+                return parseObject(value, rt);
+            });
+        }
+        return vertxOptions;
+    }
 
     public static Vertx buildVertx(VertxOptions vertxOptions) {
         return buildVertx(vertxOptions, null);
@@ -81,5 +107,21 @@ public final class VertxElf {
                 block.fail(e);
             }
         }, false, resultHandler);
+    }
+
+    private static Object parsePrimitive(Class<?> rt, String value) {
+        if (rt == boolean.class) return toBoolean(value);
+        if (rt == int.class) return toInt(value);
+        if (rt == long.class) return toLong(value);
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object parseEnum(Class<?> rt, String value) {
+        try {
+            return Enum.valueOf((Class<Enum>) rt, value);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

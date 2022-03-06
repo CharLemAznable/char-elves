@@ -13,14 +13,17 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 
 import static com.github.charlemaznable.core.es.EsClientElf.buildEsClient;
 import static com.github.charlemaznable.core.es.EsClientElf.closeEsClient;
+import static com.github.charlemaznable.core.es.EsClientElf.parseStringToEsConfig;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.elasticsearch.client.RequestOptions.DEFAULT;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EsClientElfTest {
@@ -32,6 +35,26 @@ public class EsClientElfTest {
 
     private static final String ELASTICSEARCH_USERNAME = "elastic";
     private static final String ELASTICSEARCH_PASSWORD = "changeme";
+
+    @Test
+    public void testParseEsConfig() {
+        val propertiesString = "" +
+                "uris=http://localhost:9200,http://localhost:9201\n" +
+                "username=username\n" +
+                "password=pa55wOrd\n" +
+                "connectionTimeout=5\n" +
+                "socketTimeout=60\n";
+        val esConfig = parseStringToEsConfig(propertiesString);
+        val uris = esConfig.getUris();
+        assertEquals(2, uris.size());
+        assertTrue(uris.contains("http://localhost:9200"));
+        assertTrue(uris.contains("http://localhost:9201"));
+        assertEquals("username", esConfig.getUsername());
+        assertEquals("pa55wOrd", esConfig.getPassword());
+        assertEquals(Duration.ofSeconds(5), esConfig.getConnectionTimeout());
+        assertEquals(Duration.ofSeconds(60), esConfig.getSocketTimeout());
+        assertNull(esConfig.getPathPrefix());
+    }
 
     @SneakyThrows
     @Test

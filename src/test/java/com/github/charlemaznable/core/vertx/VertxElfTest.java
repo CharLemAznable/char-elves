@@ -13,18 +13,41 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.github.charlemaznable.core.vertx.VertxElf.buildVertx;
 import static com.github.charlemaznable.core.vertx.VertxElf.closeVertx;
 import static com.github.charlemaznable.core.vertx.VertxElf.closeVertxImmediately;
+import static com.github.charlemaznable.core.vertx.VertxElf.parseStringToVertxOptions;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.joor.Reflect.onClass;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(VertxExtension.class)
 public class VertxElfTest {
+
+    @Test
+    public void testParseVertxOptions() {
+        val propertiesString = "" +
+                "eventLoopPoolSize=2\n" +
+                "maxEventLoopExecuteTime=5\n" +
+                "haEnabled=true\n" +
+                "haGroup=___DEFAULT___\n" +
+                "maxEventLoopExecuteTimeUnit=SECONDS\n" +
+                "blockedThreadCheckIntervalUnit=SECOND\n";
+        val vertxOptions = parseStringToVertxOptions(propertiesString);
+        assertEquals(2, vertxOptions.getEventLoopPoolSize());
+        assertEquals(5, vertxOptions.getMaxEventLoopExecuteTime());
+        assertTrue(vertxOptions.isHAEnabled());
+        assertEquals("___DEFAULT___", vertxOptions.getHAGroup());
+        assertEquals(TimeUnit.SECONDS, vertxOptions.getMaxEventLoopExecuteTimeUnit());
+        assertNull(vertxOptions.getBlockedThreadCheckIntervalUnit()); // error config SECOND, should be SECONDS
+        assertNull(vertxOptions.getClusterManager());
+    }
 
     @Test
     public void testVertxBuildAndClose() {

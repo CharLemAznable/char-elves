@@ -1,6 +1,8 @@
 package com.github.charlemaznable.core.es;
 
 import com.github.charlemaznable.core.es.EsClientBuildElf.ConfigCredentialsProvider;
+import com.google.common.base.Splitter;
+import com.google.common.primitives.Primitives;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -8,12 +10,38 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import java.time.Duration;
+import java.util.List;
+import java.util.Objects;
+
+import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.github.charlemaznable.core.lang.Objectt.setValue;
+import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class EsClientElf {
+
+    public static EsConfig parseStringToEsConfig(String string) {
+        val esConfig = new EsConfig();
+        val properties = parseStringToProperties(string);
+        for (val prop : properties.entrySet()) {
+            setValue(esConfig, Objects.toString(prop.getKey()), returnType -> {
+                val value = Objects.toString(prop.getValue());
+                val rt = Primitives.unwrap(checkNotNull(returnType));
+                if (rt == String.class) return value;
+                if (rt == Duration.class)
+                    return Duration.ofSeconds(Long.parseLong(value));
+                if (rt == List.class)
+                    return Splitter.on(",").omitEmptyStrings()
+                            .trimResults().splitToList(value);
+                return null;
+            });
+        }
+        return esConfig;
+    }
 
     public static RestHighLevelClient buildEsClient(EsConfig esConfig) {
         val hosts = esConfig.getUris().stream()
