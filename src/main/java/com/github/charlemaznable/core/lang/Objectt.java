@@ -17,12 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.charlemaznable.core.lang.Clz.isAssignable;
+import static com.github.charlemaznable.core.lang.ClzPath.findClass;
 import static java.lang.Character.isJavaIdentifierPart;
 import static java.lang.Character.isJavaIdentifierStart;
 import static java.lang.Character.isWhitespace;
 import static java.lang.Character.toTitleCase;
+import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.joor.Reflect.on;
 import static org.joor.Reflect.onClass;
 
 /**
@@ -190,8 +194,18 @@ public final class Objectt {
             return null;
         }
         if (!clazz.isInstance(object)) return null;
-        if (object instanceof ParamsAppliable)
-            ((ParamsAppliable) object).applyParams(spec.getParams());
+
+        val utilsPA = findClass("com.github.bingoohuang.utils.config.utils.ParamsAppliable");
+        val eqlPA = findClass("org.n3r.eql.spec.ParamsAppliable");
+        val diamondPA = findClass("org.n3r.diamond.client.cache.ParamsAppliable");
+        val objectClazz = object.getClass();
+        if ((object instanceof ParamsAppliable) ||
+                (nonNull(utilsPA) && isAssignable(objectClazz, utilsPA)) ||
+                (nonNull(eqlPA) && isAssignable(objectClazz, eqlPA)) ||
+                (nonNull(diamondPA) && isAssignable(objectClazz, diamondPA))) {
+            on(object).call("applyParams", (Object) spec.getParams());
+        }
+
         return (T) object;
     }
 
