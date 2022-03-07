@@ -13,10 +13,10 @@ import org.elasticsearch.client.RestHighLevelClient;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Objectt.setValue;
-import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -24,9 +24,8 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public final class EsClientElf {
 
-    public static EsConfig parseStringToEsConfig(String string) {
+    public static EsConfig parsePropertiesToEsConfig(Properties properties) {
         val esConfig = new EsConfig();
-        val properties = parseStringToProperties(string);
         for (val prop : properties.entrySet()) {
             setValue(esConfig, Objects.toString(prop.getKey()), returnType -> {
                 val value = Objects.toString(prop.getValue());

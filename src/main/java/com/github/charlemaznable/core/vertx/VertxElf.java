@@ -11,12 +11,12 @@ import lombok.SneakyThrows;
 import lombok.val;
 
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import static com.github.charlemaznable.core.lang.Objectt.parseObject;
 import static com.github.charlemaznable.core.lang.Objectt.setValue;
-import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -29,9 +29,8 @@ public final class VertxElf {
 
     private static final String CLUSTER_MANAGER_CLASS_PROPERTY = "vertx.cluster.managerClass";
 
-    public static VertxOptions parseStringToVertxOptions(String string) {
+    public static VertxOptions parsePropertiesToVertxOptions(Properties properties) {
         val vertxOptions = new VertxOptions();
-        val properties = parseStringToProperties(string);
         for (val prop : properties.entrySet()) {
             setValue(vertxOptions, Objects.toString(prop.getKey()), returnType -> {
                 if (isNull(returnType)) return prop.getValue();

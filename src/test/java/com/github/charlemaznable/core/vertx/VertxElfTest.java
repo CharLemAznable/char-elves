@@ -15,10 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static com.github.charlemaznable.core.vertx.VertxElf.buildVertx;
 import static com.github.charlemaznable.core.vertx.VertxElf.closeVertx;
 import static com.github.charlemaznable.core.vertx.VertxElf.closeVertxImmediately;
-import static com.github.charlemaznable.core.vertx.VertxElf.parseStringToVertxOptions;
+import static com.github.charlemaznable.core.vertx.VertxElf.parsePropertiesToVertxOptions;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.joor.Reflect.onClass;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -39,7 +40,8 @@ public class VertxElfTest {
                 "haGroup=___DEFAULT___\n" +
                 "maxEventLoopExecuteTimeUnit=SECONDS\n" +
                 "blockedThreadCheckIntervalUnit=SECOND\n";
-        val vertxOptions = parseStringToVertxOptions(propertiesString);
+        val properties = parseStringToProperties(propertiesString);
+        val vertxOptions = parsePropertiesToVertxOptions(properties);
         assertEquals(2, vertxOptions.getEventLoopPoolSize());
         assertEquals(5, vertxOptions.getMaxEventLoopExecuteTime());
         assertTrue(vertxOptions.isHAEnabled());

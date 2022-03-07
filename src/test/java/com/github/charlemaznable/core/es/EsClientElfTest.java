@@ -18,7 +18,8 @@ import java.util.Date;
 
 import static com.github.charlemaznable.core.es.EsClientElf.buildEsClient;
 import static com.github.charlemaznable.core.es.EsClientElf.closeEsClient;
-import static com.github.charlemaznable.core.es.EsClientElf.parseStringToEsConfig;
+import static com.github.charlemaznable.core.es.EsClientElf.parsePropertiesToEsConfig;
+import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.elasticsearch.client.RequestOptions.DEFAULT;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -44,7 +45,8 @@ public class EsClientElfTest {
                 "password=pa55wOrd\n" +
                 "connectionTimeout=5\n" +
                 "socketTimeout=60\n";
-        val esConfig = parseStringToEsConfig(propertiesString);
+        val properties = parseStringToProperties(propertiesString);
+        val esConfig = parsePropertiesToEsConfig(properties);
         val uris = esConfig.getUris();
         assertEquals(2, uris.size());
         assertTrue(uris.contains("http://localhost:9200"));
