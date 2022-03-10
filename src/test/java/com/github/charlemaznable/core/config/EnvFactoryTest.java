@@ -145,6 +145,16 @@ public class EnvFactoryTest {
         assertEquals("value2", argEnvConfig.custom2());
     }
 
+    @Test
+    public void testSubstitute() {
+        val source = "${kk1:-value}";
+        Arguments.initial("--kk1=vv2");
+        assertEquals("vv2", EnvFactory.substitute(source));
+        Arguments.initial();
+        assertEquals("vv1", EnvFactory.substitute(source));
+        assertEquals("VALUE", EnvFactory.substitute("${kk2:-VALUE}"));
+    }
+
     @EnvConfig
     public interface TestEnvConfig extends Configable {
 

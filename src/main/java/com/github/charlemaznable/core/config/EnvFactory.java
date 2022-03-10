@@ -22,13 +22,15 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
+import java.util.Properties;
 
-import static com.github.charlemaznable.core.config.Arguments.argumentsAsSubstitutor;
-import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsSubstitutor;
+import static com.github.charlemaznable.core.config.Arguments.argumentsAsProperties;
+import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsProperties;
 import static com.github.charlemaznable.core.lang.Condition.blankThen;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.LoadingCachee.get;
 import static com.github.charlemaznable.core.lang.LoadingCachee.simpleCache;
+import static com.github.charlemaznable.core.lang.Propertiess.ssMap;
 import static com.github.charlemaznable.core.spring.AnnotationElf.findAnnotation;
 import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.google.common.cache.CacheLoader.from;
@@ -40,11 +42,11 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.getMerge
 @NoArgsConstructor(access = PRIVATE)
 public final class EnvFactory {
 
-    private static StringSubstitutor envClassPathSubstitutor;
+    private static Properties envClassPathProperties;
     private static LoadingCache<Factory, EnvLoader> envLoaderCache = simpleCache(from(EnvLoader::new));
 
     static {
-        envClassPathSubstitutor = classResourceAsSubstitutor("config.env.props");
+        envClassPathProperties = classResourceAsProperties("config.env.props");
     }
 
     public static <T> T getEnv(Class<T> envClass) {
@@ -57,6 +59,11 @@ public final class EnvFactory {
 
     public static EnvLoader envLoader(Factory factory) {
         return get(envLoaderCache, factory);
+    }
+
+    static String substitute(String source) {
+        return new StringSubstitutor(ssMap(argumentsAsProperties(
+                envClassPathProperties))).replace(source);
     }
 
     @SuppressWarnings("unchecked")
@@ -166,10 +173,6 @@ public final class EnvFactory {
             String defaultValue = DefaultValueProvider.class == providerClass ? envConfig.defaultValue()
                     : FactoryContext.apply(factory, providerClass, p -> p.defaultValue(envClass, method));
             return substitute(blankThen(defaultValue, () -> null));
-        }
-
-        private String substitute(String source) {
-            return envClassPathSubstitutor.replace(argumentsAsSubstitutor().replace(source));
         }
 
         private Object parseValue(String key, String value, Method method) {

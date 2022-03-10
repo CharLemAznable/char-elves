@@ -1,19 +1,18 @@
 package com.github.charlemaznable.core.lang;
 
-import com.github.charlemaznable.core.config.impl.PropsConfigLoader;
 import com.google.common.io.Resources;
 import lombok.NoArgsConstructor;
-import lombok.val;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
-import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
+import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
+import static com.github.charlemaznable.core.lang.Propertiess.ssMap;
 import static com.github.charlemaznable.core.lang.Str.isEmpty;
 import static com.google.common.io.Resources.readLines;
 import static java.lang.Class.forName;
@@ -88,22 +87,12 @@ public final class ClzPath {
         return urlAsLines(classResource(classPath));
     }
 
+    public static Properties classResourceAsProperties(String classPath) {
+        return urlAsProperties(classResource(classPath));
+    }
+
     public static StringSubstitutor classResourceAsSubstitutor(String classPath) {
-        val propsURL = classResource(classPath);
-        if (nonNull(propsURL)) {
-            val envProps = new PropsConfigLoader()
-                    .loadConfigable(propsURL).getProperties();
-            Map<String, String> envPropsMap = newHashMap();
-            val propNames = envProps.propertyNames();
-            while (propNames.hasMoreElements()) {
-                val propName = (String) propNames.nextElement();
-                val propValue = envProps.getProperty(propName);
-                envPropsMap.put(propName, propValue);
-            }
-            return new StringSubstitutor(envPropsMap);
-        } else {
-            return new StringSubstitutor();
-        }
+        return urlAsSubstitutor(classResource(classPath));
     }
 
     public static InputStream urlAsInputStream(URL url) {
@@ -128,5 +117,13 @@ public final class ClzPath {
         } catch (IOException e) {
             return newArrayList();
         }
+    }
+
+    public static Properties urlAsProperties(URL url) {
+        return parseStringToProperties(urlAsString(url));
+    }
+
+    public static StringSubstitutor urlAsSubstitutor(URL url) {
+        return new StringSubstitutor(ssMap(urlAsProperties(url)));
     }
 }

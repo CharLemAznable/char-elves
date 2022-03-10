@@ -11,13 +11,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.notNullThen;
-import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
+import static com.github.charlemaznable.core.lang.Propertiess.ssMap;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 
@@ -42,14 +41,13 @@ public final class Arguments extends BaseConfigable {
     }
 
     public static StringSubstitutor argumentsAsSubstitutor() {
-        Map<String, String> argPropsMap = newHashMap();
-        val propNames = properties.propertyNames();
-        while (propNames.hasMoreElements()) {
-            val propName = (String) propNames.nextElement();
-            val propValue = properties.getProperty(propName);
-            argPropsMap.put(propName, propValue);
-        }
-        return new StringSubstitutor(argPropsMap);
+        return new StringSubstitutor(ssMap(properties));
+    }
+
+    public static Properties argumentsAsProperties(Properties defaults) {
+        val prop = new Properties(defaults);
+        prop.putAll(properties);
+        return prop;
     }
 
     @Override
@@ -59,9 +57,7 @@ public final class Arguments extends BaseConfigable {
 
     @Override
     public Properties getProperties() {
-        val prop = new Properties();
-        prop.putAll(properties);
-        return prop;
+        return argumentsAsProperties(null);
     }
 
     @Override

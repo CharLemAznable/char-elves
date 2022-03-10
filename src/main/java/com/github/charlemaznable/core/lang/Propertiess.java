@@ -7,10 +7,12 @@ import lombok.val;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
 import static com.github.charlemaznable.core.codec.Base64.unBase64;
+import static com.github.charlemaznable.core.lang.Mapp.toMap;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -54,5 +56,10 @@ public final class Propertiess {
             return AES.decrypt(unBase64(encrypted), password);
         }
         throw new UnsupportedOperationException(algrithm + " is not supported now");
+    }
+
+    public static Map<String, String> ssMap(Properties properties) {
+        return properties.stringPropertyNames().stream()
+                .collect(toMap(s -> s, properties::getProperty));
     }
 }
