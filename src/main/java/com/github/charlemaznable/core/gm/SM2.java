@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
-import java.security.Security;
 
 import static com.github.charlemaznable.core.codec.Bytes.bytes;
 import static com.github.charlemaznable.core.codec.Bytes.string;
@@ -34,7 +33,9 @@ import static com.github.charlemaznable.core.lang.Condition.checkNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public final class SM2 {
+public final class SM2 extends GM {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private static final String ALGO_NAME_EC = "EC";
 
@@ -49,16 +50,12 @@ public final class SM2 {
     private static final ECDomainParameters DOMAIN_PARAMS = new ECDomainParameters(CURVE, G_POINT,
             SM2_ECC_N, SM2_ECC_H);
 
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
-
     /////////// key generate ///////////
 
     @SneakyThrows
     public static KeyPair generateKeyPair() {
         val kpg = KeyPairGenerator.getInstance(ALGO_NAME_EC, BouncyCastleProvider.PROVIDER_NAME);
-        kpg.initialize(new ECParameterSpec(CURVE, G_POINT, SM2_ECC_N, SM2_ECC_H), new SecureRandom());
+        kpg.initialize(new ECParameterSpec(CURVE, G_POINT, SM2_ECC_N, SM2_ECC_H), RANDOM);
         return kpg.generateKeyPair();
     }
 
@@ -72,7 +69,7 @@ public final class SM2 {
 
     public static AsymmetricCipherKeyPair generateKeyPairParameter() {
         val eckpg = new ECKeyPairGenerator();
-        eckpg.init(new ECKeyGenerationParameters(DOMAIN_PARAMS, new SecureRandom()));
+        eckpg.init(new ECKeyGenerationParameters(DOMAIN_PARAMS, RANDOM));
         return eckpg.generateKeyPair();
     }
 
@@ -175,11 +172,11 @@ public final class SM2 {
     /////////// private methods ///////////
 
     private static CipherParameters randomWith(CipherParameters parameters) {
-        return new ParametersWithRandom(parameters, new SecureRandom());
+        return new ParametersWithRandom(parameters, RANDOM);
     }
 
     private static CipherParameters idWith(CipherParameters parameters, String id) {
-        return checkNull(id, () -> parameters, s -> new ParametersWithID(parameters, bytes(id)));
+        return checkNull(bytes(id), () -> parameters, b -> new ParametersWithID(parameters, b));
     }
 
     private static ECPublicKeyParameters parametersFrom(BCECPublicKey ecPubKey) {
