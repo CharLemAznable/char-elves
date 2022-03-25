@@ -1,5 +1,6 @@
 package com.github.charlemaznable.core.gm;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -67,22 +68,13 @@ public final class SM4 extends GM {
         return buildKey(bytes(key), size);
     }
 
+    @AllArgsConstructor
     public enum ECB {
 
-        PKCS5_PADDING {
-            @Override
-            protected String paddingName() {
-                return "PKCS5Padding";
-            }
-        },
-        NO_PADDING {
-            @Override
-            protected String paddingName() {
-                return "NoPadding";
-            }
-        };
+        PKCS5_PADDING("PKCS5Padding"),
+        NO_PADDING("NoPadding");
 
-        protected abstract String paddingName();
+        private String paddingName;
 
         @SneakyThrows
         public byte[] encrypt(String value, Key key) {
@@ -119,26 +111,17 @@ public final class SM4 extends GM {
         }
 
         private String cipherName() {
-            return ALGORITHM_NAME + "/ECB/" + paddingName();
+            return ALGORITHM_NAME + "/ECB/" + paddingName;
         }
     }
 
+    @AllArgsConstructor
     public enum CBC {
 
-        PKCS5_PADDING {
-            @Override
-            protected String paddingName() {
-                return "PKCS5Padding";
-            }
-        },
-        NO_PADDING {
-            @Override
-            protected String paddingName() {
-                return "NoPadding";
-            }
-        };
+        PKCS5_PADDING("PKCS5Padding"),
+        NO_PADDING("NoPadding");
 
-        protected abstract String paddingName();
+        private String paddingName;
 
         @SneakyThrows
         public byte[] encrypt(String value, Key key, byte[] iv) {
@@ -175,7 +158,7 @@ public final class SM4 extends GM {
         }
 
         private String cipherName() {
-            return ALGORITHM_NAME + "/CBC/" + paddingName();
+            return ALGORITHM_NAME + "/CBC/" + paddingName;
         }
     }
 }
