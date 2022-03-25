@@ -10,5 +10,5 @@ class GM {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    GM() {}
+    GM() { throw new UnsupportedOperationException(); }
 }
