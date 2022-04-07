@@ -1,5 +1,7 @@
 package com.github.charlemaznable.core.lang.concurrent;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -9,6 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Getter
+@Setter
 public abstract class BatchExecutor<T> {
 
     private int maxBatchSize;
