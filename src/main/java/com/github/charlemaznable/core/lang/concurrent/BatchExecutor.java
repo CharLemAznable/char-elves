@@ -10,6 +10,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Runtime.getRuntime;
+
 public abstract class BatchExecutor<T> {
 
     @Getter
@@ -33,6 +35,7 @@ public abstract class BatchExecutor<T> {
             scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.scheduleWithFixedDelay(
                     this::rotateExecute, initialDelay, delay, unit);
+            getRuntime().addShutdownHook(new Thread(this::stop));
         }
     }
 

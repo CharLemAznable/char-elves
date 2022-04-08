@@ -36,12 +36,33 @@ public class BatchExecutorTest {
         };
     }
 
-    @SneakyThrows
     @Test
     public void testBatchExecutor() {
+        assertEquals(10, batchExecutor.getMaxBatchSize());
+
+        batchExecutor.stop();
         batchExecutor.start();
 
         int threads = getRuntime().availableProcessors() + 1;
+        serviceRun(threads);
+        await().untilAsserted(() ->
+                assertEquals(threads * 1000, result.size()));
+
+        batchExecutor.start();
+        batchExecutor.stop();
+
+        batchExecutor.start();
+
+        result.clear();
+        serviceRun(threads);
+        await().untilAsserted(() ->
+                assertEquals(threads * 1000, result.size()));
+
+        batchExecutor.stop();
+    }
+
+    @SneakyThrows
+    public void serviceRun(int threads) {
         val service = new Thread[threads];
         for (int i = 0; i < threads; i++) {
             service[i] = new Thread(() -> batchRun(1000));
@@ -51,11 +72,6 @@ public class BatchExecutorTest {
         for (int i = 0; i < threads; i++) {
             service[i].join();
         }
-
-        assertEquals(10, batchExecutor.getMaxBatchSize());
-        await().untilAsserted(() -> assertEquals(threads * 1000, result.size()));
-
-        batchExecutor.stop();
     }
 
     public void batchRun(int times) {
