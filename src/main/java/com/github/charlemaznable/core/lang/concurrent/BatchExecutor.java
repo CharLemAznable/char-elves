@@ -1,7 +1,6 @@
 package com.github.charlemaznable.core.lang.concurrent;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -11,10 +10,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Getter
-@Setter
 public abstract class BatchExecutor<T> {
 
+    @Getter
     private int maxBatchSize;
     private long initialDelay;
     private long delay;
@@ -23,11 +21,11 @@ public abstract class BatchExecutor<T> {
     private LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
     private ScheduledExecutorService scheduler;
 
-    public BatchExecutor(int maxBatchSize, long initialDelay, long delay, TimeUnit unit) {
-        this.maxBatchSize = maxBatchSize;
-        this.initialDelay = initialDelay;
-        this.delay = delay;
-        this.unit = unit;
+    public BatchExecutor(BatchExecutorConfig config) {
+        this.maxBatchSize = config.getMaxBatchSize();
+        this.initialDelay = config.getInitialDelay();
+        this.delay = config.getDelay();
+        this.unit = config.getUnit();
     }
 
     public void start() {
