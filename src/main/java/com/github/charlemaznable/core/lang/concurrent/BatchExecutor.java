@@ -32,9 +32,8 @@ public abstract class BatchExecutor<T> {
 
     public void start() {
         if (null == scheduler || scheduler.isTerminated()) {
-            scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.scheduleWithFixedDelay(
-                    this::rotateExecute, initialDelay, delay, unit);
+            scheduler = Executors.newScheduledThreadPool(getRuntime().availableProcessors() + 1);
+            scheduler.scheduleWithFixedDelay(this::rotateExecute, initialDelay, delay, unit);
             getRuntime().addShutdownHook(new Thread(this::stop));
         }
     }
@@ -57,6 +56,6 @@ public abstract class BatchExecutor<T> {
         val items = new ArrayList<T>();
         queue.drainTo(items);
         if (items.isEmpty()) return;
-        batchExecute(items);
+        new Thread(() -> batchExecute(items)).start();
     }
 }
