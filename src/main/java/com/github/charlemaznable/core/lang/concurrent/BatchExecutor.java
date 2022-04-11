@@ -56,6 +56,7 @@ public abstract class BatchExecutor<T> {
     private void rotateExecute() {
         val items = new ArrayList<T>();
         queue.drainTo(items);
+        if (items.isEmpty()) return;
         batchExecute(items);
     }
 }
