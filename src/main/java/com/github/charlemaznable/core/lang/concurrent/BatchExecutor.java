@@ -73,7 +73,7 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
     @Override
     protected Executor eventBusExecutor() {
         if (nonNull(threadPoolExecutor)) return threadPoolExecutor;
-        threadPoolExecutor = new ThreadPoolExecutor(1, Integer.MAX_VALUE,
+        threadPoolExecutor = new ThreadPoolExecutor(2, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         return threadPoolExecutor;
     }
