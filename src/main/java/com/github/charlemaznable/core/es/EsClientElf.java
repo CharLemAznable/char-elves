@@ -21,6 +21,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
+@SuppressWarnings("deprecation")
 @NoArgsConstructor(access = PRIVATE)
 public final class EsClientElf {
 
