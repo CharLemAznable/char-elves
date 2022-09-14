@@ -6,6 +6,7 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -117,6 +118,7 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
                 registry.registerAlias(beanMethodBeanName, alias);
             }
             val beanMethodDefinition = new RootBeanDefinition();
+            beanMethodDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
             beanMethodDefinition.setFactoryBeanName(beanName);
             beanMethodDefinition.setUniqueFactoryMethodName(beanMethodName);
             registry.registerBeanDefinition(beanMethodBeanName, beanMethodDefinition);

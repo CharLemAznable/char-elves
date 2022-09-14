@@ -1,5 +1,8 @@
 package com.github.charlemaznable.core.config.spring;
 
+import com.github.charlemaznable.core.config.EnvFactory;
+import com.github.charlemaznable.core.config.spring.TestBaseConfig.BaseConfig;
+import com.github.charlemaznable.core.config.spring.TestBaseConfig.ExtendConfig;
 import com.github.charlemaznable.core.config.spring.TestEnvSpringConfig.ConfigBean;
 import com.github.charlemaznable.core.spring.SpringContext;
 import org.junit.jupiter.api.Test;
@@ -11,7 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @ExtendWith(SpringExtension.class)
@@ -47,13 +52,39 @@ public class EnvSpringTest {
         assertNotNull(configKey2);
         assertNotNull(configKey3);
         assertNotNull(configKey4);
-        assertEquals(configKey1, SpringContext.getBean("configKey1"));
-        assertEquals(configKey2, SpringContext.getBean("configKey22"));
-        assertEquals(configKey3, SpringContext.getBean("configKey3"));
-        assertEquals(configKey4, SpringContext.getBean("configKey4"));
+        assertSame(configKey1, SpringContext.getBean("configKey1"));
+        assertSame(configKey2, SpringContext.getBean("configKey22"));
+        assertSame(configKey3, SpringContext.getBean("configKey3"));
+        assertSame(configKey4, SpringContext.getBean("configKey4"));
         assertEquals("value1", configKey1.getValue());
         assertEquals("value2", configKey2.getValue());
         assertEquals("value3", configKey3.getValue());
         assertEquals("value4", configKey4.getValue());
+    }
+
+    @Autowired
+    private TestBaseConfig testBaseConfig;
+    @Autowired
+    @Qualifier("baseConfig")
+    private BaseConfig baseConfig;
+    @Autowired
+    @Qualifier("extendConfig")
+    private ExtendConfig extendConfig;
+
+    @Test
+    public void testBaseSubEnv() {
+        assertNotNull(testBaseConfig);
+        assertSame(testBaseConfig, SpringContext.getBean(TestBaseConfig.class));
+        assertSame(testBaseConfig, EnvFactory.getEnv(TestBaseSubConfig.class));
+
+        assertNotNull(baseConfig);
+        assertEquals(testBaseConfig.keyBase(), baseConfig.getValue());
+        assertSame(baseConfig, SpringContext.getBean("baseConfig"));
+        assertNotSame(baseConfig, testBaseConfig.baseConfig());
+
+        assertNotNull(extendConfig);
+        assertEquals(testBaseConfig.keyBase(), extendConfig.getValue());
+        assertSame(extendConfig, SpringContext.getBean("extendConfig"));
+        assertNotSame(extendConfig, testBaseConfig.extendConfig(baseConfig));
     }
 }
