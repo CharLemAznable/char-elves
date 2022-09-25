@@ -28,7 +28,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
-@SuppressWarnings("deprecation")
 @NoArgsConstructor(access = PRIVATE)
 public final class EsClientElf {
 
@@ -50,11 +49,13 @@ public final class EsClientElf {
         return esConfig;
     }
 
+    @Deprecated
     public static RestHighLevelClient buildEsClient(EsConfig esConfig) {
         return new RestHighLevelClientBuilder(buildEsHttpClient(esConfig))
                 .setApiCompatibilityMode(true).build();
     }
 
+    @Deprecated
     @SneakyThrows
     public static void closeEsClient(RestHighLevelClient client) {
         if (isNull(client)) return;
