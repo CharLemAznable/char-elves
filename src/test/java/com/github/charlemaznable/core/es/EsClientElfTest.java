@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SuppressWarnings("deprecation")
 public class EsClientElfTest {
 
-    private static final String ELASTICSEARCH_VERSION = "7.17.4";
+    private static final String ELASTICSEARCH_VERSION = "7.17.6";
     private static final DockerImageName ELASTICSEARCH_IMAGE = DockerImageName
             .parse("docker.elastic.co/elasticsearch/elasticsearch")
             .withTag(ELASTICSEARCH_VERSION);
@@ -157,9 +157,7 @@ public class EsClientElfTest {
             assertTrue(getResponse.found());
             val responseMap = newHashMap(getResponse.source());
             assertEquals(sourceMap.get("user"), responseMap.get("user"));
-            assertEquals(sourceMap.get("postDate"),
-                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-                            .parse(responseMap.get("postDate").toString()));
+            assertEquals(sourceMap.get("postDate"), responseMap.get("postDate"));
             assertEquals(sourceMap.get("message"), responseMap.get("message"));
 
             closeElasticsearchClient(esClient);
