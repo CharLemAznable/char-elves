@@ -3,6 +3,9 @@ package com.github.charlemaznable.core.es;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.github.charlemaznable.core.es.EsClientBuildElf.ConfigCredentialsProvider;
 import com.google.common.base.Splitter;
 import com.google.common.primitives.Primitives;
@@ -59,8 +62,11 @@ public final class EsClientElf {
     }
 
     public static ElasticsearchClient buildElasticsearchClient(EsConfig esConfig) {
+        val objectMapper = new ObjectMapper();
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setDateFormat(new StdDateFormat());
         return new ElasticsearchClient(new RestClientTransport(
-                buildEsHttpClient(esConfig), new JacksonJsonpMapper()));
+                buildEsHttpClient(esConfig), new JacksonJsonpMapper(objectMapper)));
     }
 
     @SneakyThrows
