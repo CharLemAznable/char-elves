@@ -1,5 +1,8 @@
 package com.github.charlemaznable.core.es;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.github.charlemaznable.core.es.EsClientBuildElf.ConfigCredentialsProvider;
 import com.google.common.base.Splitter;
 import com.google.common.primitives.Primitives;
@@ -9,6 +12,7 @@ import lombok.val;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestHighLevelClientBuilder;
 
 import java.time.Duration;
 import java.util.List;
@@ -44,6 +48,28 @@ public final class EsClientElf {
     }
 
     public static RestHighLevelClient buildEsClient(EsConfig esConfig) {
+        return new RestHighLevelClientBuilder(buildEsHttpClient(esConfig))
+                .setApiCompatibilityMode(true).build();
+    }
+
+    @SneakyThrows
+    public static void closeEsClient(RestHighLevelClient client) {
+        if (isNull(client)) return;
+        client.close();
+    }
+
+    public static ElasticsearchClient buildElasticsearchClient(EsConfig esConfig) {
+        return new ElasticsearchClient(new RestClientTransport(
+                buildEsHttpClient(esConfig), new JacksonJsonpMapper()));
+    }
+
+    @SneakyThrows
+    public static void closeElasticsearchClient(ElasticsearchClient client) {
+        if (isNull(client) || isNull(client._transport())) return;
+        client._transport().close();
+    }
+
+    private static RestClient buildEsHttpClient(EsConfig esConfig) {
         val hosts = esConfig.getUris().stream()
                 .map(EsClientBuildElf::createHttpHost).toArray(HttpHost[]::new);
         val builder = RestClient.builder(hosts);
@@ -68,12 +94,6 @@ public final class EsClientElf {
         if (nonNull(esConfig.getPathPrefix())) {
             builder.setPathPrefix(esConfig.getPathPrefix());
         }
-        return new RestHighLevelClient(builder);
-    }
-
-    @SneakyThrows
-    public static void closeEsClient(RestHighLevelClient client) {
-        if (isNull(client)) return;
-        client.close();
+        return builder.build();
     }
 }

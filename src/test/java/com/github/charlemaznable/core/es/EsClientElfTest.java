@@ -15,10 +15,14 @@ import org.testcontainers.utility.DockerImageName;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
+import java.util.Map;
 
+import static com.github.charlemaznable.core.es.EsClientElf.buildElasticsearchClient;
 import static com.github.charlemaznable.core.es.EsClientElf.buildEsClient;
+import static com.github.charlemaznable.core.es.EsClientElf.closeElasticsearchClient;
 import static com.github.charlemaznable.core.es.EsClientElf.closeEsClient;
 import static com.github.charlemaznable.core.es.EsClientElf.parsePropertiesToEsConfig;
+import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.elasticsearch.client.RequestOptions.DEFAULT;
@@ -109,8 +113,62 @@ public class EsClientElfTest {
         }
     }
 
+    @SneakyThrows
+    @Test
+    public void testElasticsearchClient() {
+        try (val elasticsearch = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
+                .withPassword(ELASTICSEARCH_PASSWORD)) {
+            elasticsearch.start();
+
+            val esConfig = new EsConfig();
+            esConfig.setUris(newArrayList(elasticsearch.getHttpHostAddress()));
+            esConfig.setUsername(ELASTICSEARCH_USERNAME);
+            esConfig.setPassword(ELASTICSEARCH_PASSWORD);
+            val esClient = buildElasticsearchClient(esConfig);
+
+            val createIndexRequest = co.elastic.clients.elasticsearch.indices
+                    .CreateIndexRequest.of(builder -> builder.index("twitter"));
+            val createIndexResponse = esClient.indices()
+                    .create(createIndexRequest);
+            assertTrue(createIndexResponse.acknowledged());
+            assertTrue(createIndexResponse.shardsAcknowledged());
+
+            val openRequest = co.elastic.clients.elasticsearch.indices
+                .OpenRequest.of(builder -> builder.index("twitter"));
+            val openIndexResponse = esClient.indices().open(openRequest);
+            assertTrue(openIndexResponse.acknowledged());
+            assertTrue(openIndexResponse.shardsAcknowledged());
+
+            val sourceMap = Maps.<String, Object>newHashMap();
+            sourceMap.put("user", "kimchy");
+            sourceMap.put("postDate", new Date());
+            sourceMap.put("message", "trying out Elasticsearch");
+            val indexRequest = co.elastic.clients.elasticsearch.core
+                .IndexRequest.of(builder -> builder.index("twitter").id("1").document(sourceMap));
+            val indexResponse = esClient.index(indexRequest);
+            assertEquals("twitter", indexResponse.index());
+            assertEquals("1", indexResponse.id());
+
+            val getRequest = co.elastic.clients.elasticsearch.core
+                    .GetRequest.of(builder -> builder.index("twitter").id("1"));
+            val getResponse = esClient.get(getRequest, Map.class);
+            assertEquals("twitter", getResponse.index());
+            assertEquals("1", getResponse.id());
+            assertTrue(getResponse.found());
+            val responseMap = newHashMap(getResponse.source());
+            assertEquals(sourceMap.get("user"), responseMap.get("user"));
+            assertEquals(sourceMap.get("postDate"),
+                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+                            .parse(responseMap.get("postDate").toString()));
+            assertEquals(sourceMap.get("message"), responseMap.get("message"));
+
+            closeElasticsearchClient(esClient);
+        }
+    }
+
     @Test
     public void testClose() {
         assertDoesNotThrow(() -> closeEsClient(null));
+        assertDoesNotThrow(() -> closeElasticsearchClient(null));
     }
 }
