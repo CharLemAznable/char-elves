@@ -16,22 +16,24 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.github.charlemaznable.core.es.EsClientElf.buildElasticsearchAsyncClient;
 import static com.github.charlemaznable.core.es.EsClientElf.buildElasticsearchClient;
 import static com.github.charlemaznable.core.es.EsClientElf.buildEsClient;
-import static com.github.charlemaznable.core.es.EsClientElf.closeElasticsearchClient;
+import static com.github.charlemaznable.core.es.EsClientElf.closeElasticsearchApiClient;
 import static com.github.charlemaznable.core.es.EsClientElf.closeEsClient;
 import static com.github.charlemaznable.core.es.EsClientElf.parsePropertiesToEsConfig;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static com.google.common.collect.Lists.newArrayList;
+import static org.awaitility.Awaitility.await;
 import static org.elasticsearch.client.RequestOptions.DEFAULT;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("deprecation")
 public class EsClientElfTest {
 
     private static final String ELASTICSEARCH_VERSION = "7.17.6";
@@ -63,6 +65,7 @@ public class EsClientElfTest {
         assertNull(esConfig.getPathPrefix());
     }
 
+    @SuppressWarnings("deprecation")
     @SneakyThrows
     @Test
     public void testEsClient() {
@@ -104,9 +107,7 @@ public class EsClientElfTest {
             assertTrue(getResponse.isExists());
             val responseMap = getResponse.getSourceAsMap();
             assertEquals(sourceMap.get("user"), responseMap.get("user"));
-            assertEquals(sourceMap.get("postDate"),
-                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-                            .parse(responseMap.get("postDate").toString()));
+            assertEquals(sourceMap.get("postDate"), parseResponsePostDate(responseMap));
             assertEquals(sourceMap.get("message"), responseMap.get("message"));
 
             closeEsClient(esClient);
@@ -157,18 +158,93 @@ public class EsClientElfTest {
             assertTrue(getResponse.found());
             val responseMap = newHashMap(getResponse.source());
             assertEquals(sourceMap.get("user"), responseMap.get("user"));
-            assertEquals(sourceMap.get("postDate"),
-                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-                            .parse(responseMap.get("postDate").toString()));
+            assertEquals(sourceMap.get("postDate"), parseResponsePostDate(responseMap));
             assertEquals(sourceMap.get("message"), responseMap.get("message"));
 
-            closeElasticsearchClient(esClient);
+            closeElasticsearchApiClient(esClient);
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    public void testElasticsearchAsyncClient() {
+        try (val elasticsearch = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
+                .withPassword(ELASTICSEARCH_PASSWORD)) {
+            elasticsearch.start();
+
+            val esConfig = new EsConfig();
+            esConfig.setUris(newArrayList(elasticsearch.getHttpHostAddress()));
+            esConfig.setUsername(ELASTICSEARCH_USERNAME);
+            esConfig.setPassword(ELASTICSEARCH_PASSWORD);
+            val esClient = buildElasticsearchAsyncClient(esConfig);
+
+            AtomicBoolean createDone = new AtomicBoolean(false);
+            val createIndexRequest = co.elastic.clients.elasticsearch.indices
+                    .CreateIndexRequest.of(builder -> builder.index("twitter"));
+            esClient.indices().create(createIndexRequest)
+                    .whenComplete((createIndexResponse, exception) -> {
+                        assertTrue(createIndexResponse.acknowledged());
+                        assertTrue(createIndexResponse.shardsAcknowledged());
+                        createDone.set(true);
+                    });
+            await().untilTrue(createDone);
+
+            AtomicBoolean openDone = new AtomicBoolean(false);
+            val openRequest = co.elastic.clients.elasticsearch.indices
+                    .OpenRequest.of(builder -> builder.index("twitter"));
+            esClient.indices().open(openRequest)
+                    .whenComplete((openIndexResponse, exception) -> {
+                        assertTrue(openIndexResponse.acknowledged());
+                        assertTrue(openIndexResponse.shardsAcknowledged());
+                        openDone.set(true);
+                    });
+            await().untilTrue(openDone);
+
+            AtomicBoolean indexDone = new AtomicBoolean(false);
+            val sourceMap = Maps.<String, Object>newHashMap();
+            sourceMap.put("user", "kimchy");
+            sourceMap.put("postDate", new Date());
+            sourceMap.put("message", "trying out Elasticsearch");
+            val indexRequest = co.elastic.clients.elasticsearch.core
+                    .IndexRequest.of(builder -> builder.index("twitter").id("1").document(sourceMap));
+            esClient.index(indexRequest)
+                    .whenComplete((indexResponse, exception) -> {
+                        assertEquals("twitter", indexResponse.index());
+                        assertEquals("1", indexResponse.id());
+                        indexDone.set(true);
+                    });
+            await().untilTrue(indexDone);
+
+            AtomicBoolean getDone = new AtomicBoolean(false);
+            val getRequest = co.elastic.clients.elasticsearch.core
+                    .GetRequest.of(builder -> builder.index("twitter").id("1"));
+            esClient.get(getRequest, Map.class)
+            .whenComplete((getResponse, exception) -> {
+                assertEquals("twitter", getResponse.index());
+                assertEquals("1", getResponse.id());
+                assertTrue(getResponse.found());
+                val responseMap = newHashMap(getResponse.source());
+                assertEquals(sourceMap.get("user"), responseMap.get("user"));
+                assertEquals(sourceMap.get("postDate"), parseResponsePostDate(responseMap));
+                assertEquals(sourceMap.get("message"), responseMap.get("message"));
+                getDone.set(true);
+            });
+            await().untilTrue(getDone);
+
+            closeElasticsearchApiClient(esClient);
         }
     }
 
     @Test
     public void testClose() {
+        //noinspection deprecation
         assertDoesNotThrow(() -> closeEsClient(null));
-        assertDoesNotThrow(() -> closeElasticsearchClient(null));
+        assertDoesNotThrow(() -> closeElasticsearchApiClient(null));
+    }
+
+    @SneakyThrows
+    private Date parseResponsePostDate(Map responseMap) {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+                .parse(responseMap.get("postDate").toString());
     }
 }

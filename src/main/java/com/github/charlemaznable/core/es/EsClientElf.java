@@ -1,5 +1,7 @@
 package com.github.charlemaznable.core.es;
 
+import co.elastic.clients.ApiClient;
+import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -63,15 +65,17 @@ public final class EsClientElf {
     }
 
     public static ElasticsearchClient buildElasticsearchClient(EsConfig esConfig) {
-        val objectMapper = new ObjectMapper();
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.setDateFormat(new StdDateFormat());
         return new ElasticsearchClient(new RestClientTransport(
-                buildEsHttpClient(esConfig), new JacksonJsonpMapper(objectMapper)));
+                buildEsHttpClient(esConfig), buildJacksonJsonpMapper()));
+    }
+
+    public static ElasticsearchAsyncClient buildElasticsearchAsyncClient(EsConfig esConfig) {
+        return new ElasticsearchAsyncClient(new RestClientTransport(
+                buildEsHttpClient(esConfig), buildJacksonJsonpMapper()));
     }
 
     @SneakyThrows
-    public static void closeElasticsearchClient(ElasticsearchClient client) {
+    public static void closeElasticsearchApiClient(ApiClient client) {
         if (isNull(client) || isNull(client._transport())) return;
         client._transport().close();
     }
@@ -102,5 +106,12 @@ public final class EsClientElf {
             builder.setPathPrefix(esConfig.getPathPrefix());
         }
         return builder.build();
+    }
+
+    private static JacksonJsonpMapper buildJacksonJsonpMapper() {
+        val objectMapper = new ObjectMapper();
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setDateFormat(new StdDateFormat());
+        return new JacksonJsonpMapper(objectMapper);
     }
 }
