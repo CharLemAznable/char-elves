@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -14,8 +13,10 @@ public class EsConfig {
 
     /**
      * Comma-separated list of the Elasticsearch instances to use.
+     *
+     * format like: http://localhost:9200
      */
-    private List<String> uris = new ArrayList<>(Collections.singletonList("http://localhost:9200"));
+    private List<String> uris = new ArrayList<>();
 
     /**
      * Username for authentication with Elasticsearch.
