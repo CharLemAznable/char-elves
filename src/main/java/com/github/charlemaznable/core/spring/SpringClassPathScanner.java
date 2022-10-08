@@ -111,9 +111,10 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
             if (isNull(beanMethodAnno)) continue;
 
             val beanMethodName = beanMethod.getName();
+            val defaultName = beanClass.getName() + "." + beanMethodName;
             val beanMethodAnnoName = beanMethodAnno.name();
             val names = new ArrayList<>(Arrays.asList(beanMethodAnnoName));
-            val beanMethodBeanName = (!names.isEmpty() ? names.remove(0) : beanMethodName);
+            val beanMethodBeanName = (!names.isEmpty() ? names.remove(0) : defaultName);
             for (String alias : names) {
                 registry.registerAlias(beanMethodBeanName, alias);
             }
