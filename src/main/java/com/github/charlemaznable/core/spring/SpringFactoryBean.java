@@ -21,8 +21,13 @@ public class SpringFactoryBean implements FactoryBean, ApplicationContextAware {
     @Override
     public Object getObject() {
         val activeProfiles = applicationContext.getEnvironment().getActiveProfiles();
+        val temp = ActiveProfilesThreadLocal.get();
         ActiveProfilesThreadLocal.set(activeProfiles);
-        return factory.apply(xyzInterface);
+        try {
+            return factory.apply(xyzInterface);
+        } finally {
+            ActiveProfilesThreadLocal.set(temp);
+        }
     }
 
     @Override
