@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.springframework.core.annotation.AnnotatedElementUtils.getMergedAnnotation;
 
 public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
@@ -31,17 +32,20 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
     private final BeanDefinitionRegistry registry;
     private final Class factoryBeanClass;
     private final Predicate<ClassMetadata> isCandidateClass;
+    private final Predicate<Class> isPrimaryCandidate;
     private final Class<? extends Annotation>[] annotationClasses;
 
     @SafeVarargs
     public SpringClassPathScanner(BeanDefinitionRegistry registry,
                                   Class factoryBeanClass,
                                   Predicate<ClassMetadata> isCandidateClass,
+                                  Predicate<Class> isPrimaryCandidate,
                                   Class<? extends Annotation>... annotationClasses) {
         super(registry, false);
         this.registry = registry;
         this.factoryBeanClass = factoryBeanClass;
         this.isCandidateClass = isCandidateClass;
+        this.isPrimaryCandidate = isPrimaryCandidate;
         this.annotationClasses = annotationClasses;
     }
 
@@ -69,13 +73,14 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Creating " + factoryBeanClass.getSimpleName() + " with name '"
-                            + holder.getBeanName() + "' and '" + beanClassName + "' xyzInterface");
+                            + beanName + "' and '" + beanClassName + "' xyzInterface");
                 }
 
                 // the mapper interface is the original class of the bean
                 // but, the actual class of the bean is MapperFactoryBean
                 beanDefinition.getPropertyValues().add("xyzInterface", beanClassName);
                 beanDefinition.setBeanClass(factoryBeanClass);
+                beanDefinition.setPrimary(isPrimaryCandidate(beanClass));
                 beanMethodDefinitions.addAll(scanBeanMethod(beanClass, beanName));
             }
             beanDefinitions.addAll(beanMethodDefinitions);
@@ -99,6 +104,10 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
                     + ". Bean already defined with the same name!");
             return false;
         }
+    }
+
+    private boolean isPrimaryCandidate(Class beanClass) {
+        return nonNull(isPrimaryCandidate) && isPrimaryCandidate.test(beanClass);
     }
 
     private Set<BeanDefinitionHolder> scanBeanMethod(Class beanClass, String beanName) {

@@ -50,8 +50,8 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
                 .getAnnotationAttributes(scanAnnotationClass.getName()));
         if (isNull(annoAttrs)) return;
 
-        val scanner = new SpringClassPathScanner(
-                registry, factoryBeanClass, this::isCandidateClass, annotationClass);
+        val scanner = new SpringClassPathScanner(registry, factoryBeanClass,
+                this::isCandidateClass, this::isPrimaryCandidateClass, annotationClass);
         if (nonNull(resourceLoader)) { // this check is needed in Spring 3.1
             scanner.setResourceLoader(resourceLoader);
         }
@@ -92,5 +92,9 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
 
     protected boolean isCandidateClass(ClassMetadata classMetadata) {
         return true;
+    }
+
+    protected boolean isPrimaryCandidateClass(Class beanClass) {
+        return false;
     }
 }
