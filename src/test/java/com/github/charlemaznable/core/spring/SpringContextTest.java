@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfiguration.class)
@@ -95,6 +97,17 @@ public class SpringContextTest {
         assertEquals("TestMultiClassA", multiBeanNames[0]);
         assertEquals("TestMultiClassB", multiBeanNames[1]);
 
+        val multiBeans0 = TestSpringContext.getBeansOfType(null);
+        assertEquals(0, multiBeans0.size());
+        val multiBeans1 = TestSpringContext.getBeansOfType(TestClass.class);
+        assertEquals(1, multiBeans1.size());
+        assertSame(TestSpringContext.getBean("TestClass"), multiBeans1.get("TestClass"));
+        val multiBeans2 = TestSpringContext.getBeansOfType(TestMultiClass.class);
+        assertEquals(2, multiBeans2.size());
+        Arrays.sort(multiBeanNames);
+        assertSame(TestSpringContext.getBean("TestMultiClassA"), multiBeans2.get("TestMultiClassA"));
+        assertSame(TestSpringContext.getBean("TestMultiClassB"), multiBeans2.get("TestMultiClassB"));
+
         multiBeanNames = TestSpringContext.getBeanNamesForAnnotation(null);
         assertEquals(0, multiBeanNames.length);
         multiBeanNames = TestSpringContext.getBeanNamesForAnnotation(TestAnnotation.class);
@@ -102,6 +115,13 @@ public class SpringContextTest {
         assertEquals(2, multiBeanNames.length);
         assertEquals(TestSpringContext.class.getName(), multiBeanNames[0]);
         assertEquals(TestSubSpringContext.class.getName(), multiBeanNames[1]);
+
+        val multiBeans3 = TestSpringContext.getBeansWithAnnotation(null);
+        assertEquals(0, multiBeans3.size());
+        val multiBeans4 = TestSpringContext.getBeansWithAnnotation(TestAnnotation.class);
+        assertEquals(2, multiBeans4.size());
+        assertTrue(multiBeans4.get(TestSpringContext.class.getName()) instanceof TestSpringContext);
+        assertTrue(multiBeans4.get(TestSubSpringContext.class.getName()) instanceof TestSubSpringContext);
     }
 
     @Test

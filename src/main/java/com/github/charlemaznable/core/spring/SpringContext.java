@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -25,6 +26,7 @@ import static com.github.charlemaznable.core.lang.Clz.isConcrete;
 import static com.github.charlemaznable.core.lang.Condition.checkNull;
 import static com.github.charlemaznable.core.lang.Condition.notNullThen;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
+import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Str.isEmpty;
 import static com.github.charlemaznable.core.spring.FullBeanNameGenerator.getBeanClassName;
 import static java.util.Objects.isNull;
@@ -173,10 +175,22 @@ public class SpringContext implements ApplicationContextAware {
         return applicationContext.getBeanNamesForType(clazz);
     }
 
+    public static <T> Map<String, T> getBeansOfType(Class<T> clazz) {
+        if (isNull(applicationContext)) return newHashMap();
+        if (isNull(clazz)) return newHashMap();
+        return applicationContext.getBeansOfType(clazz);
+    }
+
     public static String[] getBeanNamesForAnnotation(Class<? extends Annotation> annotation) {
         if (isNull(applicationContext)) return new String[0];
         if (isNull(annotation)) return new String[0];
         return applicationContext.getBeanNamesForAnnotation(annotation);
+    }
+
+    public static Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotation) {
+        if (isNull(applicationContext)) return newHashMap();
+        if (isNull(annotation)) return newHashMap();
+        return applicationContext.getBeansWithAnnotation(annotation);
     }
 
     ////////////////////////////////////////////////////////////////
