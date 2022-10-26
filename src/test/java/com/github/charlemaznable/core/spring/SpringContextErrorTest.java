@@ -30,6 +30,11 @@ public class SpringContextErrorTest {
         multiBeanNames = SpringContext.getBeanNamesForAnnotation(TestAnnotation.class);
         assertEquals(0, multiBeanNames.length);
 
+        val multiBeans1 = SpringContext.getBeansOfType(TestClass.class);
+        assertEquals(0, multiBeans1.size());
+        val multiBeans2 = SpringContext.getBeansWithAnnotation(TestAnnotation.class);
+        assertEquals(0, multiBeans2.size());
+
         TestClassA testA = SpringContext.getBean("TestClassA");
         assertNull(testA);
         testA = SpringContext.getBean("TestClassA", new TestClassA());
