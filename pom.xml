@@ -48,7 +48,7 @@
         <sonar.projectKey>CharLemAznable_char-elves</sonar.projectKey>
         <sonar.exclusions>
             src/main/java/com/github/charlemaznable/core/es/EsClientBuildElf.java,
-            src/main/java/com/github/charlemaznable/core/lang/Objectt.java
+            src/main/java/com/github/charlemaznable/core/lang/Objectt.java,
             src/main/java/com/github/charlemaznable/core/spring/SpringClassPathMethodBeanLoader.java
         </sonar.exclusions>
     </properties>
