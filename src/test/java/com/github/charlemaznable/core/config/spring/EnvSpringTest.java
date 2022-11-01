@@ -84,5 +84,7 @@ public class EnvSpringTest {
         assertEquals(testBaseConfig.keyBase(), extendConfig.getValue());
         assertSame(extendConfig, SpringContext.getBean("TestBaseSubConfig.extendConfig"));
         assertNotSame(extendConfig, testBaseConfig.extendConfig(baseConfig));
+
+        assertNull(SpringContext.getBean("TestBaseSubConfig.noBaseConfig"));
     }
 }
