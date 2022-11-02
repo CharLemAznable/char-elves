@@ -123,8 +123,8 @@ final class SpringClassPathMethodBeanLoader {
 
         registry.registerBeanDefinition(beanMethodBeanName, beanDefinitionToRegister);
         if (logger.isTraceEnabled()) {
-            logger.trace(String.format("Registering bean definition for @Bean method %s.%s()",
-                    beanName, beanMethodBeanName));
+            logger.trace(String.format("Registering bean definition for @Bean %s, method %s.%s()",
+                    beanMethodBeanName, beanName, beanMethodName));
         }
     }
 

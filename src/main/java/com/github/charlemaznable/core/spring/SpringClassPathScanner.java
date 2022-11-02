@@ -66,7 +66,7 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
                 val beanClass = checkNotNull(ClzPath.findClass(beanClassName));
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug(String.format("Creating %s with name '%s' and '%s' xyzInterface",
+                    logger.debug(String.format("Creating %s with name '%s' and xyzInterface '%s'",
                             factoryBeanClass.getSimpleName(), beanName, beanClassName));
                 }
 

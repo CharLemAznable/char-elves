@@ -11,4 +11,6 @@
         <appender-ref ref="Console"/>
     </root>
 
+    <logger name="com.github.charlemaznable.core.spring.SpringClassPathScanner" level="trace"/>
+
 </configuration>
