@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Role;
+import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListenerFactory;
@@ -35,6 +38,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.MethodMetadata;
+import org.springframework.core.type.StandardMethodMetadata;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -50,6 +54,7 @@ import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static java.util.Objects.isNull;
 import static org.joor.Reflect.onClass;
+import static org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor.SKIP_REQUIRED_CHECK_ATTRIBUTE;
 
 final class SpringClassPathMethodBeanLoader {
 
@@ -100,11 +105,17 @@ final class SpringClassPathMethodBeanLoader {
         for (String alias : names) {
             registry.registerAlias(beanMethodBeanName, alias);
         }
+        if (isOverriddenByExistingDefinition(methodMetadata, beanMethodBeanName)) return;
 
         val beanMethodDefinition = new RootBeanDefinition();
         beanMethodDefinition.setFactoryBeanName(beanName);
         beanMethodDefinition.setUniqueFactoryMethodName(beanMethodName);
+        if (methodMetadata instanceof StandardMethodMetadata) {
+            beanMethodDefinition.setResolvedFactoryMethod(
+                    ((StandardMethodMetadata) methodMetadata).getIntrospectedMethod());
+        }
         beanMethodDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
+        beanMethodDefinition.setAttribute(SKIP_REQUIRED_CHECK_ATTRIBUTE, Boolean.TRUE);
         processCommonDefinitionAnnotations(beanMethodDefinition, methodMetadata);
         processCommonAnnotationAttributes(beanMethodDefinition, beanAnnoAttrs);
         val beanDefinitionToRegister = processScopeProxy(
@@ -154,6 +165,30 @@ final class SpringClassPathMethodBeanLoader {
     @Nullable
     private static AnnotationAttributes attributesFor(AnnotatedTypeMetadata metadata, Class<?> annotationClass) {
         return AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(annotationClass.getName()));
+    }
+
+    private boolean isOverriddenByExistingDefinition(MethodMetadata methodMetadata, String beanName) {
+        if (!registry.containsBeanDefinition(beanName)) return false;
+        val existingBeanDef = registry.getBeanDefinition(beanName);
+        // A bean definition resulting from a component scan can be silently overridden
+        // by an @Bean method, as of 4.2...
+        if (existingBeanDef instanceof ScannedGenericBeanDefinition) return false;
+        // Has the existing bean definition bean marked as a framework-generated bean?
+        // -> allow the current bean method to override it, since it is application-level
+        if (existingBeanDef.getRole() > BeanDefinition.ROLE_APPLICATION) return false;
+        // At this point, it's a top-level override (probably XML), just having been parsed
+        // before configuration class processing kicks in...
+        if (registry instanceof DefaultListableBeanFactory &&
+                !((DefaultListableBeanFactory) registry).isAllowBeanDefinitionOverriding()) {
+            throw new BeanDefinitionStoreException(methodMetadata.getDeclaringClassName(),
+                    beanName, "@Bean definition illegally overridden by existing bean definition: " + existingBeanDef);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Skipping bean definition for BeanMethod %s: a definition for bean '%s' " +
+                            "already exists. This top-level bean definition is considered as an override.",
+                    methodMetadata, beanName));
+        }
+        return true;
     }
 
     private static void processCommonDefinitionAnnotations(AbstractBeanDefinition beanDefinition,

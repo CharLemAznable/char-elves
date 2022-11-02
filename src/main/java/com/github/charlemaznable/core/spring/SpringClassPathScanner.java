@@ -56,8 +56,8 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
         val beanDefinitions = super.doScan(basePackages);
 
         if (beanDefinitions.isEmpty()) {
-            logger.warn("No " + factoryBeanClass.getSimpleName() + " was found in '"
-                    + Arrays.toString(basePackages) + "' package. Please check your configuration.");
+            logger.warn(String.format("No %s was found in [%s] package. Please check your configuration.",
+                    factoryBeanClass.getSimpleName(), Arrays.toString(basePackages)));
         } else {
             for (val holder : beanDefinitions) {
                 val beanName = holder.getBeanName();
@@ -66,8 +66,8 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
                 val beanClass = checkNotNull(ClzPath.findClass(beanClassName));
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Creating " + factoryBeanClass.getSimpleName() + " with name '"
-                            + beanName + "' and '" + beanClassName + "' xyzInterface");
+                    logger.debug(String.format("Creating %s with name '%s' and '%s' xyzInterface",
+                            factoryBeanClass.getSimpleName(), beanName, beanClassName));
                 }
 
                 // the mapper interface is the original class of the bean
@@ -94,9 +94,9 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
         if (super.checkCandidate(beanName, beanDefinition)) {
             return true;
         } else {
-            logger.warn("Skipping " + factoryBeanClass.getSimpleName() + " with name '" + beanName
-                    + "' and '" + beanDefinition.getBeanClassName() + "' interface"
-                    + ". Bean already defined with the same name!");
+            logger.warn(String.format("Skipping %s with name '%s' and '%s' interface. " +
+                            "Bean already defined with the same name!",
+                    factoryBeanClass.getSimpleName(), beanName, beanDefinition.getBeanClassName()));
             return false;
         }
     }
