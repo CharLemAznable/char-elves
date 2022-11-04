@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Contract;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -195,6 +196,19 @@ public final class Condition {
         return object;
     }
 
+    @Contract(value = "null, _ -> fail", pure = true)
+    @Nonnull
+    @CanIgnoreReturnValue
+    public static <T> T checkNotNull(@Nullable T object,
+                                     Function<NullPointerException, RuntimeException> function) {
+        if (isNull(object)) {
+            throw Optional.ofNullable(function)
+                    .map(f -> f.apply(new NullPointerException()))
+                    .orElseGet(NullPointerException::new);
+        }
+        return object;
+    }
+
     @Contract(value = "null -> fail", pure = true)
     @Nonnull
     @CanIgnoreReturnValue
@@ -219,6 +233,18 @@ public final class Condition {
     public static <T> T checkNotEmpty(@Nullable T object, RuntimeException errorException) {
         if (isNull(object) || isEmpty(object))
             throw nullThen(errorException, EmptyObjectException::new);
+        return object;
+    }
+
+    @Contract(value = "null, _ -> fail", pure = true)
+    @Nonnull
+    @CanIgnoreReturnValue
+    public static <T> T checkNotEmpty(@Nullable T object,
+                                      Function<EmptyObjectException, RuntimeException> function) {
+        if (isNull(object) || isEmpty(object))
+            throw Optional.ofNullable(function)
+                    .map(f -> f.apply(new EmptyObjectException()))
+                    .orElseGet(EmptyObjectException::new);
         return object;
     }
 
@@ -249,6 +275,18 @@ public final class Condition {
         return string;
     }
 
+    @Contract(value = "null, _ -> fail", pure = true)
+    @Nonnull
+    @CanIgnoreReturnValue
+    public static String checkNotBlank(@Nullable String string,
+                                       Function<BlankStringException, RuntimeException> function) {
+        if (isNull(string) || isBlank(string))
+            throw Optional.ofNullable(function)
+                    .map(f -> f.apply(new BlankStringException()))
+                    .orElseGet(BlankStringException::new);
+        return string;
+    }
+
     public static void checkCondition(BooleanSupplier condition) {
         if (!condition.getAsBoolean()) throw new BadConditionException();
     }
@@ -259,6 +297,14 @@ public final class Condition {
 
     public static void checkCondition(BooleanSupplier condition, RuntimeException errorException) {
         if (!condition.getAsBoolean()) throw nullThen(errorException, BadConditionException::new);
+    }
+
+    public static void checkCondition(BooleanSupplier condition,
+                                      Function<BadConditionException, RuntimeException> function) {
+        if (!condition.getAsBoolean())
+            throw Optional.ofNullable(function)
+                    .map(f -> f.apply(new BadConditionException()))
+                    .orElseGet(BadConditionException::new);
     }
 
     public static void checkConditionRun(BooleanSupplier condition, Runnable runnable) {
@@ -273,6 +319,15 @@ public final class Condition {
 
     public static void checkConditionRun(BooleanSupplier condition, Runnable runnable, RuntimeException errorException) {
         if (!condition.getAsBoolean()) throw nullThen(errorException, BadConditionException::new);
+        runnable.run();
+    }
+
+    public static void checkConditionRun(BooleanSupplier condition, Runnable runnable,
+                                         Function<BadConditionException, RuntimeException> function) {
+        if (!condition.getAsBoolean())
+            throw Optional.ofNullable(function)
+                    .map(f -> f.apply(new BadConditionException()))
+                    .orElseGet(BadConditionException::new);
         runnable.run();
     }
 
@@ -291,6 +346,16 @@ public final class Condition {
     @CanIgnoreReturnValue
     public static <T> T checkConditionThen(BooleanSupplier condition, Supplier<T> action, RuntimeException errorException) {
         if (!condition.getAsBoolean()) throw nullThen(errorException, BadConditionException::new);
+        return action.get();
+    }
+
+    @CanIgnoreReturnValue
+    public static <T> T checkConditionThen(BooleanSupplier condition, Supplier<T> action,
+                                           Function<BadConditionException, RuntimeException> function) {
+        if (!condition.getAsBoolean())
+            throw Optional.ofNullable(function)
+                    .map(f -> f.apply(new BadConditionException()))
+                    .orElseGet(BadConditionException::new);
         return action.get();
     }
 }
