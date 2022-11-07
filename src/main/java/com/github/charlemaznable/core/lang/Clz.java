@@ -7,7 +7,9 @@ import org.apache.commons.lang3.ClassUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 
+import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.checkNull;
 import static java.lang.reflect.Modifier.isAbstract;
 import static java.util.Objects.isNull;
@@ -97,6 +99,34 @@ public final class Clz {
             }
             throw new IllegalArgumentException(clazz
                     + "'s Constructor with such arguments Not Found");
+        }
+    }
+
+    public static final class DepthComparator implements Comparator<Class<?>> {
+
+        private final Class<?> targetClass;
+
+        public DepthComparator(Object target) {
+            this.targetClass = checkNotNull(target.getClass(), "Target must not be null");
+        }
+
+        public DepthComparator(Class<?> targetClass) {
+            this.targetClass = checkNotNull(targetClass, "Target type must not be null");
+        }
+
+        @Override
+        public int compare(Class<?> o1, Class<?> o2) {
+            int depth1 = getDepth(o1, this.targetClass, 0);
+            int depth2 = getDepth(o2, this.targetClass, 0);
+            return (depth1 - depth2);
+        }
+
+        private int getDepth(Class<?> declaredClass, Class<?> classToMatch, int depth) {
+            // Found it!
+            if (classToMatch.equals(declaredClass)) return depth;
+            // If we've gone as far as we can go and haven't found it...
+            if (classToMatch == Object.class) return Integer.MAX_VALUE;
+            return getDepth(declaredClass, classToMatch.getSuperclass(), depth + 1);
         }
     }
 

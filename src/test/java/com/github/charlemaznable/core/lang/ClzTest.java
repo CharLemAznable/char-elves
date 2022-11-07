@@ -1,5 +1,6 @@
 package com.github.charlemaznable.core.lang;
 
+import com.github.charlemaznable.core.lang.Clz.DepthComparator;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -65,6 +66,14 @@ public class ClzTest {
 
         assertThrows(IllegalArgumentException.class,
                 () -> getConstructorParameterTypes(testTypeClass, "abc"));
+    }
+
+    @Test
+    public void testDepthComparator() {
+        val comparator1 = new DepthComparator(new SubParamType());
+        assertTrue(comparator1.compare(ParamType.class, SubParamType.class) > 0);
+        val comparator2 = new DepthComparator(ParamType.class);
+        assertTrue(comparator2.compare(ParamType.class, SubParamType.class) < 0);
     }
 
     static class TestType {
