@@ -269,7 +269,8 @@ public class SpringContext implements ApplicationContextAware {
     ////////////////////////////////////////////////////////////////
 
     @AllArgsConstructor
-    static final class FixedSupplier<T> implements Supplier<T> {
+    @NoArgsConstructor
+    public static final class FixedSupplier<T> implements Supplier<T> {
 
         private T value;
 
