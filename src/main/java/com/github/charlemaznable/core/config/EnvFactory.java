@@ -92,7 +92,9 @@ public final class EnvFactory {
                     method -> {
                         if (method.isDefault()) return 1;
                         return 0;
-                    }, new Callback[]{envProxy, NoOp.INSTANCE}, null);
+                    },
+                    new Callback[]{envProxy, NoOp.INSTANCE},
+                    new Object[]{envClass});
         }
 
         private <T> void ensureClassIsAnInterface(Class<T> clazz) {
@@ -106,8 +108,11 @@ public final class EnvFactory {
         }
     }
 
-    @NoArgsConstructor
+    @AllArgsConstructor
     private static class EnvDummy {
+
+        @Nonnull
+        private Class<?> implClass;
 
         @Override
         public boolean equals(Object obj) {
@@ -121,7 +126,7 @@ public final class EnvFactory {
 
         @Override
         public String toString() {
-            return "Env@" + Integer.toHexString(hashCode());
+            return "Env:" + implClass.getSimpleName() + "@" + Integer.toHexString(hashCode());
         }
     }
 
