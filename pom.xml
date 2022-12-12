@@ -45,6 +45,7 @@
     </repositories>
 
     <properties>
+        <java.version>17</java.version>
         <sonar.projectKey>CharLemAznable_char-elves</sonar.projectKey>
         <sonar.exclusions>
             src/main/java/com/github/charlemaznable/core/es/EsClientBuildElf.java,
