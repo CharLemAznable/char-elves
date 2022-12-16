@@ -37,7 +37,7 @@ public final class BuddyEnhancer {
     @FunctionalInterface
     public interface Delegate {
 
-        Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Throwable;
+        Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception;
     }
 
     public static final Delegate CallSuper = (m, a, superCall) -> superCall.call();
@@ -56,7 +56,7 @@ public final class BuddyEnhancer {
 
         @RuntimeType
         public Object invoke(@Origin Method method, @AllArguments Object[] args,
-                             @SuperCall(nullIfImpossible = true) Callable<Object> superCall) throws Throwable {
+                             @SuperCall(nullIfImpossible = true) Callable<Object> superCall) throws Exception {
             int index = filter.accept(method);
             if (index >= delegates.length) throw new IllegalArgumentException(
                     "Handler filter returned an index that is too large: " + index);

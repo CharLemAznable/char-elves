@@ -135,7 +135,7 @@ public final class EnvFactory {
         private Factory factory;
 
         @Override
-        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Throwable {
+        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception {
             if (method.getDeclaringClass().equals(EnvDummy.class)) {
                 return superCall.call();
             }

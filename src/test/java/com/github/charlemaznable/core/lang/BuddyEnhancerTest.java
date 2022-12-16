@@ -72,7 +72,7 @@ public class BuddyEnhancerTest {
         static int count = 0;
 
         @Override
-        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Throwable {
+        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception {
             count++;
             return superCall.call();
         }

@@ -101,13 +101,13 @@ public final class PoolProxy {
         private ObjectPool<T> pool;
 
         @Override
-        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Throwable {
+        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception {
             T poolObject = null;
             try {
                 poolObject = pool.borrowObject();
                 return method.invoke(poolObject, args);
             } catch (InvocationTargetException e) {
-                throw e.getCause();
+                throw Lombok.sneakyThrow(e.getCause());
             } finally {
                 if (nonNull(poolObject))
                     pool.returnObject(poolObject);
