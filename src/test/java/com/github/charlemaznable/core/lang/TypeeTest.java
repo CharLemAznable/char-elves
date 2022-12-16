@@ -38,7 +38,7 @@ public class TypeeTest {
 
         @Override
         public String getName(String instance) {
-            return "\"" + instance + "\'";
+            return "\"" + instance + "'";
         }
     }
 
@@ -48,7 +48,7 @@ public class TypeeTest {
 
         @Override
         public String getName(String instance) {
-            return "\"" + instance + "\'";
+            return "\"" + instance + "'";
         }
     }
 
@@ -60,7 +60,7 @@ public class TypeeTest {
 
         @Override
         public String getName(String instance) {
-            return "\"" + instance + "\'";
+            return "\"" + instance + "'";
         }
     }
 
@@ -70,7 +70,7 @@ public class TypeeTest {
 
         @Override
         public String getName(String instance) {
-            return "\"" + instance + "\'";
+            return "\"" + instance + "'";
         }
     }
 

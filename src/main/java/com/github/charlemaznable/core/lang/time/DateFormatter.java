@@ -12,7 +12,7 @@ import static java.util.Objects.isNull;
 
 public final class DateFormatter {
 
-    private SimpleDateFormat format;
+    private final SimpleDateFormat format;
 
     public DateFormatter(String pattern) {
         this.format = new SimpleDateFormat(pattern);

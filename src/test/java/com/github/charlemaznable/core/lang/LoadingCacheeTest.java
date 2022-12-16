@@ -37,6 +37,7 @@ public class LoadingCacheeTest {
     @Test
     public void testSimpleCache() {
         val simpleCache = simpleCache(new CacheLoader<String, String>() {
+            @Nonnull
             @Override
             public String load(@Nonnull String s) {
                 if (s.equals("ex")) {
@@ -57,6 +58,7 @@ public class LoadingCacheeTest {
     @Test
     public void testAccessCache() {
         val accessCache = accessCache(new CacheLoader<String, String>() {
+            @Nonnull
             @Override
             public String load(@Nonnull String s) {
                 return s + toStr(currentTimeMillis());
@@ -78,6 +80,7 @@ public class LoadingCacheeTest {
     @Test
     public void testWriteCache() {
         val writeCache = writeCache(new CacheLoader<String, String>() {
+            @Nonnull
             @Override
             public String load(@Nonnull String s) {
                 return s + toStr(currentTimeMillis());

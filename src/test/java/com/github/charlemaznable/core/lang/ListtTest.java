@@ -28,7 +28,7 @@ public class ListtTest {
     @Test
     public void testShuffle() {
         val list = newArrayList();
-        List newList = shuffle(list);
+        List<Object> newList = shuffle(list);
         assertEquals(newList, list);
 
         for (int i = 0; i < 10; i++) list.add(i);

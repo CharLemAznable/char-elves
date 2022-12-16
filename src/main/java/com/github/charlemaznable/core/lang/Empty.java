@@ -12,12 +12,12 @@ import static lombok.AccessLevel.PRIVATE;
 public final class Empty {
 
     public static boolean isEmpty(Object obj) {
-        if (obj instanceof CharSequence) {
-            return ((CharSequence) obj).length() == 0;
-        } else if (obj instanceof Collection) {
-            return ((Collection) obj).isEmpty();
-        } else if (obj instanceof Map) {
-            return ((Map) obj).isEmpty();
+        if (obj instanceof CharSequence charSequence) {
+            return charSequence.length() == 0;
+        } else if (obj instanceof Collection collection) {
+            return collection.isEmpty();
+        } else if (obj instanceof Map map) {
+            return map.isEmpty();
         } else {
             return isNull(obj);
         }

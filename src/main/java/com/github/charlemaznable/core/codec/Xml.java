@@ -65,6 +65,7 @@ public final class Xml {
         return rootAsTop ? of(rootElement.getName(), map) : map;
     }
 
+    @SuppressWarnings({"HttpUrlsUsage", "rawtypes"})
     private static final class XmlString2Map {
 
         @SneakyThrows
@@ -107,7 +108,6 @@ public final class Xml {
             return result;
         }
 
-        @SuppressWarnings("unchecked")
         private static Map<String, Object> element2Map(Element element, boolean parseAttr) {
             val map = new LinkedHashMap<String, Object>();
             val elements = element.elements();
@@ -148,8 +148,8 @@ public final class Xml {
                     mapList.add(obj);
                     mapList.add(m);
                 }
-                if (obj instanceof List) {
-                    mapList = (List) obj;
+                if (obj instanceof List l) {
+                    mapList = l;
                     mapList.add(m);
                 }
                 map.put(elem.getName(), mapList);
@@ -173,8 +173,7 @@ public final class Xml {
 
             if (nonNull(map.get(elem.getName()))) {
                 val obj = map.get(elem.getName());
-                mapList = obj instanceof List ?
-                        (List) obj : newArrayList(obj);
+                mapList = obj instanceof List list ? list : newArrayList(obj);
                 addListItem(mapList, elem,
                         parseAttr, hasAttributes, attributesMap);
                 map.put(elem.getName(), mapList);
@@ -208,6 +207,7 @@ public final class Xml {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private static final class Map2XmlString {
 
         @SneakyThrows
@@ -226,15 +226,15 @@ public final class Xml {
                 val key = entry.getKey();
                 val value = entry.getValue();
                 if (key.startsWith("@")) { // 属性
-                    body.addAttribute(key.substring(1, key.length()), value.toString());
+                    body.addAttribute(key.substring(1), value.toString());
                 } else if (key.equals(TEXT)) { // 有属性时的文本
                     body.addCDATA(value.toString());
                 } else {
-                    if (value instanceof List) {
-                        parseListElement(body, key, (List) value);
-                    } else if (value instanceof Map) {
+                    if (value instanceof List list) {
+                        parseListElement(body, key, list);
+                    } else if (value instanceof Map m) {
                         val subElement = body.addElement(key);
-                        map2Element((Map) value, subElement);
+                        map2Element(m, subElement);
                     } else {
                         if (isNull(value)) continue;
                         body.addElement(key).addCDATA(value.toString());
@@ -247,9 +247,9 @@ public final class Xml {
         private static void parseListElement(Element body, String key, List list) {
             for (val obj : list) {
                 // list里是map或String，不会存在list里直接是list的，
-                if (obj instanceof Map) {
+                if (obj instanceof Map map) {
                     val subElement = body.addElement(key);
-                    map2Element((Map) obj, subElement);
+                    map2Element(map, subElement);
                 } else {
                     body.addElement(key).addCDATA((String) obj);
                 }

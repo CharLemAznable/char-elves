@@ -7,7 +7,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public final class Base92 {
 
-    private static BaseX baseX92 = new BaseX(
+    private static final BaseX baseX92 = new BaseX(
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`1234567890-=~!@#$%^&*()_+[]{}|;':,./<>?");
 
     public static String base92(byte[] bytes) {

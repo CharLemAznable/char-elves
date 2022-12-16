@@ -17,17 +17,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BatchExecutorTest {
 
-    private List<String> result = new ArrayList<>();
-    private BatchExecutor<String> batchExecutor;
+    private final List<String> result = new ArrayList<>();
+    private final BatchExecutor<String> batchExecutor;
 
     {
-        val properties = parseStringToProperties("" +
-                "maxBatchSize=10\n" +
-                "initialDelay=0\n" +
-                "delay=1\n" +
-                "unit=SECONDS\n");
+        val properties = parseStringToProperties("""
+                maxBatchSize=10
+                initialDelay=0
+                delay=1
+                unit=SECONDS
+                """);
         val config = parsePropertiesToBatchExecutorConfig(properties);
-        batchExecutor = new BatchExecutor<String>(config) {
+        batchExecutor = new BatchExecutor<>(config) {
 
             @Override
             public void batchExecute(List<String> items) {

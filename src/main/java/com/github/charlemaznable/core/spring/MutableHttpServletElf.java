@@ -1,12 +1,12 @@
 package com.github.charlemaznable.core.spring;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.NoArgsConstructor;
 import lombok.val;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -19,22 +19,18 @@ public final class MutableHttpServletElf {
 
     public static MutableHttpServletRequest mutableRequest(HttpServletRequest request) {
         HttpServletRequest internalRequest = request;
-        while (internalRequest instanceof HttpServletRequestWrapper) {
-            if (internalRequest instanceof MutableHttpServletRequest) {
-                return (MutableHttpServletRequest) internalRequest;
-            }
-            internalRequest = internalRequest((HttpServletRequestWrapper) internalRequest);
+        while (internalRequest instanceof HttpServletRequestWrapper requestWrapper) {
+            if (internalRequest instanceof MutableHttpServletRequest mutableRequest) return mutableRequest;
+            internalRequest = internalRequest(requestWrapper);
         }
         return null;
     }
 
     public static MutableHttpServletResponse mutableResponse(HttpServletResponse response) {
         HttpServletResponse internalResponse = response;
-        while (internalResponse instanceof HttpServletResponseWrapper) {
-            if (internalResponse instanceof MutableHttpServletResponse) {
-                return (MutableHttpServletResponse) internalResponse;
-            }
-            internalResponse = internalResponse((HttpServletResponseWrapper) internalResponse);
+        while (internalResponse instanceof HttpServletResponseWrapper responseWrapper) {
+            if (internalResponse instanceof MutableHttpServletResponse mutableResponse) return mutableResponse;
+            internalResponse = internalResponse(responseWrapper);
         }
         return null;
     }

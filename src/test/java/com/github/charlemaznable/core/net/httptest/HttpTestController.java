@@ -2,14 +2,13 @@ package com.github.charlemaznable.core.net.httptest;
 
 import com.github.charlemaznable.core.net.Http;
 import com.github.charlemaznable.core.spring.MutableHttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

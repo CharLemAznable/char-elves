@@ -187,6 +187,7 @@ public class EnvFactoryTest {
         String custom2Key2();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @EnvConfig
     public interface PrimEnvConfig {
 
@@ -277,6 +278,7 @@ public class EnvFactoryTest {
         List<ConfigBean2> bean1List2();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @EnvConfig
     public interface ProvEnvConfig {
 

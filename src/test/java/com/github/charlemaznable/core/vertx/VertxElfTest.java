@@ -33,13 +33,14 @@ public class VertxElfTest {
 
     @Test
     public void testParseVertxOptions() {
-        val propertiesString = "" +
-                "eventLoopPoolSize=2\n" +
-                "maxEventLoopExecuteTime=5\n" +
-                "haEnabled=true\n" +
-                "haGroup=___DEFAULT___\n" +
-                "maxEventLoopExecuteTimeUnit=SECONDS\n" +
-                "blockedThreadCheckIntervalUnit=SECOND\n";
+        val propertiesString = """
+                eventLoopPoolSize=2
+                maxEventLoopExecuteTime=5
+                haEnabled=true
+                haGroup=___DEFAULT___
+                maxEventLoopExecuteTimeUnit=SECONDS
+                blockedThreadCheckIntervalUnit=SECOND
+                """;
         val properties = parseStringToProperties(propertiesString);
         val vertxOptions = parsePropertiesToVertxOptions(properties);
         assertEquals(2, vertxOptions.getEventLoopPoolSize());

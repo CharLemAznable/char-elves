@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IterableeTest {
 
-    private List<String> list = newArrayList("aaa", "bbb", "ccc");
+    private final List<String> list = newArrayList("aaa", "bbb", "ccc");
 
     @Test
     public void testForEach() {

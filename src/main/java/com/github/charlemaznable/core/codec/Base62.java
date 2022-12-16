@@ -8,12 +8,13 @@ import java.io.ByteArrayOutputStream;
 
 import static lombok.AccessLevel.PRIVATE;
 
+@SuppressWarnings("DuplicatedCode")
 @NoArgsConstructor(access = PRIVATE)
 public final class Base62 {
 
-    private static char[] encodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+    private static final char[] encodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
 
-    private static byte[] decodes = new byte[256];
+    private static final byte[] decodes = new byte[256];
 
     static {
         for (int i = 0; i < encodes.length; i++) {

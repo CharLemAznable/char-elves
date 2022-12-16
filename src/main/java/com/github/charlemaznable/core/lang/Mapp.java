@@ -7,6 +7,7 @@ import lombok.val;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
+@SuppressWarnings("rawtypes")
 @NoArgsConstructor(access = PRIVATE)
 public final class Mapp {
 
@@ -47,6 +49,7 @@ public final class Mapp {
         return map;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @SafeVarargs
     public static <T> Map<T, T> of(T... keyAndValues) {
         Map<T, T> map = newHashMap();
@@ -59,6 +62,7 @@ public final class Mapp {
         return map;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public static Map<Object, Object> map(Object... keyAndValues) {
         Map<Object, Object> map = newHashMap();
         for (int i = 0; i < keyAndValues.length; i += 2) {
@@ -90,9 +94,9 @@ public final class Mapp {
         if (isNull(m)) return null;
         val value = m.get(key);
         if (isNull(value)) return null;
-        if (value instanceof Number) return (Number) value;
-        if (!(value instanceof String)) return null;
-        return NumberFormat.getInstance().parse((String) value);
+        if (value instanceof Number nNumber) return nNumber;
+        if (!(value instanceof String nString)) return null;
+        return NumberFormat.getInstance().parse(nString);
     }
 
     public static Boolean getBool(Map m, Object key) {
@@ -103,13 +107,12 @@ public final class Mapp {
         if (isNull(m)) return defaultValue;
         val value = m.get(key);
         if (isNull(value)) return defaultValue;
-        if (value instanceof Boolean) return (Boolean) value;
-        if (value instanceof Number) return ((Number) value).intValue() != 0;
-        if (!(value instanceof String)) return defaultValue;
-        String valStr = (String) value;
-        return "true".equalsIgnoreCase(valStr)
-                || "yes".equalsIgnoreCase(valStr)
-                || "on".equalsIgnoreCase(valStr);
+        if (value instanceof Boolean bValue) return bValue;
+        if (value instanceof Number bNumber) return bNumber.intValue() != 0;
+        if (!(value instanceof String bString)) return defaultValue;
+        return "true".equalsIgnoreCase(bString)
+                || "yes".equalsIgnoreCase(bString)
+                || "on".equalsIgnoreCase(bString);
     }
 
     public static Integer getInt(Map m, Object key) {
@@ -119,7 +122,7 @@ public final class Mapp {
     public static Integer getInt(Map m, Object key, Integer defaultValue) {
         val value = getNum(m, key);
         if (isNull(value)) return defaultValue;
-        return value instanceof Integer ? (Integer) value : Integer.valueOf(value.intValue());
+        return value instanceof Integer iValue ? iValue : Integer.valueOf(value.intValue());
     }
 
     public static Long getLong(Map m, Object key) {
@@ -129,7 +132,7 @@ public final class Mapp {
     public static Long getLong(Map m, Object key, Long defaultValue) {
         val value = getNum(m, key);
         if (isNull(value)) return defaultValue;
-        return value instanceof Long ? (Long) value : Long.valueOf(value.longValue());
+        return value instanceof Long lValue ? lValue : Long.valueOf(value.longValue());
     }
 
     public static <T> Map<T, T> mapFromList(List<Map<String, T>> list, String keyKey, String valueKey) {
@@ -180,6 +183,7 @@ public final class Mapp {
 
     private static class MergeHashMap<K, V> extends HashMap<K, V> {
 
+        @Serial
         private static final long serialVersionUID = 8293495763789556890L;
 
         public MergeHashMap() {
@@ -195,6 +199,7 @@ public final class Mapp {
 
     private static class ConcurrentMergeHashMap<K, V> extends ConcurrentHashMap<K, V> {
 
+        @Serial
         private static final long serialVersionUID = 7370568525584783098L;
 
         public ConcurrentMergeHashMap() {

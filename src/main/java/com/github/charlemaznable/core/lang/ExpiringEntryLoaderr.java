@@ -16,11 +16,10 @@ public final class ExpiringEntryLoaderr {
         return new FunctionToExpiringEntryLoader<>(function);
     }
 
-    private static final class FunctionToExpiringEntryLoader<K, V> implements ExpiringEntryLoader<K, V> {
+    private record FunctionToExpiringEntryLoader<K, V>(
+            Function<K, ExpiringValue<V>> computingFunction) implements ExpiringEntryLoader<K, V> {
 
-        private final Function<K, ExpiringValue<V>> computingFunction;
-
-        public FunctionToExpiringEntryLoader(Function<K, ExpiringValue<V>> computingFunction) {
+        private FunctionToExpiringEntryLoader(Function<K, ExpiringValue<V>> computingFunction) {
             this.computingFunction = checkNotNull(computingFunction);
         }
 

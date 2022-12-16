@@ -23,8 +23,7 @@ public final class Typee {
             Class<?> genericType,
             int argumentOrder) {
         val genericSuperclass = subClass.getGenericSuperclass();
-        if (genericSuperclass instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) genericSuperclass;
+        if (genericSuperclass instanceof ParameterizedType pt) {
             val rawType = pt.getRawType();
 
             if (rawType == genericType || isAssignable(
@@ -35,9 +34,7 @@ public final class Typee {
         }
 
         for (Type genericInterface : subClass.getGenericInterfaces()) {
-            if (!(genericInterface instanceof ParameterizedType)) continue;
-
-            ParameterizedType pt = (ParameterizedType) genericInterface;
+            if (!(genericInterface instanceof ParameterizedType pt)) continue;
             val rawType = pt.getRawType();
 
             if (rawType == genericType || isAssignable(

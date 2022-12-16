@@ -1,14 +1,15 @@
 package com.github.charlemaznable.core.lang;
 
 import lombok.val;
-import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.CallbackFilter;
-import net.sf.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.CallbackFilter;
+import org.springframework.cglib.proxy.Enhancer;
 
 import static com.github.charlemaznable.core.lang.Clz.getConstructorParameterTypes;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 
+@SuppressWarnings("rawtypes")
 public final class EasyEnhancer extends Enhancer {
 
     private EasyEnhancer() {

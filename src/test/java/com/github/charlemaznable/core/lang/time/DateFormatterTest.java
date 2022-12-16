@@ -44,6 +44,7 @@ public class DateFormatterTest {
         val originDateString = "2015/12/31";
         val errorDateString = "2016/12/31";
         val parsedDate = new SimpleDateFormat("yyyy/MM/dd").parse(originDateString);
+        @SuppressWarnings("SuspiciousDateFormat")
         val formatString = new SimpleDateFormat("YYYY/MM/dd").format(parsedDate);
         assertNotEquals(originDateString, formatString);
         assertEquals(errorDateString, formatString);

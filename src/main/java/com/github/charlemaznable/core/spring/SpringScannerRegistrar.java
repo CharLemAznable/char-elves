@@ -23,13 +23,13 @@ import static java.util.Objects.nonNull;
 public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
     private final Class<? extends Annotation> scanAnnotationClass;
-    private final Class factoryBeanClass;
+    private final Class<?> factoryBeanClass;
     private final Class<? extends Annotation>[] annotationClass;
     private ResourceLoader resourceLoader;
 
     @SafeVarargs
     public SpringScannerRegistrar(Class<? extends Annotation> scanAnnotationClass,
-                                  Class factoryBeanClass,
+                                  Class<?> factoryBeanClass,
                                   Class<? extends Annotation>... annotationClass) {
         this.scanAnnotationClass = scanAnnotationClass;
         this.factoryBeanClass = factoryBeanClass;
@@ -39,7 +39,7 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
     @Override
     public final void registerBeanDefinitions(@Nonnull AnnotationMetadata importingClassMetadata,
                                               @Nonnull BeanDefinitionRegistry registry,
-                                              BeanNameGenerator importBeanNameGenerator) {
+                                              @Nonnull BeanNameGenerator importBeanNameGenerator) {
         this.registerBeanDefinitions(importingClassMetadata, registry);
     }
 
@@ -94,7 +94,7 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
         return true;
     }
 
-    protected boolean isPrimaryCandidateClass(Class beanClass) {
+    protected boolean isPrimaryCandidateClass(Class<?> beanClass) {
         return false;
     }
 }

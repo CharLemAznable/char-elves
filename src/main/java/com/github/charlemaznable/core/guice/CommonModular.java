@@ -19,7 +19,7 @@ import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.spring.ClzResolver.getClasses;
 import static com.google.common.collect.Sets.newHashSet;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class CommonModular<M extends CommonModular> {
 
     protected final Module baseModule;

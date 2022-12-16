@@ -37,21 +37,21 @@ public final class DefaultConfigable extends BaseConfigable {
     }
 
     @Override
-    public final boolean exists(String key) {
+    public boolean exists(String key) {
         return properties.containsKey(key);
     }
 
     @Override
-    public final Properties getProperties() {
+    public Properties getProperties() {
         return properties;
     }
 
-    public final void setProperties(Properties properties) {
+    public void setProperties(Properties properties) {
         this.properties = properties;
     }
 
     @Override
-    public final String getStr(String key) {
+    public String getStr(String key) {
         String property = properties.getProperty(key);
         if (isNull(property)) return null;
 
@@ -66,7 +66,7 @@ public final class DefaultConfigable extends BaseConfigable {
     }
 
     @Override
-    public final Configable subset(String prefix) {
+    public Configable subset(String prefix) {
         if (isEmpty(prefix)) return new DefaultConfigable(new Properties());
 
         val prefixMatch = prefix.charAt(prefix.length() - 1) != '.' ? prefix + '.' : prefix;

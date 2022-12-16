@@ -1,14 +1,13 @@
 package com.github.charlemaznable.core.lang.pool;
 
-import com.github.charlemaznable.core.lang.EasyEnhancer;
+import com.github.charlemaznable.core.lang.BuddyEnhancer;
 import lombok.AllArgsConstructor;
+import lombok.Lombok;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
@@ -17,6 +16,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static java.util.Objects.nonNull;
@@ -55,7 +55,7 @@ public final class PoolProxy {
             try {
                 poolObject = pool.borrowObject();
                 val poolObjectClass = poolObject.getClass();
-                return (T) EasyEnhancer.create(poolObjectClass,
+                return (T) BuddyEnhancer.create(poolObjectClass,
                         new ObjectPoolProxy<>(pool), args);
             } finally {
                 if (nonNull(poolObject)) pool.returnObject(poolObject);
@@ -96,13 +96,12 @@ public final class PoolProxy {
      * 调用代理对象完成任务, 即由代理完成 [从对象池取出对象]->完成任务->[向对象池交还对象]
      */
     @AllArgsConstructor
-    private static final class ObjectPoolProxy<T> implements MethodInterceptor {
+    private static final class ObjectPoolProxy<T> implements BuddyEnhancer.Delegate {
 
         private ObjectPool<T> pool;
 
         @Override
-        public Object intercept(Object o, Method method, Object[] args,
-                                MethodProxy methodProxy) throws Throwable {
+        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Throwable {
             T poolObject = null;
             try {
                 poolObject = pool.borrowObject();

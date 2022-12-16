@@ -24,7 +24,7 @@ public final class YCombinator {
     public abstract static class CacheableUnaryOperator<T, R>
             implements UnaryOperator<Function<T, R>> {
 
-        private Cache<T, R> cache = CacheBuilder.newBuilder().build();
+        private final Cache<T, R> cache = CacheBuilder.newBuilder().build();
 
         public R getIfPresent(T key) {
             return cache.getIfPresent(key);

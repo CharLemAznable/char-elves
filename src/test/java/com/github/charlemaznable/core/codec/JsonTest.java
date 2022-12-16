@@ -42,10 +42,11 @@ public class JsonTest {
         val unJsonWithType = unJsonWithType(jsonWithType);
         assertTrue(unJsonWithType instanceof BeanType1);
 
-        assertEquals("{\n" +
-                "\t\"value1\":\"value1\",\n" +
-                "\t\"value2\":\"value2\"\n" +
-                "}", jsonPretty(beanType11));
+        assertEquals("""
+                {
+                \t"value1":"value1",
+                \t"value2":"value2"
+                }""", jsonPretty(beanType11));
 
         Map<String, Object> data = of("key", "value");
         Map<String, Object> wrap = of("data1", data, "data2", data);

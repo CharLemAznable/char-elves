@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -246,6 +247,7 @@ public class ConditionTest {
 
     static class ConditionTestException extends RuntimeException {
 
+        @Serial
         private static final long serialVersionUID = -4697342496228582709L;
     }
 

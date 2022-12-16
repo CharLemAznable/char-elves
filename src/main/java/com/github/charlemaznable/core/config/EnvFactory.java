@@ -5,17 +5,13 @@ import com.github.charlemaznable.core.config.EnvConfig.DefaultValueProvider;
 import com.github.charlemaznable.core.config.ex.EnvConfigException;
 import com.github.charlemaznable.core.config.impl.BaseConfigable;
 import com.github.charlemaznable.core.context.FactoryContext;
-import com.github.charlemaznable.core.lang.EasyEnhancer;
+import com.github.charlemaznable.core.lang.BuddyEnhancer;
 import com.github.charlemaznable.core.lang.Factory;
 import com.google.common.cache.LoadingCache;
 import com.google.common.primitives.Primitives;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-import net.sf.cglib.proxy.NoOp;
 import org.apache.commons.text.StringSubstitutor;
 
 import javax.annotation.Nonnull;
@@ -23,8 +19,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import static com.github.charlemaznable.core.config.Arguments.argumentsAsProperties;
+import static com.github.charlemaznable.core.lang.BuddyEnhancer.CallSuper;
 import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsProperties;
 import static com.github.charlemaznable.core.lang.Condition.blankThen;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
@@ -42,8 +40,8 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.getMerge
 @NoArgsConstructor(access = PRIVATE)
 public final class EnvFactory {
 
-    private static Properties envClassPathProperties;
-    private static LoadingCache<Factory, EnvLoader> envLoaderCache = simpleCache(from(EnvLoader::new));
+    private static final Properties envClassPathProperties;
+    private static final LoadingCache<Factory, EnvLoader> envLoaderCache = simpleCache(from(EnvLoader::new));
 
     static {
         envClassPathProperties = classResourceAsProperties("config.env.props");
@@ -69,8 +67,8 @@ public final class EnvFactory {
     @SuppressWarnings("unchecked")
     public static class EnvLoader {
 
-        private Factory factory;
-        private LoadingCache<Class, Object> envCache
+        private final Factory factory;
+        private final LoadingCache<Class<?>, Object> envCache
                 = simpleCache(from(this::loadEnv));
 
         EnvLoader(Factory factory) {
@@ -87,13 +85,13 @@ public final class EnvFactory {
             checkEnvConfig(envClass);
 
             val envProxy = new EnvProxy(envClass, factory);
-            return EasyEnhancer.create(EnvDummy.class,
+            return BuddyEnhancer.create(EnvDummy.class,
                     new Class[]{envClass, Configable.class},
                     method -> {
                         if (method.isDefault()) return 1;
                         return 0;
                     },
-                    new Callback[]{envProxy, NoOp.INSTANCE},
+                    new BuddyEnhancer.Delegate[]{envProxy, CallSuper},
                     new Object[]{envClass});
         }
 
@@ -131,16 +129,15 @@ public final class EnvFactory {
     }
 
     @AllArgsConstructor
-    private static class EnvProxy implements MethodInterceptor {
+    private static class EnvProxy implements BuddyEnhancer.Delegate {
 
-        private Class envClass;
+        private Class<?> envClass;
         private Factory factory;
 
         @Override
-        public Object intercept(Object o, Method method, Object[] args,
-                                MethodProxy methodProxy) throws Throwable {
+        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Throwable {
             if (method.getDeclaringClass().equals(EnvDummy.class)) {
-                return methodProxy.invokeSuper(o, args);
+                return superCall.call();
             }
             if (method.getDeclaringClass().equals(Configable.class)) {
                 return method.invoke(Config.getConfigImpl(), args);
@@ -190,7 +187,7 @@ public final class EnvFactory {
                     && Collection.class.isAssignableFrom(rt);
             if (!isCollection) return parseObject(rt, key, value);
 
-            return parseObjects((Class) ((ParameterizedType) grt)
+            return parseObjects((Class<?>) ((ParameterizedType) grt)
                     .getActualTypeArguments()[0], key, value);
         }
 

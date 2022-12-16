@@ -106,7 +106,7 @@ public final class PropsReader extends LineNumberReader {
     }
 
     @SuppressWarnings("SameParameterValue")
-    protected static String unescapeJava(String str, char delimiter) {
+    private static String unescapeJava(String str, char delimiter) {
         if (isNull(str)) return null;
 
         val sz = str.length();
@@ -212,17 +212,17 @@ public final class PropsReader extends LineNumberReader {
         return propertyValue;
     }
 
-    protected void parseProperty(String line) {
+    private void parseProperty(String line) {
         val property = doParseProperty(line);
         initPropertyName(property[0]);
         initPropertyValue(property[1]);
     }
 
-    protected void initPropertyName(String name) {
+    private void initPropertyName(String name) {
         propertyName = StringEscapeUtils.unescapeJava(name);
     }
 
-    protected void initPropertyValue(String value) {
+    private void initPropertyValue(String value) {
         propertyValue = unescapeJava(value, ',');
     }
 }

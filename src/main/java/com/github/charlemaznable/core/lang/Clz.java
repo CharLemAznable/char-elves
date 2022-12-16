@@ -56,8 +56,8 @@ public final class Clz {
         } catch (IllegalArgumentException | IllegalAccessException ignored) {
             // ignored
         } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof RuntimeException) {
-                throw (RuntimeException) e.getTargetException();
+            if (e.getTargetException() instanceof RuntimeException runtimeException) {
+                throw runtimeException;
             }
         }
 

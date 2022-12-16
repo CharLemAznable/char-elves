@@ -1,7 +1,6 @@
 package com.github.charlemaznable.core.codec;
 
 import lombok.NoArgsConstructor;
-import lombok.val;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,7 +56,7 @@ public final class Json {
         return parseObject(json, clazz);
     }
 
-    public static List unJsonArray(String json) {
+    public static List<Object> unJsonArray(String json) {
         return parseArray(json);
     }
 
@@ -70,7 +69,7 @@ public final class Json {
         return unJson(json(obj), Map.class);
     }
 
-    public static <T> T spec(Map map, Class<T> clz) {
+    public static <T> T spec(Map<?, ?> map, Class<T> clz) {
         return unJson(json(map), clz);
     }
 
@@ -89,15 +88,14 @@ public final class Json {
     private static void flatMapping(String key, Map<String, Object> desc, Map<String, String> target) {
         if (isEmpty(desc)) return;
 
-        desc.forEach(new BiConsumer<String, Object>() {
+        desc.forEach(new BiConsumer<>() {
             @Override
             public void accept(String k, Object v) {
                 String mk = mappingKey(key, k);
-                if (v instanceof Map) {
-                    flatMapping(mk, (Map<String, Object>) v, target);
+                if (v instanceof Map m) {
+                    flatMapping(mk, m, target);
 
-                } else if (v instanceof Collection) {
-                    val collection = (Collection<Object>) v;
+                } else if (v instanceof Collection collection) {
                     forEach(collection, (index, item) -> accept(
                             mk + "[" + index + "]", item));
 

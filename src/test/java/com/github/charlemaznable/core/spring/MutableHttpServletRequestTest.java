@@ -1,11 +1,9 @@
 package com.github.charlemaznable.core.spring;
 
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import javax.servlet.http.HttpServletRequestWrapper;
 
 import static com.github.charlemaznable.core.codec.Bytes.bytes;
 import static com.github.charlemaznable.core.lang.Mapp.of;
@@ -46,8 +44,7 @@ public class MutableHttpServletRequestTest {
         val body23 = dealRequestBodyStream(mutableRequest, "UTF-8");
         assertEquals(body2, body23);
 
-        assertDoesNotThrow((Executable)
-                () -> setRequestBody(null, body2));
+        assertDoesNotThrow(() -> setRequestBody(null, body2));
     }
 
     @Test
@@ -58,6 +55,7 @@ public class MutableHttpServletRequestTest {
         val mockRequest = new MockHttpServletRequest();
         mockRequest.setParameter(key1, value1);
         mockRequest.setParameter("empty");
+        mockRequest.setContent(new byte[0]);
 
         val mutableRequest = new MutableHttpServletRequest(mockRequest);
         assertNull(mutableRequest.getParameter("nonExists"));
@@ -76,8 +74,7 @@ public class MutableHttpServletRequestTest {
         val value22 = fetchParameterMap(mutableRequest).get(key2);
         assertEquals(value2, value22);
 
-        assertDoesNotThrow((Executable)
-                () -> setRequestParameter(null, key2, value2));
+        assertDoesNotThrow(() -> setRequestParameter(null, key2, value2));
 
         val value3 = "value3";
         setRequestParameterMap(mutableRequest, of(key2, value3));
@@ -86,27 +83,23 @@ public class MutableHttpServletRequestTest {
         val value32 = fetchParameterMap(mutableRequest).get(key2);
         assertEquals(value3, value32);
 
-        assertDoesNotThrow((Executable)
-                () -> setRequestParameterMap(null, of(key2, value3)));
+        assertDoesNotThrow(() -> setRequestParameterMap(null, of(key2, value3)));
 
-        assertDoesNotThrow((Executable)
-                () -> mutableRequest.setParameter("SET_KEY", null));
+        assertDoesNotThrow(() -> mutableRequest.setParameter("SET_KEY", null));
         assertNull(mutableRequest.getParameterValues("SET_KEY"));
-        assertDoesNotThrow((Executable)
-                () -> mutableRequest.setParameter("SET_KEY", "SET_VALUE"));
+        assertDoesNotThrow(() -> mutableRequest.setParameter("SET_KEY", "SET_VALUE"));
         assertEquals("SET_VALUE", mutableRequest.getParameterValues("SET_KEY")[0]);
-        assertDoesNotThrow((Executable)
-                () -> mutableRequest.setParameter("SET_KEY", new String[]{"SET_VALUE1", "SET_VALUE2"}));
+        assertDoesNotThrow(() -> mutableRequest.setParameter("SET_KEY", new String[]{"SET_VALUE1", "SET_VALUE2"}));
         assertEquals("SET_VALUE1", mutableRequest.getParameterValues("SET_KEY")[0]);
         assertEquals("SET_VALUE2", mutableRequest.getParameterValues("SET_KEY")[1]);
-        assertDoesNotThrow((Executable)
-                () -> mutableRequest.setParameter("SET_KEY", 123));
+        assertDoesNotThrow(() -> mutableRequest.setParameter("SET_KEY", 123));
         assertEquals("123", mutableRequest.getParameterValues("SET_KEY")[0]);
     }
 
     @Test
     public void testWrapper() {
         val mockRequest = new MockHttpServletRequest();
+        mockRequest.setContent(new byte[0]);
         val mockWrapper = new HttpServletRequestWrapper(mockRequest);
         assertNull(mutableRequest(mockWrapper));
 

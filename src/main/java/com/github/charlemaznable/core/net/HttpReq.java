@@ -30,6 +30,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.tuple.Pair.of;
 
+@SuppressWarnings("UnusedReturnValue")
 @Slf4j
 public final class HttpReq {
 
@@ -37,11 +38,11 @@ public final class HttpReq {
 
     private String req;
 
-    private Charset charset = UTF_8;
+    private final Charset charset = UTF_8;
 
-    private StringBuilder params = new StringBuilder();
+    private final StringBuilder params = new StringBuilder();
 
-    private List<Pair<String, String>> props = newArrayList();
+    private final List<Pair<String, String>> props = newArrayList();
 
     private SSLSocketFactory sslSocketFactory;
 
@@ -192,13 +193,13 @@ public final class HttpReq {
     }
 
     private void setSSL(HttpURLConnection http) {
-        if (!(http instanceof HttpsURLConnection)) return;
+        if (!(http instanceof HttpsURLConnection https)) return;
 
         if (nonNull(sslSocketFactory))
-            ((HttpsURLConnection) http).setSSLSocketFactory(sslSocketFactory);
+            https.setSSLSocketFactory(sslSocketFactory);
 
         if (nonNull(hostnameVerifier))
-            ((HttpsURLConnection) http).setHostnameVerifier(hostnameVerifier);
+            https.setHostnameVerifier(hostnameVerifier);
     }
 
     private void writePostRequestBody(HttpURLConnection http) throws IOException {
@@ -261,6 +262,6 @@ public final class HttpReq {
             baos.write(buffer, 0, length);
         }
 
-        return new String(baos.toByteArray(), charset);
+        return baos.toString(charset);
     }
 }

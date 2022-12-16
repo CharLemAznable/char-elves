@@ -2,6 +2,7 @@ package com.github.charlemaznable.core.net;
 
 import com.github.charlemaznable.core.net.httptest.HttpTestConfiguration;
 import com.github.charlemaznable.core.net.httptest.HttpTestController;
+import jakarta.servlet.http.Cookie;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,8 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import javax.servlet.http.Cookie;
 
 import static com.github.charlemaznable.core.codec.Bytes.bytes;
 import static org.junit.jupiter.api.Assertions.assertEquals;

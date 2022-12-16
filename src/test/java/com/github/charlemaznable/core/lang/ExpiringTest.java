@@ -13,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ExpiringTest {
-    private ExpiringMap<String, Long> testCache
+
+    private final ExpiringMap<String, Long> testCache
             = ExpiringMapp.expiringMap(ExpiringEntryLoaderr.from(this::loadCache));
 
     @Test

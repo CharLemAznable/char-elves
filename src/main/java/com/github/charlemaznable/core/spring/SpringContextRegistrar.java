@@ -26,7 +26,7 @@ public class SpringContextRegistrar implements ImportBeanDefinitionRegistrar, Re
     @Override
     public final void registerBeanDefinitions(@Nonnull AnnotationMetadata importingClassMetadata,
                                               @Nonnull BeanDefinitionRegistry registry,
-                                              BeanNameGenerator importBeanNameGenerator) {
+                                              @Nonnull BeanNameGenerator importBeanNameGenerator) {
         this.registerBeanDefinitions(importingClassMetadata, registry);
     }
 
@@ -57,7 +57,7 @@ public class SpringContextRegistrar implements ImportBeanDefinitionRegistrar, Re
 
         @Nonnull
         @Override
-        public Set<BeanDefinitionHolder> doScan(String... basePackages) {
+        public Set<BeanDefinitionHolder> doScan(@Nonnull String... basePackages) {
             val beanDefinitions = super.doScan(basePackages);
             for (val holder : beanDefinitions) {
                 val definition = (GenericBeanDefinition) holder.getBeanDefinition();

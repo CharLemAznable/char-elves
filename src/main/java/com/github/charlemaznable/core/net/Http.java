@@ -1,14 +1,14 @@
 package com.github.charlemaznable.core.net;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Cleanup;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.springframework.http.HttpStatus;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
@@ -96,7 +96,7 @@ public final class Http {
         return parameterMap;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static Map<String, String> fetchPathVariableMap(HttpServletRequest request) {
         Map<String, String> pathVariableMap = newHashMap();
         val pathVariables = request.getAttribute(URI_TEMPLATE_VARIABLES_ATTRIBUTE);

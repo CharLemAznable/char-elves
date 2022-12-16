@@ -16,8 +16,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.RestHighLevelClientBuilder;
 
 import java.time.Duration;
 import java.util.List;
@@ -51,19 +49,6 @@ public final class EsClientElf {
         return esConfig;
     }
 
-    @Deprecated
-    public static RestHighLevelClient buildEsClient(EsConfig esConfig) {
-        return new RestHighLevelClientBuilder(buildEsHttpClient(esConfig))
-                .setApiCompatibilityMode(true).build();
-    }
-
-    @Deprecated
-    @SneakyThrows
-    public static void closeEsClient(RestHighLevelClient client) {
-        if (isNull(client)) return;
-        client.close();
-    }
-
     public static ElasticsearchClient buildElasticsearchClient(EsConfig esConfig) {
         return new ElasticsearchClient(new RestClientTransport(
                 buildEsHttpClient(esConfig), buildJacksonJsonpMapper()));
@@ -75,7 +60,7 @@ public final class EsClientElf {
     }
 
     @SneakyThrows
-    public static void closeElasticsearchApiClient(ApiClient client) {
+    public static void closeElasticsearchApiClient(@SuppressWarnings("rawtypes") ApiClient client) {
         if (isNull(client) || isNull(client._transport())) return;
         client._transport().close();
     }
@@ -92,12 +77,12 @@ public final class EsClientElf {
         builder.setRequestConfigCallback(requestConfigBuilder -> {
             val connectionTimeout = esConfig.getConnectionTimeout();
             if (nonNull(connectionTimeout)) {
-                requestConfigBuilder.setConnectTimeout(new Long(
+                requestConfigBuilder.setConnectTimeout(Long.valueOf(
                         connectionTimeout.toMillis()).intValue());
             }
             val socketTimeout = esConfig.getSocketTimeout();
             if (nonNull(socketTimeout)) {
-                requestConfigBuilder.setSocketTimeout(new Long(
+                requestConfigBuilder.setSocketTimeout(Long.valueOf(
                         socketTimeout.toMillis()).intValue());
             }
             return requestConfigBuilder;

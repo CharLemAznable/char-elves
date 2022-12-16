@@ -15,8 +15,8 @@ import static org.joor.Reflect.onClass;
 @NoArgsConstructor(access = PRIVATE)
 public final class FactoryContext {
 
-    private static ThreadLocal<Factory> local =
-            new InheritableThreadLocal<Factory>() {
+    private static final ThreadLocal<Factory> local =
+            new InheritableThreadLocal<>() {
                 @Override
                 protected Factory initialValue() {
                     return SpringFactory.getInstance();
@@ -86,7 +86,7 @@ public final class FactoryContext {
 
         private static class ReflectFactoryHolder {
 
-            private static ReflectFactory instance = new ReflectFactory();
+            private static final ReflectFactory instance = new ReflectFactory();
         }
     }
 }

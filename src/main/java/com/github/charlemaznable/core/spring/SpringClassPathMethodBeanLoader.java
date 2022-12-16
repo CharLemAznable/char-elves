@@ -7,7 +7,6 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -54,7 +53,6 @@ import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static java.util.Objects.isNull;
 import static org.joor.Reflect.onClass;
-import static org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor.SKIP_REQUIRED_CHECK_ATTRIBUTE;
 
 final class SpringClassPathMethodBeanLoader {
 
@@ -78,9 +76,9 @@ final class SpringClassPathMethodBeanLoader {
     Set<MethodMetadata> loadBeanMethodMetadataSet(AbstractBeanDefinition beanDefinition,
                                                   String beanClassName, Class<?> beanClass) {
         AnnotationMetadata metadata;
-        if (beanDefinition instanceof AnnotatedBeanDefinition &&
-                beanClassName.equals(((AnnotatedBeanDefinition) beanDefinition).getMetadata().getClassName())) {
-            metadata = ((AnnotatedBeanDefinition) beanDefinition).getMetadata();
+        if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition &&
+                beanClassName.equals(annotatedBeanDefinition.getMetadata().getClassName())) {
+            metadata = annotatedBeanDefinition.getMetadata();
         } else {
             if (BeanFactoryPostProcessor.class.isAssignableFrom(beanClass) ||
                     BeanPostProcessor.class.isAssignableFrom(beanClass) ||
@@ -110,12 +108,10 @@ final class SpringClassPathMethodBeanLoader {
         val beanMethodDefinition = new RootBeanDefinition();
         beanMethodDefinition.setFactoryBeanName(beanName);
         beanMethodDefinition.setUniqueFactoryMethodName(beanMethodName);
-        if (methodMetadata instanceof StandardMethodMetadata) {
-            beanMethodDefinition.setResolvedFactoryMethod(
-                    ((StandardMethodMetadata) methodMetadata).getIntrospectedMethod());
+        if (methodMetadata instanceof StandardMethodMetadata standardMethodMetadata) {
+            beanMethodDefinition.setResolvedFactoryMethod(standardMethodMetadata.getIntrospectedMethod());
         }
         beanMethodDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
-        beanMethodDefinition.setAttribute(SKIP_REQUIRED_CHECK_ATTRIBUTE, Boolean.TRUE);
         processCommonDefinitionAnnotations(beanMethodDefinition, methodMetadata);
         processCommonAnnotationAttributes(beanMethodDefinition, beanAnnoAttrs);
         val beanDefinitionToRegister = processScopeProxy(
@@ -139,8 +135,8 @@ final class SpringClassPathMethodBeanLoader {
 
         for (Condition condition : conditions) {
             ConfigurationPhase requiredPhase = null;
-            if (condition instanceof ConfigurationCondition) {
-                requiredPhase = ((ConfigurationCondition) condition).getConfigurationPhase();
+            if (condition instanceof ConfigurationCondition configurationCondition) {
+                requiredPhase = configurationCondition.getConfigurationPhase();
             }
             if ((requiredPhase == null || requiredPhase == ConfigurationPhase.REGISTER_BEAN)
                     && !condition.matches(conditionContext, methodMetadata)) {
@@ -178,8 +174,8 @@ final class SpringClassPathMethodBeanLoader {
         if (existingBeanDef.getRole() > BeanDefinition.ROLE_APPLICATION) return false;
         // At this point, it's a top-level override (probably XML), just having been parsed
         // before configuration class processing kicks in...
-        if (registry instanceof DefaultListableBeanFactory &&
-                !((DefaultListableBeanFactory) registry).isAllowBeanDefinitionOverriding()) {
+        if (registry instanceof DefaultListableBeanFactory listableBeanFactory &&
+                !listableBeanFactory.isAllowBeanDefinitionOverriding()) {
             throw new BeanDefinitionStoreException(methodMetadata.getDeclaringClassName(),
                     beanName, "@Bean definition illegally overridden by existing bean definition: " + existingBeanDef);
         }
@@ -206,8 +202,6 @@ final class SpringClassPathMethodBeanLoader {
 
     private static void processCommonAnnotationAttributes(AbstractBeanDefinition beanDefinition,
                                                           AnnotationAttributes beanAnnoAttrs) {
-        Autowire autowire = beanAnnoAttrs.getEnum("autowire");
-        if (autowire.isAutowire()) beanDefinition.setAutowireMode(autowire.value());
         boolean autowireCandidate = beanAnnoAttrs.getBoolean("autowireCandidate");
         if (!autowireCandidate) beanDefinition.setAutowireCandidate(false);
         String initMethodName = beanAnnoAttrs.getString("initMethod");

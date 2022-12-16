@@ -115,7 +115,7 @@ public final class VertxElf {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Object parseEnum(Class<?> rt, String value) {
         try {
             return Enum.valueOf((Class<Enum>) rt, value);

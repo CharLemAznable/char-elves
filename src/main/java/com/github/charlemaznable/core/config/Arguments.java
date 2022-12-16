@@ -9,7 +9,6 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -85,7 +84,7 @@ public final class Arguments extends BaseConfigable {
 
         public Set<String> getOptionNames() {
             val names = Arrays.asList(this.source.getPropertyNames());
-            return Collections.unmodifiableSet(new HashSet<>(names));
+            return Set.copyOf(names);
         }
 
         public List<String> getOptionValues(String name) {
@@ -104,6 +103,7 @@ public final class Arguments extends BaseConfigable {
             super(args);
         }
 
+        @Nonnull
         @Override
         public List<String> getNonOptionArgs() {
             return super.getNonOptionArgs();

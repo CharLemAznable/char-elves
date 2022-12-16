@@ -23,6 +23,7 @@ import static java.lang.Character.isJavaIdentifierPart;
 import static java.lang.Character.isJavaIdentifierStart;
 import static java.lang.Character.isWhitespace;
 import static java.lang.Character.toTitleCase;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -51,7 +52,7 @@ public final class Objectt {
         @Getter
         @Setter
         private String name;
-        private List<String> params = new ArrayList<>();
+        private final List<String> params = new ArrayList<>();
 
         public String[] getParams() {
             return params.toArray(new String[0]);
@@ -65,8 +66,8 @@ public final class Objectt {
     @SuppressWarnings("unchecked")
     public static boolean setValue(Object mappedObject, String columnName,
                                    ValueGettable valueGettable) {
-        if (mappedObject instanceof Map) {
-            ((Map) mappedObject).put(columnName, valueGettable.getValue(null));
+        if (mappedObject instanceof Map map) {
+            map.put(columnName, valueGettable.getValue(null));
             return true;
         }
         val dotPos = columnName.indexOf('.');
@@ -100,23 +101,25 @@ public final class Objectt {
 
     @SneakyThrows
     public static Method getAccessibleMethod(Object hostBean, String methodName) {
-        return setAccessibleTrue(hostBean.getClass().getMethod(methodName));
+        return setAccessibleTrue(hostBean, hostBean.getClass().getMethod(methodName));
     }
 
     @SneakyThrows
     public static Field getAccessibleField(Object hostBean, String propertyName) {
-        return setAccessibleTrue(hostBean.getClass().getDeclaredField(propertyName));
+        return setAccessibleTrue(hostBean, hostBean.getClass().getDeclaredField(propertyName));
     }
 
-    public static <T extends AccessibleObject> T setAccessibleTrue(T m) {
-        if (!m.isAccessible()) m.setAccessible(true);
+    public static <T extends AccessibleObject> T setAccessibleTrue(Object obj, T m) {
+        if (!m.canAccess(obj)) m.setAccessible(true);
         return m;
     }
 
     public static <T> T parseObject(String specContent, Class<T> clazz) {
         if (isBlank(specContent)) return null;
+        val spec = parseSpecLeniently(specContent);
+        if (isNull(spec)) return null;
         try {
-            return createObject(clazz, parseSpecLeniently(specContent));
+            return createObject(clazz, spec);
         } catch (Exception e) {
             log.error("parse object {} failed by {}", specContent, e.getMessage());
         }
@@ -126,8 +129,8 @@ public final class Objectt {
     @SuppressWarnings("unchecked")
     private static boolean setProperty(Object hostBean, String propertyName,
                                        ValueGettable valueGettable) {
-        if (hostBean instanceof Map) {
-            ((Map) hostBean).put(propertyName, valueGettable.getValue(null));
+        if (hostBean instanceof Map hostMap) {
+            hostMap.put(propertyName, valueGettable.getValue(null));
             return true;
         }
         return setBeanProperty(hostBean, propertyName, valueGettable);
@@ -311,13 +314,8 @@ public final class Objectt {
         }
         // Check whether it is normal ended
         switch (specState) {
-            case SpecName:
-                addSpec(name, specsDefs);
-                break;
-            case SpecOpen:
-            case ParamValue:
-            case ParamOpen:
-                error(specs, i, ch);
+            case SpecName -> addSpec(name, specsDefs);
+            case SpecOpen, ParamValue, ParamOpen -> error(specs, i, ch);
         }
         return specsDefs.toArray(new Spec[0]);
     }
@@ -356,19 +354,14 @@ public final class Objectt {
 
     @SuppressWarnings("Duplicates")
     private static char convertpecialChar(char aChar) {
-        switch (aChar) {
-            case 'n':
-                return '\n';
-            case 'r':
-                return '\r';
-            case 't':
-                return '\t';
-            case 'b':
-                return '\b';
-            case 'f':
-                return '\f';
-        }
-        return aChar;
+        return switch (aChar) {
+            case 'n' -> '\n';
+            case 'r' -> '\r';
+            case 't' -> '\t';
+            case 'b' -> '\b';
+            case 'f' -> '\f';
+            default -> aChar;
+        };
     }
 
     private enum SpecState {SpecOpen, SpecName, ParamOpen, ParamValue, SpecClose}

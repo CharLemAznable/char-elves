@@ -72,7 +72,7 @@ public final class FPE extends FormatPreservingEncryption {
 
         BASE64_PURIFIED("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"),;
 
-        private AlphabetDomain domain;
+        private final AlphabetDomain domain;
 
         AlphabetDomains(String alphabetString) {
             this.domain = new AlphabetDomain(new GenericAlphabet(
@@ -211,8 +211,8 @@ public final class FPE extends FormatPreservingEncryption {
 
         private static final String CIPHER_ALGORITHM = "AES/CBC/NoPadding";
 
-        private Key key;
-        private byte[] iv;
+        private final Key key;
+        private final byte[] iv;
 
         public AESCBCNoPaddingPRF(String keyString) {
             this(AES.getKey(keyString));
@@ -233,9 +233,7 @@ public final class FPE extends FormatPreservingEncryption {
         public AESCBCNoPaddingPRF(Key key) {
             this.key = key;
             this.iv = new byte[16];
-            for (int i = 0; i < iv.length; i++) {
-                iv[i] = (byte) 0x00;
-            }
+            Arrays.fill(iv, (byte) 0x00);
         }
 
         @SneakyThrows

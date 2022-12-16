@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
-import java.util.stream.Collectors;
 
 import static com.github.charlemaznable.core.spring.ClzResolver.getAnnotatedClasses;
 import static com.github.charlemaznable.core.spring.ClzResolver.getClasses;
@@ -42,8 +41,7 @@ public class ClzResolverTest {
         assertEquals(TestSubSpringContext.class, contextClass);
 
         val subClasses3 = getSubClasses(basePackage, TestSpringContext.class, true).stream()
-                .sorted((o1, o2) -> StringUtils.compare(o1.getSimpleName(), o2.getSimpleName()))
-                .collect(Collectors.toList());
+                .sorted((o1, o2) -> StringUtils.compare(o1.getSimpleName(), o2.getSimpleName())).toList();
         assertEquals(2, subClasses3.size());
         val contextClass31 = subClasses3.get(0);
         assertEquals(TestSpringContext.class, contextClass31);

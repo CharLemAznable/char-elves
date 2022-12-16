@@ -1,14 +1,14 @@
 package com.github.charlemaznable.core.spring;
 
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.val;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
@@ -25,9 +25,9 @@ import static java.util.Objects.nonNull;
 
 public final class MutableHttpServletRequest extends HttpServletRequestWrapper {
 
-    private Map<String, String[]> params;
+    private final Map<String, String[]> params;
     private String content;
-    private Charset charset;
+    private final Charset charset;
 
     public MutableHttpServletRequest(HttpServletRequest request) {
         this(request, UTF_8);
@@ -82,10 +82,10 @@ public final class MutableHttpServletRequest extends HttpServletRequestWrapper {
 
     public void setParameter(String name, Object value) {
         if (nonNull(value)) {
-            if (value instanceof String[]) {
-                this.params.put(name, (String[]) value);
-            } else if (value instanceof String) {
-                this.params.put(name, new String[]{(String) value});
+            if (value instanceof String[] strs) {
+                this.params.put(name, strs);
+            } else if (value instanceof String str) {
+                this.params.put(name, new String[]{str});
             } else {
                 this.params.put(name, new String[]{String.valueOf(value)});
             }

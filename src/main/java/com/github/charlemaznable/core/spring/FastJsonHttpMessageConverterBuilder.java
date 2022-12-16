@@ -19,7 +19,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public final class FastJsonHttpMessageConverterBuilder {
 
-    private FastJsonConfig fastJsonConfig = new FastJsonConfig();
+    private final FastJsonConfig fastJsonConfig = new FastJsonConfig();
 
     public FastJsonHttpMessageConverterBuilder charset(Charset charset) {
         this.fastJsonConfig.setCharset(charset);

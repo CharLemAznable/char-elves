@@ -14,7 +14,7 @@ import static java.util.Objects.nonNull;
 public final class EnvModular extends CommonModular<EnvModular> {
 
     @Delegate
-    private EnvLoader envLoader;
+    private final EnvLoader envLoader;
 
     public EnvModular(Module... modules) {
         this(newArrayList(modules));

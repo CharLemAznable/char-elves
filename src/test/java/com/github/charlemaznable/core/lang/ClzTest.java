@@ -5,7 +5,6 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
-import java.util.stream.Collectors;
 
 import static com.github.charlemaznable.core.lang.Clz.getConstructorParameterTypes;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -35,6 +34,7 @@ public class ClzTest {
         assertTrue(Clz.isConcrete(Integer.class));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testGetMethod() {
         assertThrows(NoSuchMethodException.class, () -> Clz.getMethod(Integer.class, "nonExistsMethod"));
@@ -75,16 +75,14 @@ public class ClzTest {
 
         val result1 = list.stream()
                 .sorted(new DepthComparator(new SubParamType()))
-                .filter(c -> c.isAssignableFrom(SubParamType.class))
-                .collect(Collectors.toList());
+                .filter(c -> c.isAssignableFrom(SubParamType.class)).toList();
         assertEquals(2, result1.size());
         assertEquals(SubParamType.class, result1.get(0));
         assertEquals(ParamType.class, result1.get(1));
 
         val result2 = list.stream()
                 .sorted(new DepthComparator(ParamType.class))
-                .filter(c -> c.isAssignableFrom(ParamType.class))
-                .collect(Collectors.toList());
+                .filter(c -> c.isAssignableFrom(ParamType.class)).toList();
         assertEquals(1, result2.size());
         assertEquals(ParamType.class, result2.get(0));
     }
