@@ -22,7 +22,6 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import static com.github.charlemaznable.core.config.Arguments.argumentsAsProperties;
-import static com.github.charlemaznable.core.lang.BuddyEnhancer.CallSuper;
 import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsProperties;
 import static com.github.charlemaznable.core.lang.Condition.blankThen;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
@@ -92,7 +91,7 @@ public final class EnvFactory {
                                 .equals(EnvDummy.class)) return 1;
                         return 0;
                     },
-                    new BuddyEnhancer.Delegate[]{envProxy, CallSuper},
+                    new BuddyEnhancer.Delegate[]{envProxy, BuddyEnhancer.CallSuper},
                     new Object[]{envClass});
         }
 
