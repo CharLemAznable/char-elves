@@ -88,7 +88,8 @@ public final class EnvFactory {
             return BuddyEnhancer.create(EnvDummy.class,
                     new Class[]{envClass, Configable.class},
                     method -> {
-                        if (method.isDefault()) return 1;
+                        if (method.isDefault() || method.getDeclaringClass()
+                                .equals(EnvDummy.class)) return 1;
                         return 0;
                     },
                     new BuddyEnhancer.Delegate[]{envProxy, CallSuper},
@@ -136,9 +137,6 @@ public final class EnvFactory {
 
         @Override
         public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception {
-            if (method.getDeclaringClass().equals(EnvDummy.class)) {
-                return superCall.call();
-            }
             if (method.getDeclaringClass().equals(Configable.class)) {
                 return method.invoke(Config.getConfigImpl(), args);
             }
