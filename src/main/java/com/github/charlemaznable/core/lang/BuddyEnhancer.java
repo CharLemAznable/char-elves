@@ -108,7 +108,6 @@ public final class BuddyEnhancer {
         return newType(superclass, interfaces, m -> 0, new Delegate[]{delegate});
     }
 
-    @SneakyThrows
     private static Class<?> newType(Class<?> superclass, Class<?>[] interfaces,
                                     DelegateFilter filter, Delegate[] delegates) {
         DynamicType.Builder<?> builder = new ByteBuddy().subclass(superclass).implement(interfaces)
