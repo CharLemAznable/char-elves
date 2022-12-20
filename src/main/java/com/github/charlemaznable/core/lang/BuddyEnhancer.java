@@ -6,24 +6,31 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.modifier.Ownership;
+import net.bytebuddy.description.modifier.Visibility;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.LoadedTypeInitializer.Compound;
+import net.bytebuddy.implementation.LoadedTypeInitializer.ForStaticField;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import net.bytebuddy.implementation.bind.annotation.StubValue;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static com.github.charlemaznable.core.lang.Clz.match;
 import static com.github.charlemaznable.core.lang.Clz.types;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static java.lang.ClassLoader.getSystemClassLoader;
+import static net.bytebuddy.matcher.ElementMatchers.isDeclaredBy;
+import static net.bytebuddy.matcher.ElementMatchers.not;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BuddyEnhancer {
@@ -45,23 +52,18 @@ public final class BuddyEnhancer {
     @AllArgsConstructor
     public static final class DelegateHandler {
 
-        private static final Map<Class<?>, Object> primitiveDefault = Map.of(
-                boolean.class, false, short.class, (short) 0, int.class, 0,
-                long.class, 0L, float.class, 0.0f, double.class, 0.0d,
-                byte.class, (byte) 0, char.class, '\u0000'
-        );
-
         private DelegateFilter filter;
         private Delegate[] delegates;
 
         @RuntimeType
         public Object invoke(@Origin Method method, @AllArguments Object[] args,
-                             @SuperCall(nullIfImpossible = true) Callable<Object> superCall) throws Exception {
+                             @SuperCall(nullIfImpossible = true) Callable<Object> superCall,
+                             @StubValue Object stubValue) throws Exception {
             int index = filter.accept(method);
             if (index >= delegates.length) throw new IllegalArgumentException(
                     "Handler filter returned an index that is too large: " + index);
-            return Optional.ofNullable(checkNotNull(delegates[index]).invoke(method, args, superCall))
-                    .orElseGet(() -> primitiveDefault.get(method.getReturnType()));
+            return Optional.ofNullable(checkNotNull(delegates[index])
+                    .invoke(method, args, superCall)).orElse(stubValue);
         }
     }
 
@@ -96,6 +98,7 @@ public final class BuddyEnhancer {
     ////////////////////////////////////////////////////////////
 
     private static final Class<?>[] EMPTY_CLASS_ARRAY = {};
+    private static final String DELEGATE_HANDLER_FIELD = "BUDDY$DELEGATE_HANDLER";
 
     private static Class<?> newType(Class<?> type, Delegate delegate) {
         return newType(type, EMPTY_CLASS_ARRAY, delegate);
@@ -105,14 +108,26 @@ public final class BuddyEnhancer {
         return newType(superclass, interfaces, m -> 0, new Delegate[]{delegate});
     }
 
+    @SneakyThrows
     private static Class<?> newType(Class<?> superclass, Class<?>[] interfaces,
                                     DelegateFilter filter, Delegate[] delegates) {
-        return new ByteBuddy().subclass(superclass).implement(interfaces)
-                .method(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class)))
+        DynamicType.Builder<?> builder = new ByteBuddy().subclass(superclass).implement(interfaces)
+                .method(not(isDeclaredBy(Object.class)))
                 .intercept(MethodDelegation.withDefaultConfiguration()
-                        .filter(ElementMatchers.isDeclaredBy(DelegateHandler.class))
-                        .to(new DelegateHandler(filter, delegates)))
-                .make().load(getSystemClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
+                        .filter(isDeclaredBy(DelegateHandler.class))
+                        .toField(DELEGATE_HANDLER_FIELD));
+        builder = builder.defineField(DELEGATE_HANDLER_FIELD,
+                DelegateHandler.class, Visibility.PRIVATE, Ownership.STATIC);
+        val initializers = newArrayList(new ForStaticField(
+                DELEGATE_HANDLER_FIELD, new DelegateHandler(filter, delegates)));
+        for (int i = 0; i < delegates.length; i++) {
+            val fieldName = "BUDDY$DELEGATE_" + i;
+            builder = builder.defineField(fieldName,
+                    Delegate.class, Visibility.PRIVATE, Ownership.STATIC);
+            initializers.add(new ForStaticField(fieldName, delegates[i]));
+        }
+        return builder.initializer(new Compound(initializers)).make()
+                .load(getSystemClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
     }
 
     private static Object newInstance(Class<?> type) {
