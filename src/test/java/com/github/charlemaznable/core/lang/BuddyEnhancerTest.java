@@ -3,10 +3,9 @@ package com.github.charlemaznable.core.lang;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class BuddyEnhancerTest {
 
@@ -24,27 +23,28 @@ public class BuddyEnhancerTest {
         assertEquals(2, Interceptor.count);
 
         actual = (ActualClass) BuddyEnhancer.create(
-                ActualClass.class, new Class[]{}, method -> 0,
-                new BuddyEnhancer.Delegate[]{new Interceptor()});
+                ActualClass.class, new Class[]{},
+                i -> 0, new BuddyEnhancer.Delegate[]{new Interceptor()});
         actual.method();
         assertEquals(3, Interceptor.count);
 
         val params = new Object[]{new ActualParamType()};
 
         actual = (ActualClass) BuddyEnhancer.create(
-                ActualClass.class, new Interceptor(), params);
+                ActualClass.class, params,
+                new Interceptor());
         actual.method();
         assertEquals(4, Interceptor.count);
 
         actual = (ActualClass) BuddyEnhancer.create(
-                ActualClass.class, new Class[]{},
-                new Interceptor(), params);
+                ActualClass.class, params,
+                new Class[]{}, new Interceptor());
         actual.method();
         assertEquals(5, Interceptor.count);
 
         actual = (ActualClass) BuddyEnhancer.create(
-                ActualClass.class, new Class[]{}, method -> 0,
-                new BuddyEnhancer.Delegate[]{new Interceptor()}, params);
+                ActualClass.class, params,
+                new Class[]{}, method -> 0, new BuddyEnhancer.Delegate[]{new Interceptor()});
         actual.method();
         assertEquals(6, Interceptor.count);
     }
@@ -72,9 +72,13 @@ public class BuddyEnhancerTest {
         static int count = 0;
 
         @Override
-        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception {
+        public Object invoke(BuddyEnhancer.Invocation invocation) throws Exception {
             count++;
-            return superCall.call();
+            assertNotNull(invocation.getThis());
+            assertNotNull(invocation.getSuper());
+            assertNotNull(invocation.getSuperMethod());
+            assertNull(invocation.getStubValue());
+            return invocation.getSuperCall().call();
         }
     }
 }

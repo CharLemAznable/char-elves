@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.concurrent.Callable;
 
 import static com.github.charlemaznable.core.config.Arguments.argumentsAsProperties;
 import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsProperties;
@@ -85,14 +84,15 @@ public final class EnvFactory {
 
             val envProxy = new EnvProxy(envClass, factory);
             return BuddyEnhancer.create(EnvDummy.class,
+                    new Object[]{envClass},
                     new Class[]{envClass, Configable.class},
-                    method -> {
-                        if (method.isDefault() || method.getDeclaringClass()
-                                .equals(EnvDummy.class)) return 1;
+                    invocation -> {
+                        if (invocation.getMethod().isDefault() ||
+                                invocation.getMethod().getDeclaringClass()
+                                        .equals(EnvDummy.class)) return 1;
                         return 0;
                     },
-                    new BuddyEnhancer.Delegate[]{envProxy, BuddyEnhancer.CallSuper},
-                    new Object[]{envClass});
+                    new BuddyEnhancer.Delegate[]{envProxy, BuddyEnhancer.CALL_SUPER});
         }
 
         private <T> void ensureClassIsAnInterface(Class<T> clazz) {
@@ -135,7 +135,9 @@ public final class EnvFactory {
         private Factory factory;
 
         @Override
-        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception {
+        public Object invoke(BuddyEnhancer.Invocation invocation) throws Exception {
+            val method = invocation.getMethod();
+            val args = invocation.getArguments();
             if (method.getDeclaringClass().equals(Configable.class)) {
                 return method.invoke(Config.getConfigImpl(), args);
             }

@@ -15,8 +15,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
 
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static java.util.Objects.nonNull;
@@ -56,7 +54,7 @@ public final class PoolProxy {
                 poolObject = pool.borrowObject();
                 val poolObjectClass = poolObject.getClass();
                 return (T) BuddyEnhancer.create(poolObjectClass,
-                        new ObjectPoolProxy<>(pool), args);
+                        args, new ObjectPoolProxy<>(pool));
             } finally {
                 if (nonNull(poolObject)) pool.returnObject(poolObject);
             }
@@ -101,11 +99,12 @@ public final class PoolProxy {
         private ObjectPool<T> pool;
 
         @Override
-        public Object invoke(Method method, Object[] args, Callable<Object> superCall) throws Exception {
+        public Object invoke(BuddyEnhancer.Invocation invocation) throws Exception {
             T poolObject = null;
             try {
                 poolObject = pool.borrowObject();
-                return method.invoke(poolObject, args);
+                return invocation.getMethod().invoke(
+                        poolObject, invocation.getArguments());
             } catch (InvocationTargetException e) {
                 throw Lombok.sneakyThrow(e.getCause());
             } finally {
