@@ -42,7 +42,7 @@ public final class BuddyEnhancer {
     public static final Class<?>[] EMPTY_CLASS_ARRAY = {};
     public static final DelegateFilter ALL_ZERO = invocation -> 0;
     public static final Delegate CALL_SUPER
-            = (invocation) -> invocation.getSuperCall().call();
+            = invocation -> invocation.getSuperCall().call();
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Invocation {
