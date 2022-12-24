@@ -20,7 +20,7 @@ import static com.github.charlemaznable.core.spring.ClzResolver.getClasses;
 import static com.google.common.collect.Sets.newHashSet;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public abstract class CommonModular<M extends CommonModular> {
+public abstract class CommonModular<M extends CommonModular<M>> {
 
     protected final Module baseModule;
     protected final GuiceFactory guiceFactory;
