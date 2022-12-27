@@ -104,6 +104,7 @@ public final class Arguments extends BaseConfigable {
             super(args);
         }
 
+        @Nonnull
         @Override
         public List<String> getNonOptionArgs() {
             return super.getNonOptionArgs();

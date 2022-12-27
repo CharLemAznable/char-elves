@@ -57,7 +57,7 @@ public final class Json {
         return parseObject(json, clazz);
     }
 
-    public static List unJsonArray(String json) {
+    public static List<Object> unJsonArray(String json) {
         return parseArray(json);
     }
 
@@ -70,7 +70,7 @@ public final class Json {
         return unJson(json(obj), Map.class);
     }
 
-    public static <T> T spec(Map map, Class<T> clz) {
+    public static <T> T spec(Map<?, ?> map, Class<T> clz) {
         return unJson(json(map), clz);
     }
 

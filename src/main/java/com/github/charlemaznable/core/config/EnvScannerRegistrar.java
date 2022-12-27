@@ -9,7 +9,7 @@ import static com.github.charlemaznable.core.config.EnvFactory.springEnvLoader;
 
 public final class EnvScannerRegistrar extends SpringScannerRegistrar {
 
-    private static EnvLoader springEnvLoader = springEnvLoader();
+    private static final EnvLoader springEnvLoader = springEnvLoader();
 
     public EnvScannerRegistrar() {
         super(EnvScan.class, EnvFactoryBean.class, EnvConfig.class);

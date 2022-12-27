@@ -31,9 +31,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("HttpUrlsUsage")
 public class HttpReqTest {
 
-    private static SSLSocketFactory sslSocketFactory = new SSLSocketFactory() {
+    private static final SSLSocketFactory sslSocketFactory = new SSLSocketFactory() {
         @Override
         public Socket createSocket(String s, int i) {
             return null;
@@ -69,7 +70,7 @@ public class HttpReqTest {
             return null;
         }
     };
-    private static HostnameVerifier hostnameVerifier = (s, sslSession) -> false;
+    private static final HostnameVerifier hostnameVerifier = (s, sslSession) -> false;
 
     @SneakyThrows
     @Test

@@ -7,7 +7,6 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -54,7 +53,6 @@ import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static java.util.Objects.isNull;
 import static org.joor.Reflect.onClass;
-import static org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor.SKIP_REQUIRED_CHECK_ATTRIBUTE;
 
 final class SpringClassPathMethodBeanLoader {
 
@@ -115,7 +113,6 @@ final class SpringClassPathMethodBeanLoader {
                     ((StandardMethodMetadata) methodMetadata).getIntrospectedMethod());
         }
         beanMethodDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
-        beanMethodDefinition.setAttribute(SKIP_REQUIRED_CHECK_ATTRIBUTE, Boolean.TRUE);
         processCommonDefinitionAnnotations(beanMethodDefinition, methodMetadata);
         processCommonAnnotationAttributes(beanMethodDefinition, beanAnnoAttrs);
         val beanDefinitionToRegister = processScopeProxy(
@@ -206,8 +203,6 @@ final class SpringClassPathMethodBeanLoader {
 
     private static void processCommonAnnotationAttributes(AbstractBeanDefinition beanDefinition,
                                                           AnnotationAttributes beanAnnoAttrs) {
-        Autowire autowire = beanAnnoAttrs.getEnum("autowire");
-        if (autowire.isAutowire()) beanDefinition.setAutowireMode(autowire.value());
         boolean autowireCandidate = beanAnnoAttrs.getBoolean("autowireCandidate");
         if (!autowireCandidate) beanDefinition.setAutowireCandidate(false);
         String initMethodName = beanAnnoAttrs.getString("initMethod");

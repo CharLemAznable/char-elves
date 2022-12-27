@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ElvesComponents.class, SpringContextRegistrar.class})
+@Import({ElvesAutoConfiguration.class})
 public @interface ElvesImport {
 }

@@ -42,8 +42,8 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.getMerge
 @NoArgsConstructor(access = PRIVATE)
 public final class EnvFactory {
 
-    private static Properties envClassPathProperties;
-    private static LoadingCache<Factory, EnvLoader> envLoaderCache = simpleCache(from(EnvLoader::new));
+    private static final Properties envClassPathProperties;
+    private static final LoadingCache<Factory, EnvLoader> envLoaderCache = simpleCache(from(EnvLoader::new));
 
     static {
         envClassPathProperties = classResourceAsProperties("config.env.props");
@@ -69,8 +69,8 @@ public final class EnvFactory {
     @SuppressWarnings("unchecked")
     public static class EnvLoader {
 
-        private Factory factory;
-        private LoadingCache<Class, Object> envCache
+        private final Factory factory;
+        private final LoadingCache<Class<?>, Object> envCache
                 = simpleCache(from(this::loadEnv));
 
         EnvLoader(Factory factory) {
@@ -90,7 +90,8 @@ public final class EnvFactory {
             return EasyEnhancer.create(EnvDummy.class,
                     new Class[]{envClass, Configable.class},
                     method -> {
-                        if (method.isDefault()) return 1;
+                        if (method.isDefault() || method.getDeclaringClass()
+                                .equals(EnvDummy.class)) return 1;
                         return 0;
                     },
                     new Callback[]{envProxy, NoOp.INSTANCE},
@@ -133,15 +134,12 @@ public final class EnvFactory {
     @AllArgsConstructor
     private static class EnvProxy implements MethodInterceptor {
 
-        private Class envClass;
+        private Class<?> envClass;
         private Factory factory;
 
         @Override
         public Object intercept(Object o, Method method, Object[] args,
                                 MethodProxy methodProxy) throws Throwable {
-            if (method.getDeclaringClass().equals(EnvDummy.class)) {
-                return methodProxy.invokeSuper(o, args);
-            }
             if (method.getDeclaringClass().equals(Configable.class)) {
                 return method.invoke(Config.getConfigImpl(), args);
             }
@@ -190,7 +188,7 @@ public final class EnvFactory {
                     && Collection.class.isAssignableFrom(rt);
             if (!isCollection) return parseObject(rt, key, value);
 
-            return parseObjects((Class) ((ParameterizedType) grt)
+            return parseObjects((Class<?>) ((ParameterizedType) grt)
                     .getActualTypeArguments()[0], key, value);
         }
 

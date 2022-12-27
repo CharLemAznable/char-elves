@@ -8,7 +8,6 @@ import java.io.Closeable;
 import static com.github.charlemaznable.core.lang.Clz.getMethod;
 import static com.github.charlemaznable.core.lang.Clz.invokeQuietly;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -43,9 +42,13 @@ public final class Closer {
             return;
         }
 
-        val method = getMethod(obj.getClass(), "close");
-        if (nonNull(method) && method.getParameterTypes().length == 0) {
-            invokeQuietly(obj, method);
+        try {
+            val method = getMethod(obj.getClass(), "close");
+            if (method.getParameterTypes().length == 0) {
+                invokeQuietly(obj, method);
+            }
+        } catch (Exception ignored) {
+            // ignored
         }
     }
 }

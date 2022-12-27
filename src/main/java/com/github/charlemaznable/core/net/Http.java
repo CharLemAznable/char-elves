@@ -96,7 +96,7 @@ public final class Http {
         return parameterMap;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, String> fetchPathVariableMap(HttpServletRequest request) {
         Map<String, String> pathVariableMap = newHashMap();
         val pathVariables = request.getAttribute(URI_TEMPLATE_VARIABLES_ATTRIBUTE);

@@ -19,8 +19,8 @@ import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.spring.ClzResolver.getClasses;
 import static com.google.common.collect.Sets.newHashSet;
 
-@SuppressWarnings("unchecked")
-public abstract class CommonModular<M extends CommonModular> {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public abstract class CommonModular<M extends CommonModular<M>> {
 
     protected final Module baseModule;
     protected final GuiceFactory guiceFactory;

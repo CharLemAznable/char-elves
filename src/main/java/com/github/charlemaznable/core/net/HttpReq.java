@@ -33,15 +33,15 @@ import static org.apache.commons.lang3.tuple.Pair.of;
 @Slf4j
 public final class HttpReq {
 
+    private static final Charset DEFAULT_CHARSET = UTF_8;
+
     private final String baseUrl;
 
     private String req;
 
-    private Charset charset = UTF_8;
+    private final StringBuilder params = new StringBuilder();
 
-    private StringBuilder params = new StringBuilder();
-
-    private List<Pair<String, String>> props = newArrayList();
+    private final List<Pair<String, String>> props = newArrayList();
 
     private SSLSocketFactory sslSocketFactory;
 
@@ -168,7 +168,7 @@ public final class HttpReq {
         val url = build(urlString);
         val http = (HttpURLConnection) (isNull(this.proxy) ?
                 url.openConnection() : url.openConnection(this.proxy));
-        http.setRequestProperty("Accept-Charset", this.charset.name());
+        http.setRequestProperty("Accept-Charset", DEFAULT_CHARSET.name());
         http.setConnectTimeout(60 * 1000);
         http.setReadTimeout(60 * 1000);
         return http;
@@ -209,7 +209,7 @@ public final class HttpReq {
         // DataOutputStream.writeBytes将字符串中的16位的unicode字符以8位的字符形式写到流里面
         // 错误用法: out.writeBytes(postData)
         val postData = params.toString();
-        out.write(postData.getBytes(this.charset));
+        out.write(postData.getBytes(DEFAULT_CHARSET));
         out.flush();
         out.close();
     }
@@ -225,7 +225,7 @@ public final class HttpReq {
     }
 
     private Charset parseCharset(String contentType) {
-        if (isNull(contentType)) return this.charset;
+        if (isNull(contentType)) return DEFAULT_CHARSET;
 
         String charsetName = null;
         for (val param : contentType.replace(" ", "").split(";")) {
@@ -235,7 +235,7 @@ public final class HttpReq {
             }
         }
 
-        return isNull(charsetName) ? this.charset : Charset.forName(charsetName);
+        return isNull(charsetName) ? DEFAULT_CHARSET : Charset.forName(charsetName);
     }
 
     private String readResponseBody(HttpURLConnection http, Charset charset) throws IOException {

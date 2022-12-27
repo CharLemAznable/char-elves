@@ -3,7 +3,6 @@ package com.github.charlemaznable.core.lang;
 import lombok.Getter;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.io.Closeable;
 
@@ -20,8 +19,7 @@ public class CloserTest {
         val obj2 = new TestCloseable();
         val obj3 = new TestCloser();
 
-        assertDoesNotThrow((Executable)
-                () -> closeQuietly(obj1, obj2, obj2, obj3));
+        assertDoesNotThrow(() -> closeQuietly(obj1, obj2, obj2, obj3));
         assertTrue(obj2.isClosed());
         assertTrue(obj3.isClosed());
     }

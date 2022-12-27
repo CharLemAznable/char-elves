@@ -11,11 +11,11 @@ import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class SpringFactoryBean implements FactoryBean, ApplicationContextAware {
+public class SpringFactoryBean implements FactoryBean<Object>, ApplicationContextAware {
 
-    private final Function<Class, Object> factory;
+    private final Function<Class<?>, Object> factory;
     @Setter
-    private Class xyzInterface;
+    private Class<?> xyzInterface;
     private ApplicationContext applicationContext;
 
     @Override

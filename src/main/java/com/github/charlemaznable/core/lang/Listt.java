@@ -20,10 +20,11 @@ import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static org.joor.Reflect.onClass;
 
+@SuppressWarnings("rawtypes")
 @NoArgsConstructor(access = PRIVATE)
 public final class Listt {
 
-    private static Random shuffleRandom = new SecureRandom();
+    private static final Random shuffleRandom = new SecureRandom();
 
     public static <T> List<T> unique(Iterable<T> original) {
         return newArrayList(newHashSet(original));

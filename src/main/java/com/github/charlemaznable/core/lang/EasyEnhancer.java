@@ -9,6 +9,7 @@ import static com.github.charlemaznable.core.lang.Clz.getConstructorParameterTyp
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 
+@SuppressWarnings("rawtypes")
 public final class EasyEnhancer extends Enhancer {
 
     private EasyEnhancer() {

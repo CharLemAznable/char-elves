@@ -23,6 +23,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
+@SuppressWarnings("rawtypes")
 @NoArgsConstructor(access = PRIVATE)
 public final class Mapp {
 
@@ -47,6 +48,7 @@ public final class Mapp {
         return map;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @SafeVarargs
     public static <T> Map<T, T> of(T... keyAndValues) {
         Map<T, T> map = newHashMap();
@@ -59,6 +61,7 @@ public final class Mapp {
         return map;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public static Map<Object, Object> map(Object... keyAndValues) {
         Map<Object, Object> map = newHashMap();
         for (int i = 0; i < keyAndValues.length; i += 2) {

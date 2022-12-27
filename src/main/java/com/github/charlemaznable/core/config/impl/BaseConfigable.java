@@ -19,7 +19,7 @@ public abstract class BaseConfigable implements Configable {
 
     private static final String CONFIG_NOT_FOUND = " not found in config system";
     private static final String CONFIG_FORMAT_PREFIX = "'s value [";
-    private static Pattern numberPattern = Pattern
+    private static final Pattern numberPattern = Pattern
             .compile("(-?[0-9]+\\.[0-9]*|[0-9]*\\.[0-9]+|-?[0-9]+).*");
 
     @Override
@@ -38,7 +38,7 @@ public abstract class BaseConfigable implements Configable {
         val intStr = substringBefore(matcher.group(1), ".");
         if (isEmpty(intStr)) return 0;
 
-        return Integer.valueOf(intStr);
+        return Integer.parseInt(intStr);
     }
 
     @Override
@@ -58,7 +58,7 @@ public abstract class BaseConfigable implements Configable {
         val intStr = substringBefore(matcher.group(1), ".");
         if (isEmpty(intStr)) return 0;
 
-        return Long.valueOf(intStr);
+        return Long.parseLong(intStr);
     }
 
     @Override
@@ -87,7 +87,7 @@ public abstract class BaseConfigable implements Configable {
             throw new ConfigValueFormatException(key
                     + CONFIG_FORMAT_PREFIX + str + "] is not a float");
 
-        return Float.valueOf(matcher.group(1));
+        return Float.parseFloat(matcher.group(1));
     }
 
     @Override
@@ -104,7 +104,7 @@ public abstract class BaseConfigable implements Configable {
             throw new ConfigValueFormatException(key
                     + CONFIG_FORMAT_PREFIX + str + "] is not a double");
 
-        return Double.valueOf(matcher.group(1));
+        return Double.parseDouble(matcher.group(1));
     }
 
     @Override
@@ -118,7 +118,7 @@ public abstract class BaseConfigable implements Configable {
         val intStr = substringBefore(matcher.group(1), ".");
         if (isEmpty(intStr)) return defaultValue;
 
-        return Integer.valueOf(intStr);
+        return Integer.parseInt(intStr);
     }
 
     @Override
@@ -132,7 +132,7 @@ public abstract class BaseConfigable implements Configable {
         val intStr = substringBefore(matcher.group(1), ".");
         if (isEmpty(intStr)) return defaultValue;
 
-        return Long.valueOf(intStr);
+        return Long.parseLong(intStr);
     }
 
     @Override
@@ -156,7 +156,7 @@ public abstract class BaseConfigable implements Configable {
         val matcher = numberPattern.matcher(str);
         if (!matcher.matches()) return defaultValue;
 
-        return Float.valueOf(matcher.group(1));
+        return Float.parseFloat(matcher.group(1));
     }
 
     @Override
@@ -167,7 +167,7 @@ public abstract class BaseConfigable implements Configable {
         val matcher = numberPattern.matcher(str);
         if (!matcher.matches()) return defaultValue;
 
-        return Double.valueOf(matcher.group(1));
+        return Double.parseDouble(matcher.group(1));
     }
 
     @Override

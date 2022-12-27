@@ -15,9 +15,9 @@ public final class Empty {
         if (obj instanceof CharSequence) {
             return ((CharSequence) obj).length() == 0;
         } else if (obj instanceof Collection) {
-            return ((Collection) obj).isEmpty();
+            return ((Collection<?>) obj).isEmpty();
         } else if (obj instanceof Map) {
-            return ((Map) obj).isEmpty();
+            return ((Map<?, ?>) obj).isEmpty();
         } else {
             return isNull(obj);
         }

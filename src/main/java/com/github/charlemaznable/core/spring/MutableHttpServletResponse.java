@@ -18,8 +18,8 @@ import static java.util.Objects.isNull;
 
 public final class MutableHttpServletResponse extends HttpServletResponseWrapper {
 
-    private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    private MutableServletOutputStream mutableServletOutputStream;
+    private final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    private final MutableServletOutputStream mutableServletOutputStream;
     private PrintWriter printWriter;
 
     public MutableHttpServletResponse(HttpServletResponse response) {

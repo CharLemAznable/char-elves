@@ -6,13 +6,13 @@ import static java.util.Objects.isNull;
 
 public final class BaseX {
 
-    private int base;
+    private final int base;
 
-    private char leader;
+    private final char leader;
 
-    private char[] chars;
+    private final char[] chars;
 
-    private byte[] bytes;
+    private final byte[] bytes;
 
     public BaseX(String baseString) {
         this.base = baseString.length();

@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.vertx.VertxElf.buildVertx;
 
-@SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "SpringFacetCodeInspection"})
+@SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection"})
 @Configuration
 public class VertxConfiguration {
 

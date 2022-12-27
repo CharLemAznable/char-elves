@@ -25,9 +25,9 @@ import static java.util.Objects.nonNull;
 
 public final class MutableHttpServletRequest extends HttpServletRequestWrapper {
 
-    private Map<String, String[]> params;
+    private final Map<String, String[]> params;
     private String content;
-    private Charset charset;
+    private final Charset charset;
 
     public MutableHttpServletRequest(HttpServletRequest request) {
         this(request, UTF_8);

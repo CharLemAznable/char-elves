@@ -30,6 +30,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
+@SuppressWarnings("DeprecatedIsStillUsed")
 @NoArgsConstructor(access = PRIVATE)
 public final class EsClientElf {
 
@@ -75,7 +76,7 @@ public final class EsClientElf {
     }
 
     @SneakyThrows
-    public static void closeElasticsearchApiClient(ApiClient client) {
+    public static void closeElasticsearchApiClient(@SuppressWarnings("rawtypes") ApiClient client) {
         if (isNull(client) || isNull(client._transport())) return;
         client._transport().close();
     }

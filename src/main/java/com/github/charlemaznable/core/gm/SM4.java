@@ -74,7 +74,7 @@ public final class SM4 extends GM {
         PKCS5_PADDING("PKCS5Padding"),
         NO_PADDING("NoPadding");
 
-        private String paddingName;
+        private final String paddingName;
 
         @SneakyThrows
         public byte[] encrypt(String value, Key key) {
@@ -121,7 +121,7 @@ public final class SM4 extends GM {
         PKCS5_PADDING("PKCS5Padding"),
         NO_PADDING("NoPadding");
 
-        private String paddingName;
+        private final String paddingName;
 
         @SneakyThrows
         public byte[] encrypt(String value, Key key, byte[] iv) {

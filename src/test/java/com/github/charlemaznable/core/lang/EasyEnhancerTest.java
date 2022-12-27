@@ -63,9 +63,11 @@ public class EasyEnhancerTest {
         }
     }
 
-    static class ParamType {}
+    static class ParamType {
+    }
 
-    static class ActualParamType extends ParamType {}
+    static class ActualParamType extends ParamType {
+    }
 
     static class Interceptor implements MethodInterceptor {
 

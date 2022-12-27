@@ -60,6 +60,7 @@ public abstract class Textable {
         return null;
     }
 
+    @FunctionalInterface
     public interface Processor {
 
         String process(String origin);

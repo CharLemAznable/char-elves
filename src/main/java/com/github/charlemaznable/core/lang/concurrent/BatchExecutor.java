@@ -18,16 +18,16 @@ import static java.util.Objects.nonNull;
 public abstract class BatchExecutor<T> extends EventBusExecutor {
 
     @Getter
-    private int maxBatchSize;
-    private long initialDelay;
-    private long delay;
-    private TimeUnit unit;
+    private final int maxBatchSize;
+    private final long initialDelay;
+    private final long delay;
+    private final TimeUnit unit;
 
     private volatile boolean running;
 
-    private LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
     private ThreadPoolExecutor threadPoolExecutor;
-    private Object eventObject = new Object();
+    private final Object eventObject = new Object();
 
     public BatchExecutor(BatchExecutorConfig config) {
         this.maxBatchSize = config.getMaxBatchSize();

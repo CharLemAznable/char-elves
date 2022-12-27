@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BatchExecutorTest {
 
-    private List<String> result = new ArrayList<>();
-    private BatchExecutor<String> batchExecutor;
+    private final List<String> result = new ArrayList<>();
+    private final BatchExecutor<String> batchExecutor;
 
     {
         val properties = parseStringToProperties("" +

@@ -35,6 +35,7 @@ public class ClzTest {
         assertTrue(Clz.isConcrete(Integer.class));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testGetMethod() {
         assertThrows(NoSuchMethodException.class, () -> Clz.getMethod(Integer.class, "nonExistsMethod"));

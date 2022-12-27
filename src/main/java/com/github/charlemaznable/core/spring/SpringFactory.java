@@ -23,6 +23,6 @@ public final class SpringFactory implements Factory {
 
     private static class SpringFactoryHolder {
 
-        private static SpringFactory instance = new SpringFactory();
+        private static final SpringFactory instance = new SpringFactory();
     }
 }

@@ -15,7 +15,7 @@ public final class FullBeanNameGenerator extends AnnotationBeanNameGenerator {
 
     @Nonnull
     @Override
-    protected String buildDefaultBeanName(BeanDefinition definition) {
+    protected String buildDefaultBeanName(@Nonnull BeanDefinition definition) {
         return getBeanClassName(definition);
     }
 }

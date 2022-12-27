@@ -23,6 +23,7 @@ import static java.lang.Character.isJavaIdentifierPart;
 import static java.lang.Character.isJavaIdentifierStart;
 import static java.lang.Character.isWhitespace;
 import static java.lang.Character.toTitleCase;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -51,7 +52,7 @@ public final class Objectt {
         @Getter
         @Setter
         private String name;
-        private List<String> params = new ArrayList<>();
+        private final List<String> params = new ArrayList<>();
 
         public String[] getParams() {
             return params.toArray(new String[0]);
@@ -62,7 +63,7 @@ public final class Objectt {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static boolean setValue(Object mappedObject, String columnName,
                                    ValueGettable valueGettable) {
         if (mappedObject instanceof Map) {
@@ -115,15 +116,17 @@ public final class Objectt {
 
     public static <T> T parseObject(String specContent, Class<T> clazz) {
         if (isBlank(specContent)) return null;
+        val spec = parseSpecLeniently(specContent);
+        if (isNull(spec)) return null;
         try {
-            return createObject(clazz, parseSpecLeniently(specContent));
+            return createObject(clazz, spec);
         } catch (Exception e) {
             log.error("parse object {} failed by {}", specContent, e.getMessage());
         }
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static boolean setProperty(Object hostBean, String propertyName,
                                        ValueGettable valueGettable) {
         if (hostBean instanceof Map) {

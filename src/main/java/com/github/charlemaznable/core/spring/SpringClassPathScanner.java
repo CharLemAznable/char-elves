@@ -21,19 +21,19 @@ import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
+public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
 
-    private final Class factoryBeanClass;
+    private final Class<?> factoryBeanClass;
     private final Predicate<ClassMetadata> isCandidateClass;
-    private final Predicate<Class> isPrimaryCandidate;
+    private final Predicate<Class<?>> isPrimaryCandidate;
     private final Class<? extends Annotation>[] annotationClasses;
     private final SpringClassPathMethodBeanLoader methodBeanLoader;
 
     @SafeVarargs
     public SpringClassPathScanner(BeanDefinitionRegistry registry,
-                                  Class factoryBeanClass,
+                                  Class<?> factoryBeanClass,
                                   Predicate<ClassMetadata> isCandidateClass,
-                                  Predicate<Class> isPrimaryCandidate,
+                                  Predicate<Class<?>> isPrimaryCandidate,
                                   Class<? extends Annotation>... annotationClasses) {
         super(registry, false);
         this.factoryBeanClass = factoryBeanClass;
@@ -52,7 +52,7 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
 
     @Nonnull
     @Override
-    public Set<BeanDefinitionHolder> doScan(String... basePackages) {
+    public Set<BeanDefinitionHolder> doScan(@Nonnull String... basePackages) {
         val beanDefinitions = super.doScan(basePackages);
 
         if (beanDefinitions.isEmpty()) {
@@ -85,7 +85,7 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
     }
 
     @Override
-    protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+    protected boolean isCandidateComponent(@Nonnull AnnotatedBeanDefinition beanDefinition) {
         return isNull(isCandidateClass) || isCandidateClass.test(beanDefinition.getMetadata());
     }
 
@@ -101,7 +101,7 @@ public final class SpringClassPathScanner extends ClassPathBeanDefinitionScanner
         }
     }
 
-    protected boolean isPrimaryCandidate(Class beanClass) {
+    protected boolean isPrimaryCandidate(Class<?> beanClass) {
         return nonNull(isPrimaryCandidate) && isPrimaryCandidate.test(beanClass);
     }
 }

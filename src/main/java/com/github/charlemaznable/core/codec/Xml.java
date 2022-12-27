@@ -65,6 +65,7 @@ public final class Xml {
         return rootAsTop ? of(rootElement.getName(), map) : map;
     }
 
+    @SuppressWarnings({"HttpUrlsUsage", "rawtypes"})
     private static final class XmlString2Map {
 
         @SneakyThrows
@@ -107,7 +108,6 @@ public final class Xml {
             return result;
         }
 
-        @SuppressWarnings("unchecked")
         private static Map<String, Object> element2Map(Element element, boolean parseAttr) {
             val map = new LinkedHashMap<String, Object>();
             val elements = element.elements();
@@ -208,6 +208,7 @@ public final class Xml {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private static final class Map2XmlString {
 
         @SneakyThrows
@@ -226,7 +227,7 @@ public final class Xml {
                 val key = entry.getKey();
                 val value = entry.getValue();
                 if (key.startsWith("@")) { // 属性
-                    body.addAttribute(key.substring(1, key.length()), value.toString());
+                    body.addAttribute(key.substring(1), value.toString());
                 } else if (key.equals(TEXT)) { // 有属性时的文本
                     body.addCDATA(value.toString());
                 } else {

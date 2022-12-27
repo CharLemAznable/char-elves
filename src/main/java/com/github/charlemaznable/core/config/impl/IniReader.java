@@ -21,9 +21,9 @@ import static java.util.Objects.nonNull;
 
 public final class IniReader {
 
-    protected static final String COMMENT_CHARS = "#;";
+    private static final String COMMENT_CHARS = "#;";
 
-    protected static final String SEPARATOR_CHARS = "=:(";
+    private static final String SEPARATOR_CHARS = "=:(";
 
     private static final String LINE_SEPARATOR = getProperty("line.separator");
 
@@ -31,9 +31,9 @@ public final class IniReader {
 
     private static final String LINE_CONT = "\\";
 
-    private Map<String, Properties> properties = newHashMap();
+    private final Map<String, Properties> properties = newHashMap();
 
-    private List<String> sections = newArrayList();
+    private final List<String> sections = newArrayList();
 
     private int lineNumber;
 
@@ -171,7 +171,7 @@ public final class IniReader {
         val index2 = findFirstOccurrence(line, SEPARATOR_CHARS);
         if (index1 < 0) index1 = index2;
 
-        return index1 < index2 ? index1 : index2;
+        return Math.min(index1, index2);
     }
 
     /**
@@ -253,7 +253,7 @@ public final class IniReader {
      * @return true if the line is empty or starts with one of the comment
      * characters
      */
-    protected boolean isCommentLine(@Nonnull String line) {
+    private boolean isCommentLine(@Nonnull String line) {
         // blank lines are also treated as comment lines
         return line.length() < 1 || COMMENT_CHARS.indexOf(line.charAt(0)) >= 0;
     }
@@ -264,7 +264,7 @@ public final class IniReader {
      * @param line The line to check.
      * @return true if the line contains a section
      */
-    protected boolean isSectionLine(@Nonnull String line) {
+    private boolean isSectionLine(@Nonnull String line) {
         return line.startsWith("[") && line.endsWith("]");
     }
 
