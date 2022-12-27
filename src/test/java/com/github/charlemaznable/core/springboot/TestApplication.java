@@ -1,4 +1,4 @@
-package com.github.charlemaznable.core.spring.boot;
+package com.github.charlemaznable.core.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

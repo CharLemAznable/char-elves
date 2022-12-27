@@ -1,4 +1,4 @@
-package com.github.charlemaznable.core.spring.boot;
+package com.github.charlemaznable.core.springboot;
 
 import com.github.charlemaznable.core.spring.MutableHttpServletFilter;
 import com.github.charlemaznable.core.spring.SpringContext;
