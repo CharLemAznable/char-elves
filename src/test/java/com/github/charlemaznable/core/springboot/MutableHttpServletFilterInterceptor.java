@@ -1,4 +1,4 @@
-package com.github.charlemaznable.core.spring.mutable;
+package com.github.charlemaznable.core.springboot;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
