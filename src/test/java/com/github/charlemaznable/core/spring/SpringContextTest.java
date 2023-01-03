@@ -19,9 +19,7 @@ import com.github.charlemaznable.core.spring.testcontext.TestSpringContext;
 import com.github.charlemaznable.core.spring.testcontext.TestSubSpringContext;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Arrays;
 
@@ -33,8 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfiguration.class)
+@SpringJUnitConfig(TestConfiguration.class)
 public class SpringContextTest {
 
     @Test

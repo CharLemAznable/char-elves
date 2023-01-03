@@ -1,19 +1,16 @@
 package com.github.charlemaznable.core.testing.mockito.test;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.util.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = MockitoSpyProxyConfig.class)
+@SpringJUnitConfig(MockitoSpyProxyConfig.class)
 public class MockitoSpyProxyTest {
 
     @Autowired
