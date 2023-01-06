@@ -2,6 +2,7 @@ package com.github.charlemaznable.core.spring;
 
 import lombok.val;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ResourceLoaderAware;
@@ -51,7 +52,8 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
         if (isNull(annoAttrs)) return;
 
         val scanner = new SpringClassPathScanner(registry, factoryBeanClass,
-                this::isCandidateClass, this::isPrimaryCandidateClass, annotationClass);
+                this::isCandidateClass, this::isPrimaryCandidateClass,
+                this::postProcessBeanDefinition, annotationClass);
         if (nonNull(resourceLoader)) { // this check is needed in Spring 3.1
             scanner.setResourceLoader(resourceLoader);
         }
@@ -96,5 +98,9 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
 
     protected boolean isPrimaryCandidateClass(Class<?> beanClass) {
         return false;
+    }
+
+    protected void postProcessBeanDefinition(BeanDefinition beanDefinition) {
+        // empty method
     }
 }
