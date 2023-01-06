@@ -104,8 +104,8 @@ public final class EnvFactory {
         }
 
         private <T> void checkEnvConfig(Class<T> clazz) {
-            if (!isAnnotated(clazz, EnvConfig.class))
-                throw new EnvConfigException(clazz + " has no EnvConfig");
+            if (isAnnotated(clazz, EnvConfig.class)) return;
+            throw new EnvConfigException(clazz + " has no EnvConfig");
         }
     }
 
