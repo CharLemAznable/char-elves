@@ -31,13 +31,13 @@ import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.LoadingCachee.get;
 import static com.github.charlemaznable.core.lang.LoadingCachee.simpleCache;
 import static com.github.charlemaznable.core.lang.Propertiess.ssMap;
-import static com.github.charlemaznable.core.spring.AnnotationElf.findAnnotation;
 import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.google.common.cache.CacheLoader.from;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static org.springframework.core.annotation.AnnotatedElementUtils.getMergedAnnotation;
+import static org.springframework.core.annotation.AnnotatedElementUtils.isAnnotated;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class EnvFactory {
@@ -104,8 +104,8 @@ public final class EnvFactory {
         }
 
         private <T> void checkEnvConfig(Class<T> clazz) {
-            checkNotNull(findAnnotation(clazz, EnvConfig.class),
-                    new EnvConfigException(clazz + " has no EnvConfig"));
+            if (!isAnnotated(clazz, EnvConfig.class))
+                throw new EnvConfigException(clazz + " has no EnvConfig");
         }
     }
 
