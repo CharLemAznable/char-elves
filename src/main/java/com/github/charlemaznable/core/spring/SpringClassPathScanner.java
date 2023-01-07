@@ -76,8 +76,8 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
                 }
 
                 beanDefinition.setPrimary(isPrimaryCandidate(beanClass));
-                beanDefinition.setBeanClass(factoryBeanClass);
                 postProcessBeanDefinition(beanDefinition);
+                beanDefinition.setBeanClass(factoryBeanClass);
 
                 methodBeanLoader.loadBeanMethodMetadataSet(beanDefinition, beanClassName, beanClass)
                         .forEach(methodMetadata ->
