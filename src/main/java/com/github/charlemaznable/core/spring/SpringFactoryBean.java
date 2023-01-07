@@ -1,6 +1,5 @@
 package com.github.charlemaznable.core.spring;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.val;
 import org.springframework.beans.factory.FactoryBean;
@@ -8,15 +7,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nonnull;
-import java.util.function.Function;
 
-@RequiredArgsConstructor
-public class SpringFactoryBean implements FactoryBean<Object>, ApplicationContextAware {
+public abstract class SpringFactoryBean implements FactoryBean<Object>, ApplicationContextAware {
 
-    private final Function<Class<?>, Object> factory;
     @Setter
     private Class<?> xyzInterface;
     private ApplicationContext applicationContext;
+
+    public abstract Object buildObject(Class<?> xyzInterface);
 
     @Override
     public Object getObject() {
@@ -24,7 +22,7 @@ public class SpringFactoryBean implements FactoryBean<Object>, ApplicationContex
         val temp = ActiveProfilesThreadLocal.get();
         ActiveProfilesThreadLocal.set(activeProfiles);
         try {
-            return factory.apply(xyzInterface);
+            return buildObject(xyzInterface);
         } finally {
             ActiveProfilesThreadLocal.set(temp);
         }

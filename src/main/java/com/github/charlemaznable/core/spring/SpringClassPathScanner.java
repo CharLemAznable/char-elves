@@ -71,15 +71,12 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
                 val beanClass = checkNotNull(ClzPath.findClass(beanClassName));
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug(String.format("Creating %s with name '%s' and xyzInterface '%s'",
+                    logger.debug(String.format("Creating %s with name '%s' and beanClassName '%s'",
                             factoryBeanClass.getSimpleName(), beanName, beanClassName));
                 }
 
-                // the mapper interface is the original class of the bean
-                // but, the actual class of the bean is MapperFactoryBean
-                beanDefinition.getPropertyValues().add("xyzInterface", beanClassName);
-                beanDefinition.setBeanClass(factoryBeanClass);
                 beanDefinition.setPrimary(isPrimaryCandidate(beanClass));
+                beanDefinition.setBeanClass(factoryBeanClass);
                 postProcessBeanDefinition(beanDefinition);
 
                 methodBeanLoader.loadBeanMethodMetadataSet(beanDefinition, beanClassName, beanClass)

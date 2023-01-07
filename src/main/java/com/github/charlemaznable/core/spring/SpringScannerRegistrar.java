@@ -18,19 +18,20 @@ import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 
+import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
     private final Class<? extends Annotation> scanAnnotationClass;
-    private final Class<?> factoryBeanClass;
+    private final Class<? extends SpringFactoryBean> factoryBeanClass;
     private final Class<? extends Annotation>[] annotationClass;
     private ResourceLoader resourceLoader;
 
     @SafeVarargs
     public SpringScannerRegistrar(Class<? extends Annotation> scanAnnotationClass,
-                                  Class<?> factoryBeanClass,
+                                  Class<? extends SpringFactoryBean> factoryBeanClass,
                                   Class<? extends Annotation>... annotationClass) {
         this.scanAnnotationClass = scanAnnotationClass;
         this.factoryBeanClass = factoryBeanClass;
@@ -101,6 +102,7 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
     }
 
     protected void postProcessBeanDefinition(BeanDefinition beanDefinition) {
-        // empty method
+        val beanClassName = checkNotNull(beanDefinition.getBeanClassName());
+        beanDefinition.getPropertyValues().add("xyzInterface", beanClassName);
     }
 }

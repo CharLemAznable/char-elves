@@ -22,8 +22,9 @@ public final class EnvScannerRegistrar extends SpringScannerRegistrar {
 
     public static class EnvFactoryBean extends SpringFactoryBean {
 
-        public EnvFactoryBean() {
-            super(springEnvLoader::getEnv);
+        @Override
+        public Object buildObject(Class<?> xyzInterface) {
+            return springEnvLoader.getEnv(xyzInterface);
         }
     }
 }
