@@ -43,6 +43,7 @@ public final class SM4 extends GM {
         return buildKey(key, DEFAULT_KEY_SIZE);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public static Key buildKey(byte[] key, int size) {
         val dstBytes = new byte[size >> 3];
 

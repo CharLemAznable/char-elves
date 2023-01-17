@@ -77,7 +77,6 @@ public final class Str {
         return left == '{' && right == '}';
     }
 
-    @SuppressWarnings("Duplicates")
     public static String substrInQuotes(String str, char left, int pos) {
         int leftTimes = 0;
         val leftPos = str.indexOf(left, pos);

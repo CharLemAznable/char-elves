@@ -1,49 +1,47 @@
 package com.github.charlemaznable.core.codec;
 
 import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 import static com.github.charlemaznable.core.codec.Base64.Format.STANDARD;
 import static com.github.charlemaznable.core.codec.Base64.base64;
 import static com.github.charlemaznable.core.codec.Bytes.bytes;
 import static com.github.charlemaznable.core.codec.Hex.hex;
-import static com.google.common.hash.Hashing.md5;
-import static com.google.common.hash.Hashing.sha1;
-import static com.google.common.hash.Hashing.sha256;
-import static com.google.common.hash.Hashing.sha384;
-import static com.google.common.hash.Hashing.sha512;
 
 public enum Digest {
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     MD5 {
         @Override
         protected final Hasher digestHasher() {
-            return md5().newHasher();
+            return Hashing.md5().newHasher();
         }
     },
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     SHA1 {
         @Override
         protected final Hasher digestHasher() {
-            return sha1().newHasher();
+            return Hashing.sha1().newHasher();
         }
     },
     SHA256 {
         @Override
         protected final Hasher digestHasher() {
-            return sha256().newHasher();
+            return Hashing.sha256().newHasher();
         }
     },
     SHA384 {
         @Override
         protected final Hasher digestHasher() {
-            return sha384().newHasher();
+            return Hashing.sha384().newHasher();
         }
     },
     SHA512 {
         @Override
         protected final Hasher digestHasher() {
-            return sha512().newHasher();
+            return Hashing.sha512().newHasher();
         }
     },;
 
@@ -134,21 +132,25 @@ public enum Digest {
                 .putUnencodedChars(salt).hash().asBytes();
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public final String digestBase64Deprecated(String info) {
         return base64(digestDeprecated(info), STANDARD);
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public final String digestBase64Deprecated(String info, String salt) {
         return base64(digestDeprecated(info, salt), STANDARD);
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public final String digestHexDeprecated(String info) {
         return hex(digestDeprecated(info));
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public final String digestHexDeprecated(String info, String salt) {
         return hex(digestDeprecated(info, salt));

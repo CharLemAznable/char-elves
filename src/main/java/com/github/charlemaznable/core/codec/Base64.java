@@ -78,7 +78,7 @@ public final class Base64 {
         private final int unencodedBlockSize;
         private final int encodedBlockSize;
         private final int chunkSeparatorLength;
-        protected byte pad; // instance variable just in case it needs to vary later
+        protected final byte pad; // instance variable just in case it needs to vary later
 
         protected ApacheBaseNCodec(final int unencodedBlockSize, final int encodedBlockSize,
                                    final int lineLength, final int chunkSeparatorLength) {

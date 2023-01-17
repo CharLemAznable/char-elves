@@ -8,8 +8,7 @@ import lombok.experimental.Delegate;
 
 import static com.github.charlemaznable.core.config.EnvFactory.envLoader;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
-import static com.github.charlemaznable.core.spring.AnnotationElf.findAnnotation;
-import static java.util.Objects.nonNull;
+import static org.springframework.core.annotation.AnnotatedElementUtils.isAnnotated;
 
 public final class EnvModular extends CommonModular<EnvModular> {
 
@@ -27,7 +26,7 @@ public final class EnvModular extends CommonModular<EnvModular> {
 
     @Override
     public boolean isCandidateClass(Class<?> clazz) {
-        return nonNull(findAnnotation(clazz, EnvConfig.class));
+        return isAnnotated(clazz, EnvConfig.class);
     }
 
     @Override

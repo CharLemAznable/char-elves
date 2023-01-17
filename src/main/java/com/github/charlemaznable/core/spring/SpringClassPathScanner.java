@@ -15,9 +15,11 @@ import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -26,6 +28,7 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
     private final Class<?> factoryBeanClass;
     private final Predicate<ClassMetadata> isCandidateClass;
     private final Predicate<Class<?>> isPrimaryCandidate;
+    private final Consumer<BeanDefinition> beanDefinitionPostProcessor;
     private final Class<? extends Annotation>[] annotationClasses;
     private final SpringClassPathMethodBeanLoader methodBeanLoader;
 
@@ -34,11 +37,13 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
                                   Class<?> factoryBeanClass,
                                   Predicate<ClassMetadata> isCandidateClass,
                                   Predicate<Class<?>> isPrimaryCandidate,
+                                  Consumer<BeanDefinition> beanDefinitionPostProcessor,
                                   Class<? extends Annotation>... annotationClasses) {
         super(registry, false);
         this.factoryBeanClass = factoryBeanClass;
         this.isCandidateClass = isCandidateClass;
         this.isPrimaryCandidate = isPrimaryCandidate;
+        this.beanDefinitionPostProcessor = beanDefinitionPostProcessor;
         this.annotationClasses = annotationClasses;
         this.methodBeanLoader = new SpringClassPathMethodBeanLoader(
                 getRegistry(), getEnvironment(), getResourceLoader(), logger);
@@ -66,15 +71,13 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
                 val beanClass = checkNotNull(ClzPath.findClass(beanClassName));
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug(String.format("Creating %s with name '%s' and xyzInterface '%s'",
+                    logger.debug(String.format("Creating %s with name '%s' and beanClassName '%s'",
                             factoryBeanClass.getSimpleName(), beanName, beanClassName));
                 }
 
-                // the mapper interface is the original class of the bean
-                // but, the actual class of the bean is MapperFactoryBean
-                beanDefinition.getPropertyValues().add("xyzInterface", beanClassName);
-                beanDefinition.setBeanClass(factoryBeanClass);
                 beanDefinition.setPrimary(isPrimaryCandidate(beanClass));
+                postProcessBeanDefinition(beanDefinition);
+                beanDefinition.setBeanClass(factoryBeanClass);
 
                 methodBeanLoader.loadBeanMethodMetadataSet(beanDefinition, beanClassName, beanClass)
                         .forEach(methodMetadata ->
@@ -103,5 +106,9 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
 
     protected boolean isPrimaryCandidate(Class<?> beanClass) {
         return nonNull(isPrimaryCandidate) && isPrimaryCandidate.test(beanClass);
+    }
+
+    protected void postProcessBeanDefinition(BeanDefinition beanDefinition) {
+        notNullThenRun(beanDefinitionPostProcessor, processor -> processor.accept(beanDefinition));
     }
 }

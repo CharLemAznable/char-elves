@@ -29,6 +29,8 @@ public class EnvFactoryTest {
     public void testErrorEnvConfig() {
         assertThrows(EnvConfigException.class,
                 () -> EnvFactory.getEnv(ErrorEnvConfig.class));
+        assertThrows(EnvConfigException.class,
+                () -> EnvFactory.getEnv(NoneEnvConfig.class));
     }
 
     @Test
@@ -333,4 +335,6 @@ public class EnvFactoryTest {
 
     @EnvConfig
     public static class ErrorEnvConfig {}
+
+    public interface NoneEnvConfig {}
 }

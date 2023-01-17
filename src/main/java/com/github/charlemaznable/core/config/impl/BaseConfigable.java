@@ -107,6 +107,7 @@ public abstract class BaseConfigable implements Configable {
         return Double.parseDouble(matcher.group(1));
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public final int getInt(String key, int defaultValue) {
         val str = getStr(key);
@@ -121,6 +122,7 @@ public abstract class BaseConfigable implements Configable {
         return Integer.parseInt(intStr);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public final long getLong(String key, long defaultValue) {
         val str = getStr(key);

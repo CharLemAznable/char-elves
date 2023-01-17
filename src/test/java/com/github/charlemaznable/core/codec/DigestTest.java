@@ -7,8 +7,6 @@ import java.security.NoSuchAlgorithmException;
 
 import static com.github.charlemaznable.core.codec.Base64.base64;
 import static com.github.charlemaznable.core.codec.Bytes.bytes;
-import static com.github.charlemaznable.core.codec.Digest.MD5;
-import static com.github.charlemaznable.core.codec.Digest.SHA1;
 import static com.github.charlemaznable.core.codec.Digest.SHA256;
 import static com.github.charlemaznable.core.codec.Digest.SHA384;
 import static com.github.charlemaznable.core.codec.Digest.SHA512;
@@ -16,19 +14,19 @@ import static com.github.charlemaznable.core.codec.Hex.hex;
 import static java.security.MessageDigest.getInstance;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SuppressWarnings("deprecation")
 public class DigestTest {
 
     @Test
-    @Deprecated
     public void testDigestHex() throws NoSuchAlgorithmException {
-        val hashMD5Hex = MD5.digestHex("可以提供有状态的Hasher");
-        assertEquals(hashMD5Hex, MD5.digestHex("可以提供有状态的Hasher"));
-        assertEquals(hashMD5Hex, hex(MD5.digest("可以提供有状态的Hasher")));
+        val hashMD5Hex = Digest.MD5.digestHex("可以提供有状态的Hasher");
+        assertEquals(hashMD5Hex, Digest.MD5.digestHex("可以提供有状态的Hasher"));
+        assertEquals(hashMD5Hex, hex(Digest.MD5.digest("可以提供有状态的Hasher")));
         assertEquals(hashMD5Hex, hex(getInstance("MD5").digest(bytes("可以提供有状态的Hasher"))));
 
-        val hashSHA1Hex = SHA1.digestHex("可以提供有状态的Hasher");
-        assertEquals(hashSHA1Hex, SHA1.digestHex("可以提供有状态的Hasher"));
-        assertEquals(hashSHA1Hex, hex(SHA1.digest("可以提供有状态的Hasher")));
+        val hashSHA1Hex = Digest.SHA1.digestHex("可以提供有状态的Hasher");
+        assertEquals(hashSHA1Hex, Digest.SHA1.digestHex("可以提供有状态的Hasher"));
+        assertEquals(hashSHA1Hex, hex(Digest.SHA1.digest("可以提供有状态的Hasher")));
         assertEquals(hashSHA1Hex, hex(getInstance("SHA1").digest(bytes("可以提供有状态的Hasher"))));
 
         val hashSHA256Hex = SHA256.digestHex("可以提供有状态的Hasher");
@@ -45,24 +43,23 @@ public class DigestTest {
     }
 
     @Test
-    @Deprecated
     public void testDigestSaltHex() throws NoSuchAlgorithmException {
-        val hashMD5Hex = MD5.digestHex("可以提供有状态的Hasher", "salt");
-        assertEquals(hashMD5Hex, MD5.digestHex("可以提供有状态的Hasher", "salt"));
-        assertEquals(hashMD5Hex, MD5.digestHex(bytes("可以提供有状态的Hasher"), "salt"));
-        assertEquals(hashMD5Hex, MD5.digestHex("可以提供有状态的Hasher", bytes("salt")));
-        assertEquals(hashMD5Hex, hex(MD5.digest("可以提供有状态的Hasher", "salt")));
-        assertEquals(hashMD5Hex, hex(MD5.digest(bytes("可以提供有状态的Hasher"), "salt")));
-        assertEquals(hashMD5Hex, hex(MD5.digest("可以提供有状态的Hasher", bytes("salt"))));
+        val hashMD5Hex = Digest.MD5.digestHex("可以提供有状态的Hasher", "salt");
+        assertEquals(hashMD5Hex, Digest.MD5.digestHex("可以提供有状态的Hasher", "salt"));
+        assertEquals(hashMD5Hex, Digest.MD5.digestHex(bytes("可以提供有状态的Hasher"), "salt"));
+        assertEquals(hashMD5Hex, Digest.MD5.digestHex("可以提供有状态的Hasher", bytes("salt")));
+        assertEquals(hashMD5Hex, hex(Digest.MD5.digest("可以提供有状态的Hasher", "salt")));
+        assertEquals(hashMD5Hex, hex(Digest.MD5.digest(bytes("可以提供有状态的Hasher"), "salt")));
+        assertEquals(hashMD5Hex, hex(Digest.MD5.digest("可以提供有状态的Hasher", bytes("salt"))));
         assertEquals(hashMD5Hex, hex(getInstance("MD5").digest(bytes("salt可以提供有状态的Hashersalt"))));
 
-        val hashSHA1Hex = SHA1.digestHex("可以提供有状态的Hasher", "salt");
-        assertEquals(hashSHA1Hex, SHA1.digestHex("可以提供有状态的Hasher", "salt"));
-        assertEquals(hashSHA1Hex, SHA1.digestHex(bytes("可以提供有状态的Hasher"), "salt"));
-        assertEquals(hashSHA1Hex, SHA1.digestHex("可以提供有状态的Hasher", bytes("salt")));
-        assertEquals(hashSHA1Hex, hex(SHA1.digest("可以提供有状态的Hasher", "salt")));
-        assertEquals(hashSHA1Hex, hex(SHA1.digest(bytes("可以提供有状态的Hasher"), "salt")));
-        assertEquals(hashSHA1Hex, hex(SHA1.digest("可以提供有状态的Hasher", bytes("salt"))));
+        val hashSHA1Hex = Digest.SHA1.digestHex("可以提供有状态的Hasher", "salt");
+        assertEquals(hashSHA1Hex, Digest.SHA1.digestHex("可以提供有状态的Hasher", "salt"));
+        assertEquals(hashSHA1Hex, Digest.SHA1.digestHex(bytes("可以提供有状态的Hasher"), "salt"));
+        assertEquals(hashSHA1Hex, Digest.SHA1.digestHex("可以提供有状态的Hasher", bytes("salt")));
+        assertEquals(hashSHA1Hex, hex(Digest.SHA1.digest("可以提供有状态的Hasher", "salt")));
+        assertEquals(hashSHA1Hex, hex(Digest.SHA1.digest(bytes("可以提供有状态的Hasher"), "salt")));
+        assertEquals(hashSHA1Hex, hex(Digest.SHA1.digest("可以提供有状态的Hasher", bytes("salt"))));
         assertEquals(hashSHA1Hex, hex(getInstance("SHA1").digest(bytes("salt可以提供有状态的Hashersalt"))));
 
         val hashSHA256Hex = SHA256.digestHex("可以提供有状态的Hasher", "salt");
@@ -91,14 +88,13 @@ public class DigestTest {
     }
 
     @Test
-    @Deprecated
     public void testDigestBase64() throws NoSuchAlgorithmException {
-        val hashMD5Base64 = MD5.digestBase64("可以提供有状态的Hasher");
-        assertEquals(hashMD5Base64, MD5.digestBase64("可以提供有状态的Hasher"));
+        val hashMD5Base64 = Digest.MD5.digestBase64("可以提供有状态的Hasher");
+        assertEquals(hashMD5Base64, Digest.MD5.digestBase64("可以提供有状态的Hasher"));
         assertEquals(hashMD5Base64, base64(getInstance("MD5").digest(bytes("可以提供有状态的Hasher"))));
 
-        val hashSHA1Base64 = SHA1.digestBase64("可以提供有状态的Hasher");
-        assertEquals(hashSHA1Base64, SHA1.digestBase64("可以提供有状态的Hasher"));
+        val hashSHA1Base64 = Digest.SHA1.digestBase64("可以提供有状态的Hasher");
+        assertEquals(hashSHA1Base64, Digest.SHA1.digestBase64("可以提供有状态的Hasher"));
         assertEquals(hashSHA1Base64, base64(getInstance("SHA1").digest(bytes("可以提供有状态的Hasher"))));
 
         val hashSHA256Base64 = SHA256.digestBase64("可以提供有状态的Hasher");
@@ -112,18 +108,17 @@ public class DigestTest {
     }
 
     @Test
-    @Deprecated
     public void testDigestSaltBase64() throws NoSuchAlgorithmException {
-        val hashMD5Base64 = MD5.digestBase64("可以提供有状态的Hasher", "salt");
-        assertEquals(hashMD5Base64, MD5.digestBase64("可以提供有状态的Hasher", "salt"));
-        assertEquals(hashMD5Base64, MD5.digestBase64(bytes("可以提供有状态的Hasher"), "salt"));
-        assertEquals(hashMD5Base64, MD5.digestBase64("可以提供有状态的Hasher", bytes("salt")));
+        val hashMD5Base64 = Digest.MD5.digestBase64("可以提供有状态的Hasher", "salt");
+        assertEquals(hashMD5Base64, Digest.MD5.digestBase64("可以提供有状态的Hasher", "salt"));
+        assertEquals(hashMD5Base64, Digest.MD5.digestBase64(bytes("可以提供有状态的Hasher"), "salt"));
+        assertEquals(hashMD5Base64, Digest.MD5.digestBase64("可以提供有状态的Hasher", bytes("salt")));
         assertEquals(hashMD5Base64, base64(getInstance("MD5").digest(bytes("salt可以提供有状态的Hashersalt"))));
 
-        val hashSHA1Base64 = SHA1.digestBase64("可以提供有状态的Hasher", "salt");
-        assertEquals(hashSHA1Base64, SHA1.digestBase64("可以提供有状态的Hasher", "salt"));
-        assertEquals(hashSHA1Base64, SHA1.digestBase64(bytes("可以提供有状态的Hasher"), "salt"));
-        assertEquals(hashSHA1Base64, SHA1.digestBase64("可以提供有状态的Hasher", bytes("salt")));
+        val hashSHA1Base64 = Digest.SHA1.digestBase64("可以提供有状态的Hasher", "salt");
+        assertEquals(hashSHA1Base64, Digest.SHA1.digestBase64("可以提供有状态的Hasher", "salt"));
+        assertEquals(hashSHA1Base64, Digest.SHA1.digestBase64(bytes("可以提供有状态的Hasher"), "salt"));
+        assertEquals(hashSHA1Base64, Digest.SHA1.digestBase64("可以提供有状态的Hasher", bytes("salt")));
         assertEquals(hashSHA1Base64, base64(getInstance("SHA1").digest(bytes("salt可以提供有状态的Hashersalt"))));
 
         val hashSHA256Base64 = SHA256.digestBase64("可以提供有状态的Hasher", "salt");
@@ -143,13 +138,12 @@ public class DigestTest {
     }
 
     @Test
-    @Deprecated
     public void testDigestDeprecated() {
-        val hashMD5Hex = MD5.digestHexDeprecated("可以提供有状态的Hasher");
-        assertEquals(hashMD5Hex, MD5.digestHexDeprecated("可以提供有状态的Hasher"));
+        val hashMD5Hex = Digest.MD5.digestHexDeprecated("可以提供有状态的Hasher");
+        assertEquals(hashMD5Hex, Digest.MD5.digestHexDeprecated("可以提供有状态的Hasher"));
 
-        val hashSHA1Hex = SHA1.digestHexDeprecated("可以提供有状态的Hasher");
-        assertEquals(hashSHA1Hex, SHA1.digestHexDeprecated("可以提供有状态的Hasher"));
+        val hashSHA1Hex = Digest.SHA1.digestHexDeprecated("可以提供有状态的Hasher");
+        assertEquals(hashSHA1Hex, Digest.SHA1.digestHexDeprecated("可以提供有状态的Hasher"));
 
         val hashSHA256Hex = SHA256.digestHexDeprecated("可以提供有状态的Hasher");
         assertEquals(hashSHA256Hex, SHA256.digestHexDeprecated("可以提供有状态的Hasher"));
@@ -160,11 +154,11 @@ public class DigestTest {
         val hashSHA512Hex = SHA512.digestHexDeprecated("可以提供有状态的Hasher");
         assertEquals(hashSHA512Hex, SHA512.digestHexDeprecated("可以提供有状态的Hasher"));
 
-        val hashMD5Base64 = MD5.digestBase64Deprecated("可以提供有状态的Hasher");
-        assertEquals(hashMD5Base64, MD5.digestBase64Deprecated("可以提供有状态的Hasher"));
+        val hashMD5Base64 = Digest.MD5.digestBase64Deprecated("可以提供有状态的Hasher");
+        assertEquals(hashMD5Base64, Digest.MD5.digestBase64Deprecated("可以提供有状态的Hasher"));
 
-        val hashSHA1Base64 = SHA1.digestBase64Deprecated("可以提供有状态的Hasher");
-        assertEquals(hashSHA1Base64, SHA1.digestBase64Deprecated("可以提供有状态的Hasher"));
+        val hashSHA1Base64 = Digest.SHA1.digestBase64Deprecated("可以提供有状态的Hasher");
+        assertEquals(hashSHA1Base64, Digest.SHA1.digestBase64Deprecated("可以提供有状态的Hasher"));
 
         val hashSHA256Base64 = SHA256.digestBase64Deprecated("可以提供有状态的Hasher");
         assertEquals(hashSHA256Base64, SHA256.digestBase64Deprecated("可以提供有状态的Hasher"));
@@ -177,13 +171,12 @@ public class DigestTest {
     }
 
     @Test
-    @Deprecated
     public void testDigestSaltDeprecated() {
-        val hashMD5Hex = MD5.digestHexDeprecated("可以提供有状态的Hasher", "salt");
-        assertEquals(hashMD5Hex, MD5.digestHexDeprecated("可以提供有状态的Hasher", "salt"));
+        val hashMD5Hex = Digest.MD5.digestHexDeprecated("可以提供有状态的Hasher", "salt");
+        assertEquals(hashMD5Hex, Digest.MD5.digestHexDeprecated("可以提供有状态的Hasher", "salt"));
 
-        val hashSHA1Hex = SHA1.digestHexDeprecated("可以提供有状态的Hasher", "salt");
-        assertEquals(hashSHA1Hex, SHA1.digestHexDeprecated("可以提供有状态的Hasher", "salt"));
+        val hashSHA1Hex = Digest.SHA1.digestHexDeprecated("可以提供有状态的Hasher", "salt");
+        assertEquals(hashSHA1Hex, Digest.SHA1.digestHexDeprecated("可以提供有状态的Hasher", "salt"));
 
         val hashSHA256Hex = SHA256.digestHexDeprecated("可以提供有状态的Hasher", "salt");
         assertEquals(hashSHA256Hex, SHA256.digestHexDeprecated("可以提供有状态的Hasher", "salt"));
@@ -194,11 +187,11 @@ public class DigestTest {
         val hashSHA512Hex = SHA512.digestHexDeprecated("可以提供有状态的Hasher", "salt");
         assertEquals(hashSHA512Hex, SHA512.digestHexDeprecated("可以提供有状态的Hasher", "salt"));
 
-        val hashMD5Base64 = MD5.digestBase64Deprecated("可以提供有状态的Hasher", "salt");
-        assertEquals(hashMD5Base64, MD5.digestBase64Deprecated("可以提供有状态的Hasher", "salt"));
+        val hashMD5Base64 = Digest.MD5.digestBase64Deprecated("可以提供有状态的Hasher", "salt");
+        assertEquals(hashMD5Base64, Digest.MD5.digestBase64Deprecated("可以提供有状态的Hasher", "salt"));
 
-        val hashSHA1Base64 = SHA1.digestBase64Deprecated("可以提供有状态的Hasher", "salt");
-        assertEquals(hashSHA1Base64, SHA1.digestBase64Deprecated("可以提供有状态的Hasher", "salt"));
+        val hashSHA1Base64 = Digest.SHA1.digestBase64Deprecated("可以提供有状态的Hasher", "salt");
+        assertEquals(hashSHA1Base64, Digest.SHA1.digestBase64Deprecated("可以提供有状态的Hasher", "salt"));
 
         val hashSHA256Base64 = SHA256.digestBase64Deprecated("可以提供有状态的Hasher", "salt");
         assertEquals(hashSHA256Base64, SHA256.digestBase64Deprecated("可以提供有状态的Hasher", "salt"));

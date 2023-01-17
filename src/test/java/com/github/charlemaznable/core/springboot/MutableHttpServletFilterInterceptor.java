@@ -1,4 +1,4 @@
-package com.github.charlemaznable.core.spring.mutable;
+package com.github.charlemaznable.core.springboot;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -70,8 +70,9 @@ public class SpringContextRegistrar implements ImportBeanDefinitionRegistrar, Re
 
     static class ComplexFactoryBean extends SpringFactoryBean {
 
-        ComplexFactoryBean() {
-            super(x -> new ComplexDummy());
+        @Override
+        public Object buildObject(Class<?> xyzInterface) {
+            return new ComplexDummy();
         }
     }
 }

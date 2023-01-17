@@ -66,6 +66,7 @@ public final class AES {
         return getKey(keyBytes, 128);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     static Key getKey(byte[] keyBytes, int size) {
         val dstBytes = new byte[size >> 3];
 

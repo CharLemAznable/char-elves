@@ -14,7 +14,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -34,7 +33,6 @@ import static org.joor.Reflect.onClass;
 
 @SuppressWarnings("unchecked")
 @Slf4j
-@Component
 public class SpringContext implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;

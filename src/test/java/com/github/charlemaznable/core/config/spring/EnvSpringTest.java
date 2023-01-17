@@ -6,11 +6,9 @@ import com.github.charlemaznable.core.config.spring.TestBaseConfig.ExtendConfig;
 import com.github.charlemaznable.core.config.spring.TestEnvSpringConfig.ConfigBean;
 import com.github.charlemaznable.core.spring.SpringContext;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = EnvSpringConfiguration.class)
+@SpringJUnitConfig(EnvSpringConfiguration.class)
 public class EnvSpringTest {
 
     @Autowired

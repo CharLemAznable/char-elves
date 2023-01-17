@@ -217,7 +217,6 @@ public final class Objectt {
         return specs.length == 0 ? null : specs[0];
     }
 
-    @SuppressWarnings("Duplicates")
     public static Spec[] parseSpecs(String specs) {
         char[] chars = specs.toCharArray();
         SpecState specState = SpecState.SpecClose;
@@ -320,7 +319,6 @@ public final class Objectt {
         return specsDefs.toArray(new Spec[0]);
     }
 
-    @SuppressWarnings("Duplicates")
     private static Spec addSpec(StringBuilder name, List<Spec> specsDefs) {
         Spec spec = new Spec();
         spec.setName(name.toString());
@@ -352,7 +350,6 @@ public final class Objectt {
         throw new IllegalArgumentException(specs + " is invalid at pos " + i + " with char " + ch);
     }
 
-    @SuppressWarnings("Duplicates")
     private static char convertpecialChar(char aChar) {
         return switch (aChar) {
             case 'n' -> '\n';

@@ -50,7 +50,6 @@ public class HttpTestController {
         Http.errorHttpStatus(response, HttpStatus.NOT_FOUND);
     }
 
-    @SuppressWarnings("Duplicates")
     @RequestMapping("/parameter")
     public void parameter(HttpServletRequest request, HttpServletResponse response) {
         val parameterMap = Http.fetchParameterMap(request);
@@ -88,7 +87,6 @@ public class HttpTestController {
         }
     }
 
-    @SuppressWarnings("Duplicates")
     @RequestMapping("/header")
     public void header(HttpServletRequest request, HttpServletResponse response) {
         val headerMap = Http.fetchHeaderMap(request);
@@ -101,7 +99,6 @@ public class HttpTestController {
         }
     }
 
-    @SuppressWarnings("Duplicates")
     @RequestMapping("/cookie")
     public void cookie(HttpServletRequest request, HttpServletResponse response) {
         val cookieMap = Http.fetchCookieMap(request);
