@@ -4,12 +4,17 @@ import com.github.charlemaznable.core.guice.Modulee;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provider;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.util.Providers;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import lombok.AllArgsConstructor;
 
-import static com.google.inject.Scopes.SINGLETON;
+import javax.annotation.Nullable;
+
+import static com.github.charlemaznable.core.lang.Condition.nullThen;
+import static com.github.charlemaznable.core.vertx.VertxElf.buildVertx;
 
 @AllArgsConstructor
 public final class VertxModular {
@@ -40,9 +45,10 @@ public final class VertxModular {
 
     public Module createModule() {
         return Modulee.combine(vertxOptionsModule, new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Vertx.class).toProvider(VertxProvider.class).in(SINGLETON);
+            @Provides
+            @Singleton
+            public Vertx vertx(@Nullable VertxOptions vertxOptions) {
+                return buildVertx(nullThen(vertxOptions, VertxOptions::new));
             }
         });
     }
