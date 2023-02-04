@@ -113,8 +113,8 @@ public final class EnvFactory {
             }
 
             val envConfig = getMergedAnnotation(method, EnvConfig.class);
-            val configKey = checkEnvConfigKey(method, envConfig);
-            val defaultValue = checkEnvDefaultValue(method, envConfig);
+            val configKey = checkEnvConfigKey(envConfig);
+            val defaultValue = checkEnvDefaultValue(envConfig);
             val defaultArgument = args.length > 0 ? args[0] : null;
 
             val key = blankThen(configKey, method::getName);
@@ -131,12 +131,12 @@ public final class EnvFactory {
             return null;
         }
 
-        private String checkEnvConfigKey(Method method, EnvConfig envConfig) {
+        private String checkEnvConfigKey(EnvConfig envConfig) {
             if (isNull(envConfig)) return "";
             return substitute(envConfig.configKey());
         }
 
-        private String checkEnvDefaultValue(Method method, EnvConfig envConfig) {
+        private String checkEnvDefaultValue(EnvConfig envConfig) {
             if (isNull(envConfig)) return null;
             return substitute(blankThen(envConfig.defaultValue(), () -> null));
         }
