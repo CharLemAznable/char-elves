@@ -1,5 +1,6 @@
 package com.github.charlemaznable.core.config.guice;
 
+import com.github.charlemaznable.core.config.EnvFactory;
 import com.github.charlemaznable.core.config.EnvModular;
 import com.github.charlemaznable.core.guice.GuiceFactory;
 import com.google.inject.Guice;
@@ -17,10 +18,10 @@ public class EnvGuiceTest {
         val injector = Guice.createInjector(envModular.createModule());
 
         val testEnvConfig = injector.getInstance(TestEnvGuiceConfig.class);
-        assertEquals(envModular.getEnv(TestEnvGuiceConfig.class), testEnvConfig);
+        assertEquals(EnvFactory.getEnv(TestEnvGuiceConfig.class), testEnvConfig);
 
         val testEnvGuiceConfig = new GuiceFactory(injector).build(TestEnvGuiceConfig.class);
-        assertEquals(envModular.getEnv(TestEnvGuiceConfig.class), testEnvGuiceConfig);
+        assertEquals(EnvFactory.getEnv(TestEnvGuiceConfig.class), testEnvGuiceConfig);
 
         assertEquals("value1", testEnvConfig.key1());
         assertEquals("value2", testEnvConfig.key2());

@@ -1,7 +1,5 @@
 package com.github.charlemaznable.core.config;
 
-import com.github.charlemaznable.core.config.EnvConfig.ConfigKeyProvider;
-import com.github.charlemaznable.core.config.EnvConfig.DefaultValueProvider;
 import com.github.charlemaznable.core.config.ex.ConfigValueFormatException;
 import com.github.charlemaznable.core.config.ex.EnvConfigException;
 import lombok.val;
@@ -14,7 +12,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +42,7 @@ public class EnvFactoryTest {
         assertEquals("value5", testEnvConfig.key5Def());
         assertEquals("value5", testEnvConfig.key5("value5"));
 
-        val springEnvConfig = EnvFactory.springEnvLoader().getEnv(TestEnvConfig.class);
+        val springEnvConfig = EnvFactory.getEnv(TestEnvConfig.class);
 
         val empty = springEnvConfig.subset("");
         assertTrue(empty.getProperties().isEmpty());
@@ -128,11 +125,6 @@ public class EnvFactoryTest {
         assertEquals("value3", bean1List2.get(1).getKey1());
         assertEquals("value4", bean1List2.get(1).getKey2());
         assertEquals("value3value4", bean1List2.get(1).getKey3());
-
-        val provEnvConfig = EnvFactory.getEnv(ProvEnvConfig.class);
-        assertEquals("PROV", provEnvConfig.prov());
-        assertThrows(EnvConfigException.class, provEnvConfig::error1);
-        assertThrows(EnvConfigException.class, provEnvConfig::error2);
 
         val argEnvConfig = EnvFactory.getEnv(ArgEnvConfig.class);
         assertNull(argEnvConfig.custom1());
@@ -280,20 +272,6 @@ public class EnvFactoryTest {
         List<ConfigBean2> bean1List2();
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    @EnvConfig
-    public interface ProvEnvConfig {
-
-        @EnvConfig(configKeyProvider = Provider.class, defaultValueProvider = Provider.class)
-        String prov();
-
-        @EnvConfig(configKeyProvider = ErrorProvider.class)
-        String error1();
-
-        @EnvConfig(defaultValueProvider = ErrorProvider.class)
-        String error2();
-    }
-
     @AliasConfig
     public interface ArgEnvConfig {
 
@@ -317,21 +295,6 @@ public class EnvFactoryTest {
         @AliasFor(annotation = EnvConfig.class)
         String value() default "";
     }
-
-    public static class Provider implements ConfigKeyProvider, DefaultValueProvider {
-
-        @Override
-        public String configKey(Class<?> minerClass, Method method) {
-            return "prov";
-        }
-
-        @Override
-        public String defaultValue(Class<?> minerClass, Method method) {
-            return "PROV";
-        }
-    }
-
-    public static class ErrorProvider implements ConfigKeyProvider, DefaultValueProvider {}
 
     @EnvConfig
     public static class ErrorEnvConfig {}
