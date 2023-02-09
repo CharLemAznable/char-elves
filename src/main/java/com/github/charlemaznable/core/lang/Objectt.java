@@ -1,5 +1,6 @@
 package com.github.charlemaznable.core.lang;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -124,6 +125,21 @@ public final class Objectt {
             log.error("parse object {} failed by {}", specContent, e.getMessage());
         }
         return null;
+    }
+
+    public static <T> List<T> parseObjects(String specContent, Class<T> clazz) {
+        List<T> result = Lists.newArrayList();
+        if (isBlank(specContent)) return result;
+        Spec[] specs = parseSpecs(specContent);
+        try {
+            for (Spec spec : specs) {
+                T object = createObject(clazz, spec);
+                if (object != null) result.add(object);
+            }
+        } catch (Exception e) {
+            log.error("parse object {} failed by {}", specContent, e.getMessage());
+        }
+        return result;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -1,12 +1,8 @@
 package com.github.charlemaznable.core.config;
 
-import com.github.charlemaznable.core.config.EnvConfig.ConfigKeyProvider;
-import com.github.charlemaznable.core.config.EnvConfig.DefaultValueProvider;
 import com.github.charlemaznable.core.config.ex.EnvConfigException;
 import com.github.charlemaznable.core.config.impl.BaseConfigable;
-import com.github.charlemaznable.core.context.FactoryContext;
 import com.github.charlemaznable.core.lang.EasyEnhancer;
-import com.github.charlemaznable.core.lang.Factory;
 import com.google.common.cache.LoadingCache;
 import com.google.common.primitives.Primitives;
 import lombok.AllArgsConstructor;
@@ -27,11 +23,9 @@ import java.util.Properties;
 import static com.github.charlemaznable.core.config.Arguments.argumentsAsProperties;
 import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsProperties;
 import static com.github.charlemaznable.core.lang.Condition.blankThen;
-import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.LoadingCachee.get;
 import static com.github.charlemaznable.core.lang.LoadingCachee.simpleCache;
 import static com.github.charlemaznable.core.lang.Propertiess.ssMap;
-import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.google.common.cache.CacheLoader.from;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -43,22 +37,15 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.isAnnota
 public final class EnvFactory {
 
     private static final Properties envClassPathProperties;
-    private static final LoadingCache<Factory, EnvLoader> envLoaderCache = simpleCache(from(EnvLoader::new));
+    private static final LoadingCache<Class<?>, Object> envCache = simpleCache(from(EnvFactory::loadEnv));
 
     static {
         envClassPathProperties = classResourceAsProperties("config.env.props");
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getEnv(Class<T> envClass) {
-        return envLoader(FactoryContext.get()).getEnv(envClass);
-    }
-
-    public static EnvLoader springEnvLoader() {
-        return envLoader(springFactory());
-    }
-
-    public static EnvLoader envLoader(Factory factory) {
-        return get(envLoaderCache, factory);
+        return (T) get(envCache, envClass);
     }
 
     static String substitute(String source) {
@@ -66,47 +53,31 @@ public final class EnvFactory {
                 envClassPathProperties))).replace(source);
     }
 
-    @SuppressWarnings("unchecked")
-    public static class EnvLoader {
+    @Nonnull
+    private static <T> Object loadEnv(@Nonnull Class<T> envClass) {
+        ensureClassIsAnInterface(envClass);
+        checkEnvConfig(envClass);
 
-        private final Factory factory;
-        private final LoadingCache<Class<?>, Object> envCache
-                = simpleCache(from(this::loadEnv));
+        val envProxy = new EnvProxy(envClass);
+        return EasyEnhancer.create(EnvDummy.class,
+                new Class[]{envClass, Configable.class},
+                method -> {
+                    if (method.isDefault() || method.getDeclaringClass()
+                            .equals(EnvDummy.class)) return 1;
+                    return 0;
+                },
+                new Callback[]{envProxy, NoOp.INSTANCE},
+                new Object[]{envClass});
+    }
 
-        EnvLoader(Factory factory) {
-            this.factory = checkNotNull(factory);
-        }
+    private static <T> void ensureClassIsAnInterface(Class<T> clazz) {
+        if (clazz.isInterface()) return;
+        throw new EnvConfigException(clazz + " is not An Interface");
+    }
 
-        public <T> T getEnv(Class<T> envClass) {
-            return (T) get(envCache, envClass);
-        }
-
-        @Nonnull
-        private <T> Object loadEnv(@Nonnull Class<T> envClass) {
-            ensureClassIsAnInterface(envClass);
-            checkEnvConfig(envClass);
-
-            val envProxy = new EnvProxy(envClass, factory);
-            return EasyEnhancer.create(EnvDummy.class,
-                    new Class[]{envClass, Configable.class},
-                    method -> {
-                        if (method.isDefault() || method.getDeclaringClass()
-                                .equals(EnvDummy.class)) return 1;
-                        return 0;
-                    },
-                    new Callback[]{envProxy, NoOp.INSTANCE},
-                    new Object[]{envClass});
-        }
-
-        private <T> void ensureClassIsAnInterface(Class<T> clazz) {
-            if (clazz.isInterface()) return;
-            throw new EnvConfigException(clazz + " is not An Interface");
-        }
-
-        private <T> void checkEnvConfig(Class<T> clazz) {
-            if (isAnnotated(clazz, EnvConfig.class)) return;
-            throw new EnvConfigException(clazz + " has no EnvConfig");
-        }
+    private static <T> void checkEnvConfig(Class<T> clazz) {
+        if (isAnnotated(clazz, EnvConfig.class)) return;
+        throw new EnvConfigException(clazz + " has no EnvConfig annotation");
     }
 
     @AllArgsConstructor
@@ -135,7 +106,6 @@ public final class EnvFactory {
     private static class EnvProxy implements MethodInterceptor {
 
         private Class<?> envClass;
-        private Factory factory;
 
         @Override
         public Object intercept(Object o, Method method, Object[] args,
@@ -145,8 +115,8 @@ public final class EnvFactory {
             }
 
             val envConfig = getMergedAnnotation(method, EnvConfig.class);
-            val configKey = checkEnvConfigKey(method, envConfig);
-            val defaultValue = checkEnvDefaultValue(method, envConfig);
+            val configKey = checkEnvConfigKey(envConfig);
+            val defaultValue = checkEnvDefaultValue(envConfig);
             val defaultArgument = args.length > 0 ? args[0] : null;
 
             val key = blankThen(configKey, method::getName);
@@ -163,19 +133,14 @@ public final class EnvFactory {
             return null;
         }
 
-        private String checkEnvConfigKey(Method method, EnvConfig envConfig) {
+        private String checkEnvConfigKey(EnvConfig envConfig) {
             if (isNull(envConfig)) return "";
-            val providerClass = envConfig.configKeyProvider();
-            return substitute(ConfigKeyProvider.class == providerClass ? envConfig.configKey()
-                    : FactoryContext.apply(factory, providerClass, p -> p.configKey(envClass, method)));
+            return substitute(envConfig.configKey());
         }
 
-        private String checkEnvDefaultValue(Method method, EnvConfig envConfig) {
+        private String checkEnvDefaultValue(EnvConfig envConfig) {
             if (isNull(envConfig)) return null;
-            val providerClass = envConfig.defaultValueProvider();
-            String defaultValue = DefaultValueProvider.class == providerClass ? envConfig.defaultValue()
-                    : FactoryContext.apply(factory, providerClass, p -> p.defaultValue(envClass, method));
-            return substitute(blankThen(defaultValue, () -> null));
+            return substitute(blankThen(envConfig.defaultValue(), () -> null));
         }
 
         private Object parseValue(String key, String value, Method method) {

@@ -1,15 +1,12 @@
 package com.github.charlemaznable.core.config;
 
-import com.github.charlemaznable.core.config.EnvFactory.EnvLoader;
 import com.github.charlemaznable.core.spring.SpringFactoryBean;
 import com.github.charlemaznable.core.spring.SpringScannerRegistrar;
 import org.springframework.core.type.ClassMetadata;
 
-import static com.github.charlemaznable.core.config.EnvFactory.springEnvLoader;
+import static com.github.charlemaznable.core.config.EnvFactory.getEnv;
 
 public final class EnvScannerRegistrar extends SpringScannerRegistrar {
-
-    private static final EnvLoader springEnvLoader = springEnvLoader();
 
     public EnvScannerRegistrar() {
         super(EnvScan.class, EnvFactoryBean.class, EnvConfig.class);
@@ -24,7 +21,7 @@ public final class EnvScannerRegistrar extends SpringScannerRegistrar {
 
         @Override
         public Object buildObject(Class<?> xyzInterface) {
-            return springEnvLoader.getEnv(xyzInterface);
+            return getEnv(xyzInterface);
         }
     }
 }
