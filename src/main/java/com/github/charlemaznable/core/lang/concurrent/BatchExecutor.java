@@ -29,14 +29,14 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
     private final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
     private ThreadPoolExecutor eventExecutor;
     private final Object eventObject = new Object();
-    private final Executor batchExecutor;
+    private final Executor batchEventExecutor;
 
     public BatchExecutor(BatchExecutorConfig config) {
         this.maxBatchSize = config.getMaxBatchSize();
         this.initialDelay = config.getInitialDelay();
         this.delay = config.getDelay();
         this.unit = config.getUnit();
-        this.batchExecutor = batchExecutor();
+        this.batchEventExecutor = batchEventExecutor();
     }
 
     public synchronized void start() {
@@ -67,7 +67,7 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
         val items = new ArrayList<T>();
         queue.drainTo(items);
         if (!items.isEmpty()) {
-            this.batchExecutor.execute(() -> batchExecute(items));
+            this.batchEventExecutor.execute(() -> batchExecute(items));
         }
         if (running && eventObject == event)
             post(event, delay, unit);
@@ -81,7 +81,7 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
         return eventExecutor;
     }
 
-    protected Executor batchExecutor() {
+    protected Executor batchEventExecutor() {
         return newCachedThreadPool();
     }
 }
