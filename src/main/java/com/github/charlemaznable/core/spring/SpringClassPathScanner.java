@@ -30,6 +30,7 @@ import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.context.annotation.TypeFilterUtils.createTypeFiltersFor;
 
 public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
@@ -63,7 +64,7 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
         List<TypeFilter> includeFilters = newArrayList();
         for (val includeFilterAttribute : includeFilterAttributes) {
             includeFilters.addAll(createTypeFiltersFor(includeFilterAttribute,
-                    this.getEnvironment(), this.getResourceLoader(), this.getRegistry()));
+                    this.getEnvironment(), this.getResourceLoader(), requireNonNull(this.getRegistry())));
         }
         if (includeFilters.isEmpty()) includeFilters.add((metadataReader, metadataReaderFactory) -> true);
         for (TypeFilter includeFilter : includeFilters) {
@@ -75,7 +76,7 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
 
         for (val excludeFilterAttribute : excludeFilterAttributes) {
             val typeFilters = createTypeFiltersFor(excludeFilterAttribute,
-                    this.getEnvironment(), this.getResourceLoader(), this.getRegistry());
+                    this.getEnvironment(), this.getResourceLoader(), requireNonNull(this.getRegistry()));
             for (val typeFilter : typeFilters) {
                 addExcludeFilter(typeFilter);
             }
