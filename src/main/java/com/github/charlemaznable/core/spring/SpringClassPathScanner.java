@@ -1,6 +1,7 @@
 package com.github.charlemaznable.core.spring;
 
 import com.github.charlemaznable.core.lang.ClzPath;
+import lombok.AllArgsConstructor;
 import lombok.val;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -10,17 +11,23 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.ClassMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.TypeFilter;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
+import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.springframework.context.annotation.TypeFilterUtils.createTypeFiltersFor;
@@ -53,16 +60,19 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
 
     public void registerFilters(AnnotationAttributes[] includeFilterAttributes,
                                 AnnotationAttributes[] excludeFilterAttributes) {
-        for (val annotationClass : annotationClasses) {
-            addIncludeFilter(new AnnotationTypeFilter(annotationClass));
-        }
+        List<TypeFilter> includeFilters = newArrayList();
         for (val includeFilterAttribute : includeFilterAttributes) {
-            val typeFilters = createTypeFiltersFor(includeFilterAttribute,
-                    this.getEnvironment(), this.getResourceLoader(), this.getRegistry());
-            for (val typeFilter : typeFilters) {
-                addIncludeFilter(typeFilter);
+            includeFilters.addAll(createTypeFiltersFor(includeFilterAttribute,
+                    this.getEnvironment(), this.getResourceLoader(), this.getRegistry()));
+        }
+        if (includeFilters.isEmpty()) includeFilters.add((metadataReader, metadataReaderFactory) -> true);
+        for (TypeFilter includeFilter : includeFilters) {
+            for (val annotationClass : annotationClasses) {
+                addIncludeFilter(new CombineTypeFilter(
+                        new AnnotationTypeFilter(annotationClass), includeFilter));
             }
         }
+
         for (val excludeFilterAttribute : excludeFilterAttributes) {
             val typeFilters = createTypeFiltersFor(excludeFilterAttribute,
                     this.getEnvironment(), this.getResourceLoader(), this.getRegistry());
@@ -127,5 +137,19 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
 
     protected void postProcessBeanDefinition(BeanDefinition beanDefinition) {
         notNullThenRun(beanDefinitionPostProcessor, processor -> processor.accept(beanDefinition));
+    }
+
+    @AllArgsConstructor
+    private static class CombineTypeFilter implements TypeFilter {
+
+        private AnnotationTypeFilter annotationTypeFilter;
+        private TypeFilter customTypeFilter;
+
+        @Override
+        public boolean match(@Nonnull MetadataReader metadataReader,
+                             @Nonnull MetadataReaderFactory metadataReaderFactory) throws IOException {
+            return annotationTypeFilter.match(metadataReader, metadataReaderFactory) &&
+                    customTypeFilter.match(metadataReader, metadataReaderFactory);
+        }
     }
 }
