@@ -8,6 +8,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
@@ -22,6 +23,7 @@ import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.springframework.context.annotation.TypeFilterUtils.createTypeFiltersFor;
 
 public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
 
@@ -49,9 +51,24 @@ public class SpringClassPathScanner extends ClassPathBeanDefinitionScanner {
                 getRegistry(), getEnvironment(), getResourceLoader(), logger);
     }
 
-    public void registerFilters() {
+    public void registerFilters(AnnotationAttributes[] includeFilterAttributes,
+                                AnnotationAttributes[] excludeFilterAttributes) {
         for (val annotationClass : annotationClasses) {
             addIncludeFilter(new AnnotationTypeFilter(annotationClass));
+        }
+        for (val includeFilterAttribute : includeFilterAttributes) {
+            val typeFilters = createTypeFiltersFor(includeFilterAttribute,
+                    this.getEnvironment(), this.getResourceLoader(), this.getRegistry());
+            for (val typeFilter : typeFilters) {
+                addIncludeFilter(typeFilter);
+            }
+        }
+        for (val excludeFilterAttribute : excludeFilterAttributes) {
+            val typeFilters = createTypeFiltersFor(excludeFilterAttribute,
+                    this.getEnvironment(), this.getResourceLoader(), this.getRegistry());
+            for (val typeFilter : typeFilters) {
+                addExcludeFilter(typeFilter);
+            }
         }
     }
 

@@ -64,6 +64,10 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
             scanner.setBeanNameGenerator(BeanUtils.instantiateClass(generatorClass));
         }
 
+        scanner.registerFilters(
+                annoAttrs.getAnnotationArray("includeFilters"),
+                annoAttrs.getAnnotationArray("excludeFilters"));
+
         val basePackages = new ArrayList<String>();
         for (val pkg : annoAttrs.getStringArray("value")) {
             if (StringUtils.hasText(pkg)) {
@@ -78,13 +82,10 @@ public class SpringScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
         for (val clazz : annoAttrs.getClassArray("basePackageClasses")) {
             basePackages.add(ClassUtils.getPackageName(clazz));
         }
-
         if (basePackages.isEmpty()) {
             val className = importingClassMetadata.getClassName();
             basePackages.add(ClassUtils.getPackageName(className));
         }
-
-        scanner.registerFilters();
         scanner.doScan(StringUtils.toStringArray(basePackages));
     }
 
