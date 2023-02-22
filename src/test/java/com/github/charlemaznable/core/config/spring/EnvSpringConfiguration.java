@@ -14,7 +14,7 @@ import org.springframework.context.annotation.FilterType;
 @ElvesImport
 @EnvScan(basePackageClasses = TestEnvSpringConfig.class,
         nameGenerator = ShortBeanNameGenerator.class,
-        includeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {TestBaseConfig.class, TestEnvSpringConfig.class})},
+        includeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {TestEnvSpringConfig.class})},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {TestFactoryConfig.class})})
 public class EnvSpringConfiguration {
 
