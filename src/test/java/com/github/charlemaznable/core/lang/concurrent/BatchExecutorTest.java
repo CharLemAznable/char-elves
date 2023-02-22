@@ -26,6 +26,7 @@ public class BatchExecutorTest {
                 initialDelay=0
                 delay=1
                 unit=SECONDS
+                error.key=error.value
                 """);
         val config = parsePropertiesToBatchExecutorConfig(properties);
         batchExecutor = new BatchExecutor<>(config) {

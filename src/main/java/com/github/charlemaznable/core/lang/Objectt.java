@@ -85,6 +85,7 @@ public final class Objectt {
         if (property != null) return property;
         // There has to be a method get* matching this segment
         val returnType = getPropertyType(propertyName, hostBean);
+        if (returnType == null) return null;
         if (Map.class.isAssignableFrom(returnType)) property = Maps.newHashMap();
         if (property == null) property = onClass(returnType).create().get();
         val prop = property;
@@ -184,8 +185,8 @@ public final class Objectt {
         } catch (Exception e) {
             log.debug("invoke get field exception", e);
         }
-        throw new UnsupportedOperationException("unable to get property "
-                + propertyName + " value of bean " + hostBean);
+        log.debug("unable to get property {} value of bean {}", propertyName, hostBean);
+        return null;
     }
 
     private static Class<?> getPropertyType(String propertyName, Object hostBean) {
@@ -200,8 +201,8 @@ public final class Objectt {
         } catch (Exception e) {
             log.debug("invoke get field exception", e);
         }
-        throw new UnsupportedOperationException("unable to get property "
-                + propertyName + " type of bean " + hostBean);
+        log.debug("unable to get property {} type of bean {}", propertyName, hostBean);
+        return null;
     }
 
     @SuppressWarnings("unchecked")
