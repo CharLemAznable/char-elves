@@ -37,7 +37,7 @@ public class KafkaConfigElfTest {
         MockDiamondServer.setConfigInfo(KAFKA_CONFIG_DIAMOND_GROUP_NAME, "producer", ""
                 + "bootstrap.servers=127.0.0.1:9092\n"
                 + "key.serializer=org.apache.kafka.common.serialization.StringSerializer\n"
-                + "value.serializer=org.apache.kafka.common.serialization.StringSerializen");
+                + "value.serializer=org.apache.kafka.common.serialization.StringSerializer");
         MockDiamondServer.setConfigInfo(KAFKA_CONFIG_DIAMOND_GROUP_NAME, "consumer", ""
                 + "bootstrap.servers=127.0.0.1:9092\n"
                 + "key.deserializer=org.apache.kafka.common.serialization.StringDeserializer\n"
