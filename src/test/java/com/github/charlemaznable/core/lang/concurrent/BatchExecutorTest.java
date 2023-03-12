@@ -25,7 +25,8 @@ public class BatchExecutorTest {
                 "maxBatchSize=10\n" +
                 "initialDelay=0\n" +
                 "delay=1\n" +
-                "unit=SECONDS\n");
+                "unit=SECONDS\n" +
+                "error.key=error.value\n");
         val config = parsePropertiesToBatchExecutorConfig(properties);
         batchExecutor = new BatchExecutor<String>(config) {
 

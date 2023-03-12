@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.Runtime.getRuntime;
 import static java.util.Objects.nonNull;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 
 public abstract class BatchExecutor<T> extends EventBusExecutor {
 
@@ -26,14 +27,16 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
     private volatile boolean running;
 
     private final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
-    private ThreadPoolExecutor threadPoolExecutor;
+    private ThreadPoolExecutor eventExecutor;
     private final Object eventObject = new Object();
+    private final Executor batchEventExecutor;
 
     public BatchExecutor(BatchExecutorConfig config) {
         this.maxBatchSize = config.getMaxBatchSize();
         this.initialDelay = config.getInitialDelay();
         this.delay = config.getDelay();
         this.unit = config.getUnit();
+        this.batchEventExecutor = batchEventExecutor();
     }
 
     public synchronized void start() {
@@ -64,7 +67,7 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
         val items = new ArrayList<T>();
         queue.drainTo(items);
         if (!items.isEmpty()) {
-            new Thread(() -> batchExecute(items)).start();
+            this.batchEventExecutor.execute(() -> batchExecute(items));
         }
         if (running && eventObject == event)
             post(event, delay, unit);
@@ -72,9 +75,13 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
 
     @Override
     protected Executor eventBusExecutor() {
-        if (nonNull(threadPoolExecutor)) return threadPoolExecutor;
-        threadPoolExecutor = new ThreadPoolExecutor(2, Integer.MAX_VALUE,
+        if (nonNull(eventExecutor)) return eventExecutor;
+        eventExecutor = new ThreadPoolExecutor(2, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-        return threadPoolExecutor;
+        return eventExecutor;
+    }
+
+    protected Executor batchEventExecutor() {
+        return newCachedThreadPool();
     }
 }

@@ -1,6 +1,7 @@
 package com.github.charlemaznable.core.config.spring;
 
 import com.github.charlemaznable.core.config.EnvFactory;
+import com.github.charlemaznable.core.config.TestFactoryConfig;
 import com.github.charlemaznable.core.config.spring.TestBaseConfig.BaseConfig;
 import com.github.charlemaznable.core.config.spring.TestBaseConfig.ExtendConfig;
 import com.github.charlemaznable.core.config.spring.TestEnvSpringConfig.ConfigBean;
@@ -83,5 +84,16 @@ public class EnvSpringTest {
         assertNotSame(extendConfig, testBaseConfig.extendConfig(baseConfig));
 
         assertNull(SpringContext.getBean("TestBaseSubConfig.noBaseConfig"));
+    }
+
+    @Autowired
+    private TestFactoryConfig factoryConfig;
+
+    @Test
+    public void testFactoryConfig() {
+        assertEquals("value1", factoryConfig.key1());
+        assertEquals("value2", factoryConfig.key2());
+        assertEquals("value3", factoryConfig.key3());
+        assertEquals("value4", factoryConfig.key4());
     }
 }
