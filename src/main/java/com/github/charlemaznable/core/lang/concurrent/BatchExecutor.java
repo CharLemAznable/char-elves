@@ -13,9 +13,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.charlemaznable.core.lang.concurrent.Executors.parallelismExecutor;
-import static com.github.charlemaznable.core.lang.concurrent.Executors.unlimitExecutor;
 import static java.lang.Runtime.getRuntime;
 import static java.util.Objects.nonNull;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 
 public abstract class BatchExecutor<T> extends EventBusExecutor {
 
@@ -77,7 +77,7 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
     @Override
     protected Executor eventBusExecutor() {
         if (nonNull(eventExecutor)) return eventExecutor;
-        eventExecutor = unlimitExecutor();
+        eventExecutor = newCachedThreadPool();
         return eventExecutor;
     }
 
