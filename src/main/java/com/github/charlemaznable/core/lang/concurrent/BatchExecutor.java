@@ -8,10 +8,11 @@ import lombok.val;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.charlemaznable.core.lang.concurrent.Executors.parallelismExecutor;
 import static java.lang.Runtime.getRuntime;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
@@ -27,7 +28,7 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
     private volatile boolean running;
 
     private final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
-    private ThreadPoolExecutor eventExecutor;
+    private ExecutorService eventExecutor;
     private final Object eventObject = new Object();
     private final Executor batchEventExecutor;
 
@@ -76,12 +77,11 @@ public abstract class BatchExecutor<T> extends EventBusExecutor {
     @Override
     protected Executor eventBusExecutor() {
         if (nonNull(eventExecutor)) return eventExecutor;
-        eventExecutor = new ThreadPoolExecutor(2, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+        eventExecutor = newCachedThreadPool();
         return eventExecutor;
     }
 
     protected Executor batchEventExecutor() {
-        return newCachedThreadPool();
+        return parallelismExecutor();
     }
 }
