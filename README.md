@@ -29,7 +29,7 @@ JAVA常用工具包.
 <dependency>
   <groupId>com.github.charlemaznable</groupId>
   <artifactId>char-elves</artifactId>
-  <version>2022.0.6</version>
+  <version>2022.0.7</version>
 </dependency>
 ```
 
@@ -39,6 +39,6 @@ JAVA常用工具包.
 <dependency>
   <groupId>com.github.charlemaznable</groupId>
   <artifactId>char-elves</artifactId>
-  <version>2022.0.7-SNAPSHOT</version>
+  <version>2022.0.8-SNAPSHOT</version>
 </dependency>
 ```
