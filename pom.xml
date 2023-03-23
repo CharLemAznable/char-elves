@@ -49,7 +49,8 @@
         <sonar.exclusions>
             src/main/java/com/github/charlemaznable/core/es/EsClientBuildElf.java,
             src/main/java/com/github/charlemaznable/core/lang/Objectt.java,
-            src/main/java/com/github/charlemaznable/core/spring/SpringClassPathMethodBeanLoader.java
+            src/main/java/com/github/charlemaznable/core/spring/SpringClassPathMethodBeanLoader.java,
+            src/main/java/com/github/charlemaznable/core/vertx/spring/ConditionalOnRx.java
         </sonar.exclusions>
 
         <apollo-mockserver.version>2023.0.5-SNAPSHOT</apollo-mockserver.version>
@@ -97,6 +98,21 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java2</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java3</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
