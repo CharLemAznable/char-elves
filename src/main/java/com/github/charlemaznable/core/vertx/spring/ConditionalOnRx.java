@@ -24,7 +24,7 @@ import static java.util.Objects.isNull;
 @Conditional({ConditionalOnRx.OnRxCondition.class})
 @interface ConditionalOnRx {
 
-    Class<?> value();
+    String value();
 
     class OnRxCondition implements Condition {
 
