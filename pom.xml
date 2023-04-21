@@ -49,6 +49,10 @@
         <sonar.exclusions>
             src/main/java/com/github/charlemaznable/core/es/EsClientBuildElf.java,
             src/main/java/com/github/charlemaznable/core/lang/Objectt.java,
+            src/main/java/com/github/charlemaznable/core/rxjava/RxJava1BuildHelper.java,
+            src/main/java/com/github/charlemaznable/core/rxjava/RxJava2BuildHelper.java,
+            src/main/java/com/github/charlemaznable/core/rxjava/RxJava3BuildHelper.java,
+            src/main/java/com/github/charlemaznable/core/rxjava/RxJavaCheckHelper.java,
             src/main/java/com/github/charlemaznable/core/spring/SpringClassPathMethodBeanLoader.java,
             src/main/java/com/github/charlemaznable/core/vertx/spring/ConditionalOnRx.java
         </sonar.exclusions>
