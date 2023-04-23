@@ -8,11 +8,11 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public final class RxJava1BuildHelper {
 
-    public static Single<Object> buildSingle(java.util.concurrent.Future<Object> future) {
+    public static Single<Object> buildSingleFromFuture(java.util.concurrent.Future<Object> future) {
         return Single.from(future);
     }
 
-    public static Single<Object> buildSingle(io.vertx.core.Future<Object> future) {
+    public static Single<Object> buildSingleFromVertxFuture(io.vertx.core.Future<Object> future) {
         return Single.create(sub -> future.onComplete(ar -> {
             if (!sub.isUnsubscribed()) {
                 if (ar.succeeded()) {

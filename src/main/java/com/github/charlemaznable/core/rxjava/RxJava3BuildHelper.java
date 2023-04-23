@@ -16,12 +16,12 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public final class RxJava3BuildHelper {
 
-    public static Single<Object> buildSingle(java.util.concurrent.Future<Object> future) {
+    public static Single<Object> buildSingleFromFuture(java.util.concurrent.Future<Object> future) {
         return Single.fromFuture(future);
     }
 
     @SuppressWarnings("DuplicatedCode")
-    public static Single<Object> buildSingle(io.vertx.core.Future<Object> future) {
+    public static Single<Object> buildSingleFromVertxFuture(io.vertx.core.Future<Object> future) {
         return RxJavaPlugins.onAssembly(new Single<>() {
             @Override
             protected void subscribeActual(@NonNull SingleObserver<? super Object> observer) {

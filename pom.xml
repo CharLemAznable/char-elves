@@ -49,6 +49,8 @@
         <sonar.exclusions>
             src/main/java/com/github/charlemaznable/core/es/EsClientBuildElf.java,
             src/main/java/com/github/charlemaznable/core/lang/Objectt.java,
+            src/main/java/com/github/charlemaznable/core/mutiny/MutinyBuildHelper.java,
+            src/main/java/com/github/charlemaznable/core/mutiny/MutinyCheckHelper.java,
             src/main/java/com/github/charlemaznable/core/rxjava/RxJava1BuildHelper.java,
             src/main/java/com/github/charlemaznable/core/rxjava/RxJava2BuildHelper.java,
             src/main/java/com/github/charlemaznable/core/rxjava/RxJava3BuildHelper.java,
@@ -98,6 +100,11 @@
         <dependency>
             <groupId>com.idealista</groupId>
             <artifactId>format-preserving-encryption</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.smallrye.reactive</groupId>
+            <artifactId>mutiny</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
