@@ -14,7 +14,7 @@ public final class ReactorCheckHelper {
 
     public static final boolean HAS_REACTOR = ClzPath.classExists(REACTOR_MONO);
 
-    public static boolean checkReturnMutinyUni(Class<?> returnType) {
+    public static boolean checkReturnReactorMono(Class<?> returnType) {
         return HAS_REACTOR && Objects.equals(ClzPath.findClass(REACTOR_MONO), returnType);
     }
 }
