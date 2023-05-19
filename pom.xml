@@ -104,6 +104,10 @@
             <artifactId>format-preserving-encryption</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.etcd</groupId>
+            <artifactId>jetcd-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
             <optional>true</optional>
@@ -242,6 +246,11 @@
             <groupId>com.github.charlemaznable</groupId>
             <artifactId>apollo-mockserver</artifactId>
             <version>${apollo-mockserver.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.etcd</groupId>
+            <artifactId>jetcd-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
