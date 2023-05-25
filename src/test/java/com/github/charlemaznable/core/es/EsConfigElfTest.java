@@ -1,6 +1,8 @@
 package com.github.charlemaznable.core.es;
 
 import com.github.charlemaznable.apollo.MockApolloServer;
+import com.github.charlemaznable.etcdconf.EtcdConfigService;
+import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.n3r.diamond.client.impl.MockDiamondServer;
@@ -9,8 +11,10 @@ import java.time.Duration;
 
 import static com.github.charlemaznable.core.es.EsClientElf.parsePropertiesToEsConfig;
 import static com.github.charlemaznable.core.es.EsConfigElf.ES_CONFIG_DIAMOND_GROUP_NAME;
+import static com.github.charlemaznable.core.es.EsConfigElf.ES_CONFIG_ETCD_NAMESPACE;
 import static com.github.charlemaznable.core.es.EsConfigElf.getApolloProperty;
 import static com.github.charlemaznable.core.es.EsConfigElf.getDiamondStone;
+import static com.github.charlemaznable.core.es.EsConfigElf.getEtcdValue;
 import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,6 +48,23 @@ public class EsConfigElfTest {
         assertConfigValue(configStone);
 
         MockDiamondServer.tearDownMockServer();
+    }
+
+    @Test
+    public void testEsConfigElfInEtcd() {
+        EtcdConfigService.setUpTestMode();
+        EmbeddedEtcdCluster.addOrModifyProperty(ES_CONFIG_ETCD_NAMESPACE, "DEFAULT", """
+                uris=http://localhost:9200,http://localhost:9201
+                username=username
+                password=pa55wOrd
+                connectionTimeout=5
+                socketTimeout=60
+                """);
+
+        val configValue = getEtcdValue("DEFAULT");
+        assertConfigValue(configValue);
+
+        EtcdConfigService.tearDownTestMode();
     }
 
     private void assertConfigValue(String configValue) {

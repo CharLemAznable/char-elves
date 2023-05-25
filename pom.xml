@@ -61,6 +61,7 @@
             src/main/java/com/github/charlemaznable/core/vertx/spring/ConditionalOnRx.java
         </sonar.exclusions>
 
+        <etcdconf-client.version>2023.1.2-SNAPSHOT</etcdconf-client.version>
         <apollo-mockserver.version>2023.1.2-SNAPSHOT</apollo-mockserver.version>
     </properties>
 
@@ -85,6 +86,12 @@
         <dependency>
             <groupId>com.github.bingoohuang</groupId>
             <artifactId>diamond-client</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.github.charlemaznable</groupId>
+            <artifactId>etcdconf-client</artifactId>
+            <version>${etcdconf-client.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>

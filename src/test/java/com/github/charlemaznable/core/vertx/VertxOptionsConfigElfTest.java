@@ -1,6 +1,8 @@
 package com.github.charlemaznable.core.vertx;
 
 import com.github.charlemaznable.apollo.MockApolloServer;
+import com.github.charlemaznable.etcdconf.EtcdConfigService;
+import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.n3r.diamond.client.impl.MockDiamondServer;
@@ -10,8 +12,10 @@ import java.util.concurrent.TimeUnit;
 import static com.github.charlemaznable.core.lang.Propertiess.parseStringToProperties;
 import static com.github.charlemaznable.core.vertx.VertxElf.parsePropertiesToVertxOptions;
 import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.VERTX_OPTIONS_DIAMOND_GROUP_NAME;
+import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.VERTX_OPTIONS_ETCD_NAMESPACE;
 import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.getApolloProperty;
 import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.getDiamondStone;
+import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.getEtcdValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -45,6 +49,24 @@ public class VertxOptionsConfigElfTest {
         assertConfigValue(configStone);
 
         MockDiamondServer.tearDownMockServer();
+    }
+
+    @Test
+    public void testVertxOptionsConfigElfInEtcd() {
+        EtcdConfigService.setUpTestMode();
+        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "DEFAULT", """
+                eventLoopPoolSize=2
+                maxEventLoopExecuteTime=5
+                haEnabled=true
+                haGroup=___DEFAULT___
+                maxEventLoopExecuteTimeUnit=SECONDS
+                blockedThreadCheckIntervalUnit=SECOND
+                """);
+
+        val configValue = getEtcdValue("DEFAULT");
+        assertConfigValue(configValue);
+
+        EtcdConfigService.tearDownTestMode();
     }
 
     private void assertConfigValue(String configValue) {
