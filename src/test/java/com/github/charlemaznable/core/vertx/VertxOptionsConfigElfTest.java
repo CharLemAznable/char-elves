@@ -1,8 +1,7 @@
 package com.github.charlemaznable.core.vertx;
 
 import com.github.charlemaznable.apollo.MockApolloServer;
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.n3r.diamond.client.impl.MockDiamondServer;
@@ -53,8 +52,8 @@ public class VertxOptionsConfigElfTest {
 
     @Test
     public void testVertxOptionsConfigElfInEtcd() {
-        EtcdConfigService.setUpTestMode();
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "DEFAULT", """
+        MockEtcdServer.setUpMockServer();
+        MockEtcdServer.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "DEFAULT", """
                 eventLoopPoolSize=2
                 maxEventLoopExecuteTime=5
                 haEnabled=true
@@ -66,7 +65,7 @@ public class VertxOptionsConfigElfTest {
         val configValue = getEtcdValue("DEFAULT");
         assertConfigValue(configValue);
 
-        EtcdConfigService.tearDownTestMode();
+        MockEtcdServer.tearDownMockServer();
     }
 
     private void assertConfigValue(String configValue) {

@@ -1,8 +1,7 @@
 package com.github.charlemaznable.core.es;
 
 import com.github.charlemaznable.apollo.MockApolloServer;
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.n3r.diamond.client.impl.MockDiamondServer;
@@ -52,8 +51,8 @@ public class EsConfigElfTest {
 
     @Test
     public void testEsConfigElfInEtcd() {
-        EtcdConfigService.setUpTestMode();
-        EmbeddedEtcdCluster.addOrModifyProperty(ES_CONFIG_ETCD_NAMESPACE, "DEFAULT", """
+        MockEtcdServer.setUpMockServer();
+        MockEtcdServer.addOrModifyProperty(ES_CONFIG_ETCD_NAMESPACE, "DEFAULT", """
                 uris=http://localhost:9200,http://localhost:9201
                 username=username
                 password=pa55wOrd
@@ -64,7 +63,7 @@ public class EsConfigElfTest {
         val configValue = getEtcdValue("DEFAULT");
         assertConfigValue(configValue);
 
-        EtcdConfigService.tearDownTestMode();
+        MockEtcdServer.tearDownMockServer();
     }
 
     private void assertConfigValue(String configValue) {

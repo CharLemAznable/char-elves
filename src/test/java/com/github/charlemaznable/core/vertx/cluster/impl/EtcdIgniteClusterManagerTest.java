@@ -2,8 +2,7 @@ package com.github.charlemaznable.core.vertx.cluster.impl;
 
 import com.github.charlemaznable.core.vertx.cluster.EtcdValueTest;
 import com.github.charlemaznable.core.vertx.cluster.IgniteClusterManagerTest;
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -15,42 +14,42 @@ public class EtcdIgniteClusterManagerTest
 
     @Test
     public void testEtcdIgniteClusterManager() {
-        EtcdConfigService.setUpTestMode();
+        MockEtcdServer.setUpMockServer();
 
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "ignite", "" +
+        MockEtcdServer.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "ignite", "" +
                 "clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.EtcdIgniteClusterManager");
         val ignite = parseEtcdValue("ignite");
         assertIgnite(ignite);
 
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "ignite0", "" +
+        MockEtcdServer.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "ignite0", "" +
                 "clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.EtcdIgniteClusterManager()");
         val ignite0 = parseEtcdValue("ignite0");
         assertIgnite0(ignite0);
 
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "ignite1", "" +
+        MockEtcdServer.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "ignite1", "" +
                 "clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.EtcdIgniteClusterManager(igniteJson)");
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE, "igniteJson", """
+        MockEtcdServer.addOrModifyProperty(VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE, "igniteJson", """
                 {
                   "localPort":47101
                 }""");
         val ignite1 = parseEtcdValue("ignite1");
         assertIgnite1(ignite1);
 
-        EtcdConfigService.tearDownTestMode();
+        MockEtcdServer.tearDownMockServer();
     }
 
     @Test
     public void testEtcdIgniteClusterManagerError() {
-        EtcdConfigService.setUpTestMode();
+        MockEtcdServer.setUpMockServer();
 
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "igniteNone", "" +
+        MockEtcdServer.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "igniteNone", "" +
                 "clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.EtcdIgniteClusterManager(igniteNotExists)");
         val igniteNone = parseEtcdValue("igniteNone");
         assertIgniteNone(igniteNone);
 
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "igniteError", "" +
+        MockEtcdServer.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "igniteError", "" +
                 "clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.EtcdIgniteClusterManager(igniteJsonError)");
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE, "igniteJsonError", """
+        MockEtcdServer.addOrModifyProperty(VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE, "igniteJsonError", """
                 {
                   "localPort":47101,
                   "discoveryOptions":
@@ -58,6 +57,6 @@ public class EtcdIgniteClusterManagerTest
         val igniteError = parseEtcdValue("igniteError");
         assertIgniteError(igniteError);
 
-        EtcdConfigService.tearDownTestMode();
+        MockEtcdServer.tearDownMockServer();
     }
 }

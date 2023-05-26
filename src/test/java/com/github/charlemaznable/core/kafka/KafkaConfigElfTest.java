@@ -1,8 +1,7 @@
 package com.github.charlemaznable.core.kafka;
 
 import com.github.charlemaznable.apollo.MockApolloServer;
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import lombok.val;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -60,13 +59,13 @@ public class KafkaConfigElfTest {
 
     @Test
     public void testKafkaConfigElfInEtcd() {
-        EtcdConfigService.setUpTestMode();
-        EmbeddedEtcdCluster.addOrModifyProperty(KAFKA_CONFIG_ETCD_NAMESPACE, "producer", """
+        MockEtcdServer.setUpMockServer();
+        MockEtcdServer.addOrModifyProperty(KAFKA_CONFIG_ETCD_NAMESPACE, "producer", """
                 bootstrap.servers=127.0.0.1:9092
                 key.serializer=org.apache.kafka.common.serialization.StringSerializer
                 value.serializer=org.apache.kafka.common.serialization.StringSerializer
                 """);
-        EmbeddedEtcdCluster.addOrModifyProperty(KAFKA_CONFIG_ETCD_NAMESPACE, "consumer", """
+        MockEtcdServer.addOrModifyProperty(KAFKA_CONFIG_ETCD_NAMESPACE, "consumer", """
                 bootstrap.servers=127.0.0.1:9092
                 key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
                 value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
@@ -78,7 +77,7 @@ public class KafkaConfigElfTest {
         val consumerConfigValue = getEtcdValue("consumer");
         assertConsumerConfigValue(consumerConfigValue);
 
-        EtcdConfigService.tearDownTestMode();
+        MockEtcdServer.tearDownMockServer();
     }
 
     private void assertProducerConfigValue(String configValue) {
