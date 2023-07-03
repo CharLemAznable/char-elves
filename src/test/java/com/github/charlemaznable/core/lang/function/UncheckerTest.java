@@ -12,10 +12,12 @@ public class UncheckerTest {
     public void testUnchecker() {
         assertThrows(Exception.class, () -> unchecked(ExceptionFunctions::consumer).accept("sneaky"));
         assertThrows(Exception.class, () -> unchecked(ExceptionFunctions::function).apply("sneaky"));
+        assertThrows(Exception.class, () -> unchecked(ExceptionFunctions::runnable).run());
         assertThrows(Exception.class, () -> unchecked(ExceptionFunctions::supplier).get());
 
         assertDoesNotThrow(() -> unchecked(t -> {}).accept("sneaky"));
         assertDoesNotThrow(() -> unchecked(t -> t).apply("sneaky"));
+        assertDoesNotThrow(() -> unchecked(() -> {}).run());
         assertDoesNotThrow(() -> unchecked(() -> "sneaky").get());
     }
 
@@ -27,6 +29,10 @@ public class UncheckerTest {
 
         public static String function(String msg) throws Exception {
             throw new Exception(msg);
+        }
+
+        public static void runnable() throws Exception {
+            throw new Exception("sneaky");
         }
 
         public static String supplier() throws Exception {

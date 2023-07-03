@@ -32,6 +32,16 @@ public final class Unchecker {
         };
     }
 
+    public static Runnable unchecked(RunnableWithException runnable) {
+        return () -> {
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                throw sneakyThrow(e);
+            }
+        };
+    }
+
     public static <T> Supplier<T> unchecked(SupplierWithException<T> supplier) {
         return () -> {
             try {
