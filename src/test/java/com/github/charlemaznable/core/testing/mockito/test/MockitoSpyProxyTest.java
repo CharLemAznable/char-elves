@@ -19,12 +19,15 @@ public class MockitoSpyProxyTest {
     private ClassB b;
     @Autowired
     private ClassC c;
+    @Autowired
+    private ClassD d;
 
     @Test
     public void testMockitoSpyProxy() {
         assertFalse(MockUtil.isSpy(a));
         assertTrue(MockUtil.isSpy(b));
         assertTrue(MockUtil.isSpy(c));
+        assertTrue(MockUtil.isSpy(d));
 
         assertEquals("A&B&C", a.complex());
 
@@ -32,5 +35,9 @@ public class MockitoSpyProxyTest {
         doReturn("CC").when(c).doSth();
 
         assertEquals("A&BB&CC", a.complex());
+
+        doReturn("DD").when(d).doSth();
+
+        assertEquals("DD", d.doSth());
     }
 }
