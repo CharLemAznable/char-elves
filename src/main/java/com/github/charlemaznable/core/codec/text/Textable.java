@@ -39,7 +39,7 @@ public abstract class Textable {
                     value : processor.process(value));
         }
 
-        return new TreeMap<>(result).entrySet().parallelStream()
+        return new TreeMap<>(result).entrySet().stream()
                 .map(e -> e.getKey() + keyValueSeparator() + e.getValue())
                 .collect(Collectors.joining(entrySeparator()));
     }

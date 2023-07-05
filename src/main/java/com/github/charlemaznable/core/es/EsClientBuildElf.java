@@ -49,7 +49,7 @@ final class EsClientBuildElf {
                         esConfig.getUsername(), esConfig.getPassword());
                 setCredentials(AuthScope.ANY, credentials);
             }
-            esConfig.getUris().parallelStream().map(this::toUri)
+            esConfig.getUris().stream().map(this::toUri)
                     .forEach(this::addUserInfoCredentials);
         }
 
