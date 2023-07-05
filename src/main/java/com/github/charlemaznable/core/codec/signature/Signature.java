@@ -217,7 +217,7 @@ public final class Signature {
                 : new TreeMap<>(flatMap).descendingMap();
         tempMap.remove(options.key());
         return options.plainProcessor().apply(tempMap
-                .entrySet().stream()
+                .entrySet().parallelStream()
                 .filter(options.entryFilter())
                 .map(options.entryMapper())
                 .collect(Collectors.joining(options.entrySeparator())));
