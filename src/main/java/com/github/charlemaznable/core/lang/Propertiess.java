@@ -59,7 +59,7 @@ public final class Propertiess {
     }
 
     public static Map<String, String> ssMap(Properties properties) {
-        return properties.stringPropertyNames().stream()
+        return properties.stringPropertyNames().parallelStream()
                 .collect(toMap(s -> s, properties::getProperty));
     }
 }

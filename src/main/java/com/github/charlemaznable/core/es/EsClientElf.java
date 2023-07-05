@@ -66,7 +66,7 @@ public final class EsClientElf {
     }
 
     private static RestClient buildEsHttpClient(EsConfig esConfig) {
-        val hosts = esConfig.getUris().stream()
+        val hosts = esConfig.getUris().parallelStream()
                 .map(EsClientBuildElf::createHttpHost).toArray(HttpHost[]::new);
         val builder = RestClient.builder(hosts);
         builder.setHttpClientConfigCallback(httpClientBuilder -> {

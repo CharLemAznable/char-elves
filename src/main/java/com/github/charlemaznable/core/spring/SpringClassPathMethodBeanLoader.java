@@ -129,7 +129,7 @@ final class SpringClassPathMethodBeanLoader {
 
         val conditions = new ArrayList<Condition>();
         getConditionClasses(methodMetadata).forEach(conditionClasses ->
-                Arrays.stream(conditionClasses).forEach(conditionClass ->
+                Arrays.stream(conditionClasses).parallel().forEach(conditionClass ->
                         conditions.add(getCondition(conditionClass, conditionContext.getClassLoader()))));
         AnnotationAwareOrderComparator.sort(conditions);
 

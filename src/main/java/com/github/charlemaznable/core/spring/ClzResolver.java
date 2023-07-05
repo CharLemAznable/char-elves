@@ -38,7 +38,7 @@ public final class ClzResolver {
         val resources = resolver.getResources(CLASSPATH_ALL_URL_PREFIX
                 + resolveBasePackage(basePackage) + CLASS_PATTER);
 
-        return stream(resources).filter(Resource::isReadable)
+        return stream(resources).parallel().filter(Resource::isReadable)
                 .map(resource -> resolveResourceClass(resource, readerFactory))
                 .filter(clazz -> testResolvedClass(clazz, classPredicate)).collect(toList());
     }
@@ -67,7 +67,7 @@ public final class ClzResolver {
         val resources = resolver.getResources(CLASSPATH_ALL_URL_PREFIX
                 + resolveBasePackage(basePackage) + ALL_MATCH_PATTERN + extension);
 
-        return stream(resources).filter(Resource::isReadable)
+        return stream(resources).parallel().filter(Resource::isReadable)
                 .map(ClzResolver::resolveResourceURL).collect(toList());
     }
 
