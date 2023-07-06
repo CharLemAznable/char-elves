@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serial;
 import java.text.NumberFormat;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +154,16 @@ public final class Mapp {
 
     public static <K, V> Map<K, V> newHashMap(Map<? extends K, ? extends V> map) {
         return isNull(map) ? Maps.newHashMap() : Maps.newHashMap(map);
+    }
+
+    public static <K extends Enum<K>, V> EnumMap<K, V> newEnumMap(Class<K> type) {
+        return Maps.newEnumMap(type);
+    }
+
+    public static <K extends Enum<K>, V> EnumMap<K, V> newEnumMap(Class<K> type, Map<K, ? extends V> map) {
+        EnumMap<K, V> enumMap = newEnumMap(type);
+        if (nonNull(map)) enumMap.putAll(map);
+        return enumMap;
     }
 
     @SafeVarargs

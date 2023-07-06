@@ -33,7 +33,16 @@ public class MappTest {
         val map4 = Mapp.newHashMap(map2);
         assertFalse(Mapp.isEmpty(map4));
         val map5 = Mapp.newHashMap(null);
-        assertTrue(Mapp.isEmpty(map3));
+        assertTrue(Mapp.isEmpty(map5));
+
+        enum MapEnum {
+            A, B, C
+        }
+
+        val map6 = Mapp.newEnumMap(MapEnum.class, null);
+        assertTrue(Mapp.isEmpty(map6));
+        val map7 = Mapp.newEnumMap(MapEnum.class, Mapp.of(MapEnum.A, "A", MapEnum.B, "B"));
+        assertFalse(Mapp.isEmpty(map7));
     }
 
     @Test
