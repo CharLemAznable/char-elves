@@ -81,7 +81,7 @@ public final class HyperLogLog {
      * m = (1.04/rsd)^2
      *
      * @param rsd relative standard deviation
-     * @return log2m, bucket count m = 1 << log2m
+     * @return log2m, bucket count m = 2 ^ log2m
      */
     public static int log2m(double rsd) {
         return (int) (log((1.106 / rsd) * (1.106 / rsd)) / log(2));
@@ -90,7 +90,7 @@ public final class HyperLogLog {
     /**
      * rsd = 1.04/sqrt(m)
      *
-     * @param log2m log2m, bucket count m = 1 << log2m
+     * @param log2m log2m, bucket count m = 2 ^ log2m
      * @return relative standard deviation
      */
     public static double rsd(int log2m) {
