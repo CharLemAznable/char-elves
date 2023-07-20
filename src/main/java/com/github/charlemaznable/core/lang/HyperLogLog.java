@@ -167,9 +167,15 @@ public final class HyperLogLog {
             }
         }
 
+        if (0 == registerSum) {
+            throw new IllegalStateException("Register Sum is Zero");
+        }
         double estimate = alphaMM * (1 / registerSum);
 
         if (estimate <= (5.0 / 2.0) * m) {
+            if (0 == zeros) {
+                throw new IllegalStateException("Zeros count is Zero");
+            }
             // Small Range Estimate
             return round(linearCounting(m, zeros));
         } else {
@@ -227,13 +233,13 @@ public final class HyperLogLog {
      */
     public static final class RegisterSet {
 
-        public final static int LOG2_BITS_PER_WORD = 6;
-        public final static int REGISTER_SIZE = 5;
+        public static final int LOG2_BITS_PER_WORD = 6;
+        public static final int REGISTER_SIZE = 5;
 
         public final int count;
         public final int size;
 
-        private final int[] M;
+        private final int[] buckets;
 
         public RegisterSet(int count) {
             this(count, null);
@@ -242,9 +248,9 @@ public final class HyperLogLog {
         public RegisterSet(int count, int[] initialValues) {
             this.count = count;
 
-            this.M = requireNonNullElseGet(initialValues,
+            this.buckets = requireNonNullElseGet(initialValues,
                     () -> new int[getSizeForCount(count)]);
-            this.size = this.M.length;
+            this.size = this.buckets.length;
         }
 
         public static int getBits(int count) {
@@ -265,7 +271,7 @@ public final class HyperLogLog {
         public int get(int position) {
             int bucketPos = position / LOG2_BITS_PER_WORD;
             int shift = REGISTER_SIZE * (position - (bucketPos * LOG2_BITS_PER_WORD));
-            return (this.M[bucketPos] & (0x1f << shift)) >>> shift;
+            return (this.buckets[bucketPos] & (0x1f << shift)) >>> shift;
         }
 
         public boolean updateIfGreater(int position, int value) {
@@ -274,10 +280,10 @@ public final class HyperLogLog {
             int mask = 0x1f << shift;
 
             // Use long to avoid sign issues with the left-most shift
-            long curVal = this.M[bucket] & mask;
+            long curVal = this.buckets[bucket] & mask;
             long newVal = (long) value << shift;
             if (curVal < newVal) {
-                this.M[bucket] = (int) ((this.M[bucket] & ~mask) | newVal);
+                this.buckets[bucket] = (int) ((this.buckets[bucket] & ~mask) | newVal);
                 return true;
             } else {
                 return false;
@@ -285,16 +291,16 @@ public final class HyperLogLog {
         }
 
         public void merge(RegisterSet that) {
-            for (int bucket = 0; bucket < M.length; bucket++) {
+            for (int bucket = 0; bucket < buckets.length; bucket++) {
                 int word = 0;
                 for (int j = 0; j < LOG2_BITS_PER_WORD; j++) {
                     int mask = 0x1f << (REGISTER_SIZE * j);
 
-                    int thisVal = (this.M[bucket] & mask);
-                    int thatVal = (that.M[bucket] & mask);
+                    int thisVal = (this.buckets[bucket] & mask);
+                    int thatVal = (that.buckets[bucket] & mask);
                     word |= max(thisVal, thatVal);
                 }
-                this.M[bucket] = word;
+                this.buckets[bucket] = word;
             }
         }
     }
