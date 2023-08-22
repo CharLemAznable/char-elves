@@ -16,7 +16,6 @@ import static com.github.charlemaznable.core.lang.HyperLogLog.rsd;
 import static java.lang.Runtime.getRuntime;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -58,23 +57,20 @@ public class HyperLogLogTest {
             log.info("result cardinality: " + cardinality);
             // hyperloglog(16384) standard error 0.81%
             // 95%置信区间: count±2*0.81%
-            assertTrue(cardinality <= COUNT * 1.0162);
-            assertTrue(cardinality >= COUNT * 0.9838);
+            assertEquals(1., 1. * cardinality / COUNT, 2 * 0.0081);
 
             val cardinality2 = hll2.cardinality();
             log.info("result cardinality2: " + cardinality2);
             // hyperloglog(16384) standard error 0.81%
             // 95%置信区间: count±2*0.81%
-            assertTrue(cardinality2 <= COUNT * 1.0162);
-            assertTrue(cardinality2 >= COUNT * 0.9838);
+            assertEquals(1., 1. * cardinality2 / COUNT, 2 * 0.0081);
 
             val merged = hll.merge(hll2);
             val mergedCardinality = hll2.cardinality();
             log.info("result merged: " + mergedCardinality);
             // hyperloglog(16384) standard error 0.81%
             // 95%置信区间: count±2*0.81%
-            assertTrue(mergedCardinality <= COUNT * 1.0162);
-            assertTrue(mergedCardinality >= COUNT * 0.9838);
+            assertEquals(1., 1. * mergedCardinality / COUNT, 2 * 0.0081);
         });
     }
 
