@@ -17,6 +17,7 @@ public abstract class ZookeeperClusterManagerTest {
               "connectTimeout":3000,
               "rootPath":"io.vertx",
               "retry": {
+                "policy":"exponential_backoff",
                 "initialSleepTime":100,
                 "intervalTimes":10000,
                 "maxTimes":5
