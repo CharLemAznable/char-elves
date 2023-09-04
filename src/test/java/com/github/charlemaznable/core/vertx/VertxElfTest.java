@@ -1,7 +1,6 @@
 package com.github.charlemaznable.core.vertx;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -84,7 +83,7 @@ public class VertxElfTest {
 
         @Override
         public void start(Promise<Void> startPromise) {
-            CompositeFuture.all(newArrayList(
+            Future.all(newArrayList(
                     Future.<Void>future(f ->
                             VertxElf.<Void>executeBlocking(promise -> {
                                 throw new UnsupportedOperationException();
