@@ -17,12 +17,12 @@ public final class Url {
 
     @SneakyThrows
     public static String encode(String s) {
-        return URLEncoder.encode(s, UTF_8.name());
+        return URLEncoder.encode(s, UTF_8);
     }
 
     @SneakyThrows
     public static String decode(String s) {
-        return URLDecoder.decode(s, UTF_8.name());
+        return URLDecoder.decode(s, UTF_8);
     }
 
     public static String encodeDotAndColon(String s) {
