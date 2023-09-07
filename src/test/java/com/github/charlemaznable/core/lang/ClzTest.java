@@ -34,7 +34,6 @@ public class ClzTest {
         assertTrue(Clz.isConcrete(Integer.class));
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testGetMethod() {
         assertThrows(NoSuchMethodException.class, () -> Clz.getMethod(Integer.class, "nonExistsMethod"));
@@ -75,14 +74,14 @@ public class ClzTest {
 
         val result1 = list.stream()
                 .sorted(new DepthComparator(new SubParamType()))
-                .filter(c -> c.isAssignableFrom(SubParamType.class)).toList();
+                .filter(c -> Clz.isAssignable(SubParamType.class, c)).toList();
         assertEquals(2, result1.size());
         assertEquals(SubParamType.class, result1.get(0));
         assertEquals(ParamType.class, result1.get(1));
 
         val result2 = list.stream()
                 .sorted(new DepthComparator(ParamType.class))
-                .filter(c -> c.isAssignableFrom(ParamType.class)).toList();
+                .filter(c -> Clz.isAssignable(ParamType.class, c)).toList();
         assertEquals(1, result2.size());
         assertEquals(ParamType.class, result2.get(0));
     }

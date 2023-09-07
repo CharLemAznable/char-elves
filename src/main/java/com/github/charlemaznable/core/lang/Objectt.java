@@ -86,7 +86,7 @@ public final class Objectt {
         // There has to be a method get* matching this segment
         val returnType = getPropertyType(propertyName, hostBean);
         if (returnType == null) return null;
-        if (Map.class.isAssignableFrom(returnType)) property = Maps.newHashMap();
+        if (isAssignable(returnType, Map.class)) property = Maps.newHashMap();
         if (property == null) property = onClass(returnType).create().get();
         val prop = property;
         setProperty(hostBean, propertyName, rt -> prop);

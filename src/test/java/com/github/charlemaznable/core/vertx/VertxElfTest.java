@@ -85,7 +85,7 @@ public class VertxElfTest {
         public void start(Promise<Void> startPromise) {
             Future.all(newArrayList(
                     Future.<Void>future(f ->
-                            VertxElf.<Void>executeBlocking(promise -> {
+                            VertxElf.<Void>executeBlocking(() -> {
                                 throw new UnsupportedOperationException();
                             }, asyncResult -> {
                                 assertTrue(asyncResult.failed());
@@ -94,7 +94,7 @@ public class VertxElfTest {
                             })
                     ),
                     Future.<Void>future(f ->
-                            VertxElf.<Void>executeBlocking(Promise::complete,
+                            VertxElf.<Void>executeBlocking(() -> null,
                                     asyncResult -> {
                                         assertTrue(asyncResult.succeeded());
                                         assertNull(asyncResult.result());

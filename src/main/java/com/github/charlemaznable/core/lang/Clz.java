@@ -79,8 +79,8 @@ public final class Clz {
             for (int i = 0; i < actualTypes.length; i++) {
                 val actualType = actualTypes[i];
                 if (actualType == NULL.class ||
-                        wrapper(declaredTypes[i]).isAssignableFrom(
-                                wrapper(actualType))) continue;
+                        isAssignable(wrapper(actualType),
+                                wrapper(declaredTypes[i]))) continue;
                 return false;
             }
             return true;

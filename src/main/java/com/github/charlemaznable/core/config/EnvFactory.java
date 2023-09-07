@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import static com.github.charlemaznable.core.config.Arguments.argumentsAsProperties;
+import static com.github.charlemaznable.core.lang.Clz.isAssignable;
 import static com.github.charlemaznable.core.lang.ClzPath.classResourceAsProperties;
 import static com.github.charlemaznable.core.lang.Condition.blankThen;
 import static com.github.charlemaznable.core.lang.LoadingCachee.get;
@@ -148,7 +149,7 @@ public final class EnvFactory {
 
             val grt = method.getGenericReturnType();
             val isCollection = grt instanceof ParameterizedType
-                    && Collection.class.isAssignableFrom(rt);
+                    && isAssignable(rt, Collection.class);
             if (!isCollection) return parseObject(rt, key, value);
 
             return parseObjects((Class<?>) ((ParameterizedType) grt)

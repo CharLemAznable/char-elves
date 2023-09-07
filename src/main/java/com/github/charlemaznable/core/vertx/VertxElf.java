@@ -3,7 +3,6 @@ package com.github.charlemaznable.core.vertx;
 import com.google.common.primitives.Primitives;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import lombok.NoArgsConstructor;
@@ -12,9 +11,11 @@ import lombok.val;
 
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import static com.github.charlemaznable.core.lang.Clz.isAssignable;
 import static com.github.charlemaznable.core.lang.Objectt.parseObject;
 import static com.github.charlemaznable.core.lang.Objectt.setValue;
 import static java.util.Objects.isNull;
@@ -38,8 +39,7 @@ public final class VertxElf {
                 val rt = Primitives.unwrap(returnType);
                 if (rt == String.class) return value;
                 if (rt.isPrimitive()) return parsePrimitive(rt, value);
-                if (Enum.class.isAssignableFrom(rt))
-                    return parseEnum(rt, value);
+                if (isAssignable(rt, Enum.class)) return parseEnum(rt, value);
                 return parseObject(value, rt);
             });
         }
@@ -97,15 +97,11 @@ public final class VertxElf {
     }
 
     public static <V> void executeBlocking(
-            Handler<Promise<V>> blockingCodeHandler,
+            Callable<V> blockingCodeHandler,
             Handler<AsyncResult<V>> resultHandler) {
-        Vertx.currentContext().executeBlocking(block -> {
-            try {
-                blockingCodeHandler.handle(block);
-            } catch (Exception e) {
-                block.fail(e);
-            }
-        }, false, resultHandler);
+        Vertx.currentContext()
+                .executeBlocking(blockingCodeHandler, false)
+                .onComplete(resultHandler);
     }
 
     private static Object parsePrimitive(Class<?> rt, String value) {

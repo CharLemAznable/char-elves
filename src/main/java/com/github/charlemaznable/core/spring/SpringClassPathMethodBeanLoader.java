@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static com.github.charlemaznable.core.lang.Clz.isAssignable;
 import static com.github.charlemaznable.core.lang.Condition.notNullThen;
 import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
@@ -80,10 +81,8 @@ final class SpringClassPathMethodBeanLoader {
                 beanClassName.equals(annotatedBeanDefinition.getMetadata().getClassName())) {
             metadata = annotatedBeanDefinition.getMetadata();
         } else {
-            if (BeanFactoryPostProcessor.class.isAssignableFrom(beanClass) ||
-                    BeanPostProcessor.class.isAssignableFrom(beanClass) ||
-                    AopInfrastructureBean.class.isAssignableFrom(beanClass) ||
-                    EventListenerFactory.class.isAssignableFrom(beanClass)) {
+            if (isAssignable(beanClass, BeanFactoryPostProcessor.class, BeanPostProcessor.class,
+                    AopInfrastructureBean.class, EventListenerFactory.class)) {
                 return Collections.emptySet();
             }
             metadata = AnnotationMetadata.introspect(beanClass);

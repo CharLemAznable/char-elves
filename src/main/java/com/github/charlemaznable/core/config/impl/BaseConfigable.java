@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import static com.github.charlemaznable.core.codec.Json.unJson;
 import static com.github.charlemaznable.core.codec.Json.unJsonArray;
+import static com.github.charlemaznable.core.lang.Clz.isAssignable;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Str.isEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
@@ -192,7 +193,7 @@ public abstract class BaseConfigable implements Configable {
             throw new ConfigValueFormatException(key + "'s value is not in JSONObject format");
         }
 
-        if (AfterPropertiesSet.class.isAssignableFrom(beanClass))
+        if (isAssignable(beanClass, AfterPropertiesSet.class))
             ((AfterPropertiesSet) bean).afterPropertiesSet();
 
         return bean;
@@ -214,7 +215,7 @@ public abstract class BaseConfigable implements Configable {
             throw new ConfigValueFormatException(key + "'s value is not in JSONArray format");
         }
 
-        if (AfterPropertiesSet.class.isAssignableFrom(beanClass))
+        if (isAssignable(beanClass, AfterPropertiesSet.class))
             for (T bean : beans) {
                 ((AfterPropertiesSet) bean).afterPropertiesSet();
             }
