@@ -3,8 +3,7 @@ package com.github.charlemaznable.core.rxjava;
 import com.github.charlemaznable.core.lang.ClzPath;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
+import static com.github.charlemaznable.core.lang.Clz.isAssignable;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -19,14 +18,14 @@ public final class RxJavaCheckHelper {
     public static final boolean HAS_RXJAVA3 = ClzPath.classExists(RXJAVA3_SINGLE);
 
     public static boolean checkReturnRxJavaSingle(Class<?> returnType) {
-        return HAS_RXJAVA && Objects.equals(ClzPath.findClass(RXJAVA_SINGLE), returnType);
+        return HAS_RXJAVA && isAssignable(ClzPath.findClass(RXJAVA_SINGLE), returnType);
     }
 
     public static boolean checkReturnRxJava2Single(Class<?> returnType) {
-        return HAS_RXJAVA2 && Objects.equals(ClzPath.findClass(RXJAVA2_SINGLE), returnType);
+        return HAS_RXJAVA2 && isAssignable(ClzPath.findClass(RXJAVA2_SINGLE), returnType);
     }
 
     public static boolean checkReturnRxJava3Single(Class<?> returnType) {
-        return HAS_RXJAVA3 && Objects.equals(ClzPath.findClass(RXJAVA3_SINGLE), returnType);
+        return HAS_RXJAVA3 && isAssignable(ClzPath.findClass(RXJAVA3_SINGLE), returnType);
     }
 }

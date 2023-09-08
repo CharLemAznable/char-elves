@@ -3,8 +3,7 @@ package com.github.charlemaznable.core.mutiny;
 import com.github.charlemaznable.core.lang.ClzPath;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
+import static com.github.charlemaznable.core.lang.Clz.isAssignable;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -15,6 +14,6 @@ public final class MutinyCheckHelper {
     public static final boolean HAS_MUTINY = ClzPath.classExists(MUTINY_UNI);
 
     public static boolean checkReturnMutinyUni(Class<?> returnType) {
-        return HAS_MUTINY && Objects.equals(ClzPath.findClass(MUTINY_UNI), returnType);
+        return HAS_MUTINY && isAssignable(ClzPath.findClass(MUTINY_UNI), returnType);
     }
 }
