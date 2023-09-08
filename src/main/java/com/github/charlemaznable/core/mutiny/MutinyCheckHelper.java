@@ -14,6 +14,7 @@ public final class MutinyCheckHelper {
     public static final boolean HAS_MUTINY = ClzPath.classExists(MUTINY_UNI);
 
     public static boolean checkReturnMutinyUni(Class<?> returnType) {
-        return HAS_MUTINY && isAssignable(ClzPath.findClass(MUTINY_UNI), returnType);
+        return HAS_MUTINY && Object.class != returnType
+                && isAssignable(ClzPath.findClass(MUTINY_UNI), returnType);
     }
 }

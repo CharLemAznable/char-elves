@@ -14,6 +14,7 @@ public final class ReactorCheckHelper {
     public static final boolean HAS_REACTOR = ClzPath.classExists(REACTOR_MONO);
 
     public static boolean checkReturnReactorMono(Class<?> returnType) {
-        return HAS_REACTOR && isAssignable(ClzPath.findClass(REACTOR_MONO), returnType);
+        return HAS_REACTOR && Object.class != returnType
+                && isAssignable(ClzPath.findClass(REACTOR_MONO), returnType);
     }
 }
