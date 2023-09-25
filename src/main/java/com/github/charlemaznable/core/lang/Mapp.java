@@ -9,10 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serial;
 import java.text.NumberFormat;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
@@ -21,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static com.github.charlemaznable.core.lang.Condition.notNullThenRun;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -162,8 +165,15 @@ public final class Mapp {
 
     public static <K extends Enum<K>, V> EnumMap<K, V> newEnumMap(Class<K> type, Map<K, ? extends V> map) {
         EnumMap<K, V> enumMap = newEnumMap(type);
-        if (nonNull(map)) enumMap.putAll(map);
+        notNullThenRun(map, enumMap::putAll);
         return enumMap;
+    }
+
+    public static <K extends Comparable, V> Map<K, V> newTreeMap(Map<? extends K, ? extends V> map,
+                                                                 Comparator<? super K> comparator) {
+        val treeMap = new TreeMap<K, V>(comparator);
+        notNullThenRun(map, treeMap::putAll);
+        return treeMap;
     }
 
     @SafeVarargs

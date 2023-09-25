@@ -43,6 +43,11 @@ public class MappTest {
         assertTrue(Mapp.isEmpty(map6));
         val map7 = Mapp.newEnumMap(MapEnum.class, Mapp.of(MapEnum.A, "A", MapEnum.B, "B"));
         assertFalse(Mapp.isEmpty(map7));
+
+        val map8 = Mapp.newTreeMap(null, String.CASE_INSENSITIVE_ORDER);
+        assertTrue(Mapp.isEmpty(map8));
+        map8.put("AAA", "abc");
+        assertEquals("abc", map8.get("aaa"));
     }
 
     @Test
