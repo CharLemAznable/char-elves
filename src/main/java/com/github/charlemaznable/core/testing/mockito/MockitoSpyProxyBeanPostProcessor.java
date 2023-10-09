@@ -2,6 +2,7 @@ package com.github.charlemaznable.core.testing.mockito;
 
 import com.github.charlemaznable.core.lang.ClzPath;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
 import org.springframework.beans.BeansException;
@@ -22,8 +23,8 @@ public class MockitoSpyProxyBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(@Nonnull Object bean, @Nonnull String beanName) throws BeansException {
-        if (HAS_MOCKITO && hasAnnotation(bean.getClass(), MockitoSpyForTesting.class)
-                && !MockUtil.isSpy(bean)) return Mockito.spy(bean);
-        return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
+        val mockBean = (HAS_MOCKITO && hasAnnotation(bean.getClass(), MockitoSpyForTesting.class)
+                && !MockUtil.isSpy(bean)) ? Mockito.spy(bean) : bean;
+        return BeanPostProcessor.super.postProcessAfterInitialization(mockBean, beanName);
     }
 }

@@ -7,8 +7,8 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -24,7 +24,7 @@ public final class RxJava2BuildHelper {
     public static Single<Object> buildSingleFromVertxFuture(io.vertx.core.Future<Object> future) {
         return RxJavaPlugins.onAssembly(new Single<>() {
             @Override
-            protected void subscribeActual(@NotNull SingleObserver<? super Object> observer) {
+            protected void subscribeActual(@Nonnull SingleObserver<? super Object> observer) {
                 val disposed = new AtomicBoolean();
                 observer.onSubscribe(new Disposable() {
                     @Override
