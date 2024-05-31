@@ -47,7 +47,7 @@ public class FPETest {
         val decrypt1 = formatPreservingEncryption.decrypt(encrypt1, bytes(tweakText));
         val decrypt2 = fpe.decrypt(encrypt2, tweakText);
         assertEquals(plainText, decrypt1);
-        assertEquals(plainText, decrypt1);
+        assertEquals(plainText, decrypt2);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class FPETest {
         val decrypt1 = formatPreservingEncryption.decrypt(encrypt1, bytes(tweakText));
         val decrypt2 = fpe.decrypt(encrypt2, tweakText);
         assertEquals(plainText, decrypt1);
-        assertEquals(plainText, decrypt1);
+        assertEquals(plainText, decrypt2);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class FPETest {
         val decrypt1 = formatPreservingEncryption.decrypt(encrypt1, bytes(tweakText));
         val decrypt2 = fpe.decrypt(encrypt2, tweakText);
         assertEquals(plainText, decrypt1);
-        assertEquals(plainText, decrypt1);
+        assertEquals(plainText, decrypt2);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class FPETest {
         val decrypt1 = formatPreservingEncryption.decrypt(encrypt1, bytes(tweakText));
         val decrypt2 = fpe.decrypt(encrypt2, tweakText);
         assertEquals(plainText, decrypt1);
-        assertEquals(plainText, decrypt1);
+        assertEquals(plainText, decrypt2);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class FPETest {
         val decrypt1 = formatPreservingEncryption.decrypt(encrypt1, bytes(tweakText));
         val decrypt2 = fpe.decrypt(encrypt2, tweakText);
         assertEquals(plainText, decrypt1);
-        assertEquals(plainText, decrypt1);
+        assertEquals(plainText, decrypt2);
     }
 
     public void batchRun(FPE fpe, int times) {

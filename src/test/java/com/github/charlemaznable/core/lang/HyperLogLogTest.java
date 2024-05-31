@@ -66,7 +66,7 @@ public class HyperLogLogTest {
             assertEquals(1., 1. * cardinality2 / COUNT, 2 * 0.0081);
 
             val merged = hll.merge(hll2);
-            val mergedCardinality = hll2.cardinality();
+            val mergedCardinality = merged.cardinality();
             log.info("result merged: " + mergedCardinality);
             // hyperloglog(16384) standard error 0.81%
             // 95%置信区间: count±2*0.81%
