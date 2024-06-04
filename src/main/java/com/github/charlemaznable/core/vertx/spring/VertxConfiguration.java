@@ -2,6 +2,7 @@ package com.github.charlemaznable.core.vertx.spring;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.spi.cluster.ClusterManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +19,9 @@ import static com.github.charlemaznable.core.vertx.VertxElf.buildVertx;
 public class VertxConfiguration {
 
     @Bean
-    public Vertx vertx(@Nullable VertxOptions vertxOptions) {
-        return buildVertx(nullThen(vertxOptions, VertxOptions::new));
+    public Vertx vertx(@Nullable VertxOptions vertxOptions,
+                       @Nullable ClusterManager clusterManager) {
+        return buildVertx(nullThen(vertxOptions, VertxOptions::new), clusterManager);
     }
 
     @ConditionalOnRx("io.vertx.rxjava.core.Vertx")

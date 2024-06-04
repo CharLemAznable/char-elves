@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.impl.clustered.ClusteredEventBus;
+import io.vertx.core.spi.cluster.ClusterManager;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -21,15 +22,12 @@ public class CustomOptionsTest {
 
     @Test
     public void testVertxModular() {
-        val vertxOptions = new VertxOptions();
-        vertxOptions.setWorkerPoolSize(DEFAULT_WORKER_POOL_SIZE);
-        vertxOptions.setClusterManager(new HazelcastClusterManager());
-        val injector = Guice.createInjector(new VertxModular(vertxOptions).createModule());
+        val injector = Guice.createInjector(new VertxModular(new HazelcastClusterManager()).createModule());
         val vertx = injector.getInstance(Vertx.class);
         assertNotNull(vertx);
         val reflectVertx = on(vertx);
         int defaultWorkerPoolSize = reflectVertx.field("defaultWorkerPoolSize").get();
-        assertEquals(DEFAULT_WORKER_POOL_SIZE, defaultWorkerPoolSize);
+        assertEquals(VertxOptions.DEFAULT_WORKER_POOL_SIZE, defaultWorkerPoolSize);
         val eventBus = reflectVertx.field("eventBus").get();
         assertTrue(eventBus instanceof ClusteredEventBus);
         assertSame(vertx, injector.getInstance(Vertx.class));
@@ -37,7 +35,8 @@ public class CustomOptionsTest {
 
     @Test
     public void testVertxModularProviderClass() {
-        val injector = Guice.createInjector(new VertxModular(CustomOptionsProvider.class).createModule());
+        val injector = Guice.createInjector(new VertxModular(
+                CustomOptionsProvider.class, CustomManagerProvider.class).createModule());
         val vertx = injector.getInstance(Vertx.class);
         assertNotNull(vertx);
         val reflectVertx = on(vertx);
@@ -54,8 +53,15 @@ public class CustomOptionsTest {
         public VertxOptions get() {
             val vertxOptions = new VertxOptions();
             vertxOptions.setWorkerPoolSize(DEFAULT_WORKER_POOL_SIZE);
-            vertxOptions.setClusterManager(new HazelcastClusterManager());
             return vertxOptions;
+        }
+    }
+
+    public static class CustomManagerProvider implements Provider<ClusterManager> {
+
+        @Override
+        public ClusterManager get() {
+            return new HazelcastClusterManager();
         }
     }
 }

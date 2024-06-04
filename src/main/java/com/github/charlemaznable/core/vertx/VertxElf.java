@@ -4,7 +4,9 @@ import com.google.common.primitives.Primitives;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxBuilder;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.spi.cluster.ClusterManager;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -46,18 +48,25 @@ public final class VertxElf {
         return vertxOptions;
     }
 
-    public static Vertx buildVertx(VertxOptions vertxOptions) {
-        return buildVertx(vertxOptions, null);
+    public static boolean isClustered(VertxOptions vertxOptions) {
+        return isClustered(vertxOptions, null);
+    }
+
+    public static boolean isClustered(VertxOptions vertxOptions, ClusterManager clusterManager) {
+        return nonNull(vertxOptions.getClusterManager()) || nonNull(clusterManager) ||
+                nonNull(System.getProperty(CLUSTER_MANAGER_CLASS_PROPERTY));
+    }
+
+    public static Vertx buildVertx(VertxBuilder vertxBuilder, boolean clustered) {
+        return buildVertx(vertxBuilder, clustered, null);
     }
 
     @SneakyThrows
-    public static Vertx buildVertx(VertxOptions vertxOptions, Function<Throwable, Vertx> exceptionFn) {
-        if (nonNull(vertxOptions.getClusterManager()) ||
-                nonNull(System.getProperty(CLUSTER_MANAGER_CLASS_PROPERTY))) {
+    public static Vertx buildVertx(VertxBuilder vertxBuilder, boolean clustered, Function<Throwable, Vertx> exceptionFn) {
+        if (clustered) {
             val cf = new CompletableFuture<Vertx>();
-            val completableFuture = isNull(exceptionFn)
-                    ? cf : cf.exceptionally(exceptionFn);
-            Vertx.clusteredVertx(vertxOptions, asyncResult -> {
+            val completableFuture = isNull(exceptionFn) ? cf : cf.exceptionally(exceptionFn);
+            vertxBuilder.buildClustered(asyncResult -> {
                 if (asyncResult.failed()) {
                     completableFuture.completeExceptionally(asyncResult.cause());
                 } else {
@@ -66,8 +75,26 @@ public final class VertxElf {
             });
             return completableFuture.get();
         } else {
-            return Vertx.vertx(vertxOptions);
+            return vertxBuilder.build();
         }
+    }
+
+    public static Vertx buildVertx(VertxOptions vertxOptions) {
+        return buildVertx(Vertx.builder().with(vertxOptions), isClustered(vertxOptions));
+    }
+
+    public static Vertx buildVertx(VertxOptions vertxOptions, ClusterManager clusterManager) {
+        return buildVertx(Vertx.builder().with(vertxOptions).withClusterManager(clusterManager),
+                isClustered(vertxOptions, clusterManager));
+    }
+
+    public static Vertx buildVertx(VertxOptions vertxOptions, Function<Throwable, Vertx> exceptionFn) {
+        return buildVertx(Vertx.builder().with(vertxOptions), isClustered(vertxOptions), exceptionFn);
+    }
+
+    public static Vertx buildVertx(VertxOptions vertxOptions, ClusterManager clusterManager, Function<Throwable, Vertx> exceptionFn) {
+        return buildVertx(Vertx.builder().with(vertxOptions).withClusterManager(clusterManager),
+                isClustered(vertxOptions, clusterManager), exceptionFn);
     }
 
     public static void closeVertx(Vertx vertx) {

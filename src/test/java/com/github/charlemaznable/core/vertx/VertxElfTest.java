@@ -57,15 +57,17 @@ public class VertxElfTest {
         assertFalse(vertx1.isClustered());
         closeVertxImmediately(vertx1);
 
-        val clusterOptions = new VertxOptions();
-        clusterOptions.setClusterManager(new HazelcastClusterManager());
-        val vertx2 = buildVertx(clusterOptions, throwable -> null);
-        assertTrue(vertx2.isClustered());
-        closeVertx(vertx2, throwable -> null);
+        val vertx2 = buildVertx(new VertxOptions(), throwable -> null);
+        assertFalse(vertx2.isClustered());
+        closeVertxImmediately(vertx2);
 
-        val vertx3 = buildVertx(clusterOptions);
+        val vertx3 = buildVertx(new VertxOptions(), new HazelcastClusterManager(), throwable -> null);
         assertTrue(vertx3.isClustered());
-        closeVertx(vertx3);
+        closeVertx(vertx3, throwable -> null);
+
+        val vertx4 = buildVertx(new VertxOptions(), new HazelcastClusterManager());
+        assertTrue(vertx4.isClustered());
+        closeVertx(vertx4);
 
         assertDoesNotThrow(() -> closeVertxImmediately(null));
         assertDoesNotThrow(() -> closeVertx(null));
